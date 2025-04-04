@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Busqueda;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -23,6 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $user = auth()->user();
+        $busqueda = new Busqueda();
+
         return view('home');
     }
 }

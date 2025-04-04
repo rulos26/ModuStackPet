@@ -1,7 +1,6 @@
 @extends('adminlte::master')
 
 @inject('layoutHelper', 'JeroenNoten\LaravelAdminLte\Helpers\LayoutHelper')
-@inject('preloaderHelper', 'JeroenNoten\LaravelAdminLte\Helpers\PreloaderHelper')
 
 @section('adminlte_css')
     @stack('css')
@@ -15,14 +14,15 @@
 @section('body')
     <div class="wrapper">
 
-        {{-- Preloader Animation (fullscreen mode) --}}
-        @if($preloaderHelper->isPreloaderEnabled())
+        {{-- Preloader Animation --}}
+       {{--  @if($layoutHelper->isPreloaderEnabled())
             @include('adminlte::partials.common.preloader')
-        @endif
+        @endif --}}
 
         {{-- Top Navbar --}}
         @if($layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.navbar.navbar-layout-topnav')
+            @include('adminlte::partials.navbar.menu-item-fullscreen-widget')
         @else
             @include('adminlte::partials.navbar.navbar')
         @endif
@@ -45,7 +45,7 @@
         @endif
 
         {{-- Right Control Sidebar --}}
-        @if($layoutHelper->isRightSidebarEnabled())
+        @if(config('adminlte.right_sidebar'))
             @include('adminlte::partials.sidebar.right-sidebar')
         @endif
 
@@ -53,6 +53,7 @@
 @stop
 
 @section('adminlte_js')
+    @stack('scripts')
     @stack('js')
     @yield('js')
 @stop

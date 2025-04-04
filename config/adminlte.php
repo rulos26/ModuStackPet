@@ -154,8 +154,8 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => null,
+    'layout_fixed_sidebar' => true,
+    'layout_fixed_navbar' => true,
     'layout_fixed_footer' => null,
     'layout_dark_mode' => null,
 
@@ -236,7 +236,7 @@ return [
     |
     */
 
-    'right_sidebar' => false,
+    'right_sidebar' => true,
     'right_sidebar_icon' => 'fas fa-cogs',
     'right_sidebar_theme' => 'dark',
     'right_sidebar_slide' => true,
@@ -264,27 +264,22 @@ return [
     'password_reset_url' => 'password/reset',
     'password_email_url' => 'password/email',
     'profile_url' => false,
-    'disable_darkmode_routes' => false,
 
     /*
     |--------------------------------------------------------------------------
-    | Laravel Asset Bundling
+    | Laravel Mix
     |--------------------------------------------------------------------------
     |
-    | Here we can enable the Laravel Asset Bundling option for the admin panel.
-    | Currently, the next modes are supported: 'mix', 'vite' and 'vite_js_only'.
-    | When using 'vite_js_only', it's expected that your CSS is imported using
-    | JavaScript. Typically, in your application's 'resources/js/app.js' file.
-    | If you are not using any of these, leave it as 'false'.
+    | Here we can enable the Laravel Mix option for the admin panel.
     |
-    | For detailed instructions you can look the asset bundling section here:
+    | For detailed instructions you can look the laravel mix section here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Other-Configuration
     |
     */
 
-    'laravel_asset_bundling' => false,
-    'laravel_css_path' => 'css/app.css',
-    'laravel_js_path' => 'js/app.js',
+    'enabled_laravel_mix' => false,
+    'laravel_mix_css_path' => 'css/app.css',
+    'laravel_mix_js_path' => 'js/app.js',
 
     /*
     |--------------------------------------------------------------------------
@@ -299,100 +294,100 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
-
-        // Sidebar items:
-        [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
-        ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
-        ],
+    [
+        'text'  => 'Inicios',
+        'route' => 'home',
+        'icon'  => 'fa fa-home text-primary',
     ],
+    [
+        'text'  => 'Datos Basicos',
+        'route' => 'datos-basicos.create',
+        'icon'  => 'fa fa-id-card text-primary',
+    ],
+    [
+        'text'  => 'Datos Afiliados',
+        'route' => 'afiliados.create',
+        'icon'  => 'fa fa-users text-primary',
+    ],
+    [
+        'text'  => 'Datos Afiliados Convivencias',
+        'route' => 'afiliados-convivencias.create',
+        'icon'  => 'fa fa-handshake text-primary',
+    ],
+    [
+        'text'  => 'Datos Basicos Hijos',
+        'route' => 'datos-basicos-hijos.create',
+        'icon'  => 'fa fa-child text-primary',
+    ],
+    [
+        'text'  => 'Direcciones Viviendas',
+        'route' => 'direcciones-viviendas.create',
+        'icon'  => 'fa fa-map-marker-alt text-primary',
+    ],
+    [
+        'text'  => 'Empleos Afiliados',
+        'route' => 'empleos-afiliados.create',
+        'icon'  => 'fa fa-briefcase text-primary',
+    ],
+    [
+        'text'  => 'Afiliados Cobertura salud',
+        'route' => 'afiliados-coberturas-saluds.create',
+        'icon'  => 'fa fa-hospital text-primary',
+    ],
+    [
+        'text'  => 'Hallazgos y Observaciones',
+        'route' => 'hallazgos-observaciones.create',
+        'icon'  => 'fa fa-search text-primary',
+    ],
+    [
+        'text'  => 'Siniestros',
+        'route' => 'siniestros.create',
+        'icon'  => 'fa fa-car-crash text-primary',
+    ],
+    [
+        'text'  => 'Hechos Ocurrencias',
+        'route' => 'hechos-ocurrencias.create',
+        'icon'  => 'fa fa-exclamation-triangle text-primary',
+    ],
+    [
+        'text'  => 'Reclamantes Afiliados',
+        'route' => 'reclamantes-afiliados.create',
+        'icon'  => 'fa fa-user-shield text-primary',
+    ],
+    [
+        'text'  => 'Verificaciones',
+        'route' => 'verificaciones.create',
+        'icon'  => 'fa fa-check text-primary',
+    ],
+    
+    [
+        'text'  => 'Evidencia Fotograficas',
+        'route' => 'imagenes.index',
+        'icon'  => 'fa fa-file-alt text-primary',
+    ],
+
+    [
+        'text'  => 'reportes',
+        'route' => 'reporte.evaluado',
+        'icon'  => 'fa fa-file-alt text-primary',
+    ],
+    [
+        'text'  => 'Carta Autorizacion',
+        'route' => 'carta-autorizaciones.cartaNew',
+        'icon'  => 'fa fa-file-alt text-primary',
+    ],
+    [
+        'text'  => 'Consulta Afiliado',
+        'route' => 'consulta.afiliado',
+        'icon'  => 'fa fa-file-alt text-primary',
+    ],
+    
+    
+
+     
+
+],
+
 
     /*
     |--------------------------------------------------------------------------
