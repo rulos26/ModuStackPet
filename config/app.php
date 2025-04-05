@@ -4,25 +4,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Name
+    | Nombre de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
+    | Este valor es el nombre de tu aplicación, que será utilizado cuando el
+    | framework necesite colocar el nombre de la aplicación en una notificación
+    | u otros elementos de la interfaz donde se necesite mostrar el nombre.
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'ModuStackPet'),
+
 
     /*
     |--------------------------------------------------------------------------
-    | Application Environment
+    | Entorno de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
+    | Este valor determina el "entorno" en el que tu aplicación se está ejecutando.
+    | Esto puede determinar cómo prefieres configurar varios servicios que utiliza
+    | la aplicación. Configúralo en tu archivo ".env".
     |
     */
 
@@ -30,12 +31,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Debug Mode
+    | Modo de Depuración de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
+    | Cuando tu aplicación está en modo de depuración, se mostrarán mensajes de
+    | error detallados con trazas de pila cada vez que ocurra un error. Si está
+    | deshabilitado, se mostrará una página de error genérica simple.
     |
     */
 
@@ -43,12 +44,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application URL
+    | URL de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | This URL is used by the console to properly generate URLs when using
-    | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
+    | Esta URL es utilizada por la consola para generar correctamente URLs al usar
+    | la herramienta de línea de comandos Artisan. Debes configurarla en la raíz
+    | de la aplicación para que esté disponible en los comandos de Artisan.
     |
     */
 
@@ -56,42 +57,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Timezone
+    | Zona Horaria de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
-    |
-    */
-
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Application Locale Configuration
-    |--------------------------------------------------------------------------
-    |
-    | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
+    | Aquí puedes especificar la zona horaria predeterminada para tu aplicación,
+    | que será utilizada por las funciones de fecha y hora de PHP. La zona horaria
+    | está configurada como "UTC" por defecto, ya que es adecuada para la mayoría
+    | de los casos de uso.
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'timezone' => 'America/Bogota',
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
-
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*
     |--------------------------------------------------------------------------
-    | Encryption Key
+    | Configuración de Localización de la Aplicación
     |--------------------------------------------------------------------------
     |
-    | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
+    | La localización de la aplicación determina el idioma predeterminado que será
+    | utilizado por los métodos de traducción/localización de Laravel. Esta opción
+    | puede configurarse a cualquier idioma para el cual planees tener cadenas de
+    | traducción.
+    |
+    */
+
+    'locale' => env('APP_LOCALE', 'es'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'es'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'es_ES'),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Clave de Encriptación
+    |--------------------------------------------------------------------------
+    |
+    | Esta clave es utilizada por los servicios de encriptación de Laravel y debe
+    | configurarse como una cadena aleatoria de 32 caracteres para garantizar que
+    | todos los valores encriptados sean seguros. Debes hacer esto antes de
+    | desplegar la aplicación.
     |
     */
 
@@ -107,14 +111,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Maintenance Mode Driver
+    | Controlador del Modo de Mantenimiento
     |--------------------------------------------------------------------------
     |
-    | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
+    | Estas opciones de configuración determinan el controlador utilizado para
+    | gestionar el estado del "modo de mantenimiento" de Laravel. El controlador
+    | "cache" permitirá que el modo de mantenimiento sea controlado en múltiples
+    | máquinas.
     |
-    | Supported drivers: "file", "cache"
+    | Controladores soportados: "file", "cache"
     |
     */
 
@@ -122,5 +127,7 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    
 
 ];
