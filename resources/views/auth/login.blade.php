@@ -14,7 +14,7 @@
                 <!-- Logo -->
                 <div class="logo-container text-center mb-4">
                     <!-- Imagen del logo redonda -->
-                    <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
                 </div>
 
                 <!-- Card de Login -->
