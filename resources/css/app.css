@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Estilos para el tema oscuro */
+.dark-theme {
+    --bs-body-bg: #121212;
+    --bs-body-color: #ffffff;
+    --bs-primary: #6200ea;
+    --bs-link-color: #bb86fc;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Estilos para el tema claro */
+.light-theme {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #000000;
+    --bs-primary: #007bff;
+    --bs-link-color: #007bff;
+    background-color: #ffffff;
+    color: #000000;
+}
