@@ -36,7 +36,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -121,6 +121,63 @@
         .error-message {
             color: red;
             margin-bottom: 20px;
+        }
+
+        /* Media queries para pantallas pequeñas */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 20px;
+                max-width: 90%;
+            }
+
+            .logo-container img {
+                width: 80px;
+                height: 80px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            label {
+                font-size: 0.9rem;
+            }
+
+            input {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+        }
+
+        /* Media queries para pantallas muy pequeñas (teléfonos) */
+        @media (max-width: 480px) {
+            .logo-container img {
+                width: 60px;
+                height: 60px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            label {
+                font-size: 0.8rem;
+            }
+
+            input {
+                font-size: 0.8rem;
+                padding: 6px;
+            }
+
+            button {
+                font-size: 0.8rem;
+                padding: 8px;
+            }
         }
     </style>
 </head>
