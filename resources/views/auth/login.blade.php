@@ -140,7 +140,7 @@
         </form>
 
         <div class="links">
-            <p><a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a></p>
+            <p><a href="{{ route('password.request') }}">¿Olvidastedd tu contraseña?</a></p>
             <p><a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a></p>
         </div>
     </div>
