@@ -40,6 +40,19 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
         .login-container {
             background-color: var(--container-bg);
             padding: 40px;
@@ -112,6 +125,10 @@
     </style>
 </head>
 <body>
+    <div class="logo-container">
+        <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo">
+    </div>
+
     <div class="login-container">
         <h1>Iniciar Sesión</h1>
 
@@ -140,7 +157,7 @@
         </form>
 
         <div class="links">
-            <p><a href="{{ route('password.request') }}">¿Olvidastefff tu contraseña?</a></p>
+            <p><a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a></p>
             <p><a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a></p>
         </div>
     </div>
