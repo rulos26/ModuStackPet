@@ -6,54 +6,14 @@
     <title>Iniciar Sesión</title>
     <!-- Cargar Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Estilos generales */
-        .logo-container img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        body {
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Modo claro */
-        body.light {
-            background-color: #f8f9fa; /* Color de fondo claro */
-            color: #212529; /* Color de texto oscuro */
-        }
-
-        .card.light {
-            background-color: #ffffff; /* Fondo de la tarjeta en modo claro */
-            color: #212529;
-        }
-
-        /* Modo oscuro */
-        body.dark {
-            background-color: #121212; /* Color de fondo oscuro */
-            color: #e0e0e0; /* Color de texto claro */
-        }
-
-        .card.dark {
-            background-color: #1e1e1e; /* Fondo de la tarjeta en modo oscuro */
-            color: #e0e0e0;
-        }
-
-        /* Transición para el cambio de tema */
-        .card {
-            transition: background-color 0.3s, color 0.3s;
-        }
-    </style>
 </head>
-<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+<body class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <!-- Logo -->
                 <div class="logo-container text-center mb-4">
-                    <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo">
+                    <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
                 </div>
 
                 <!-- Card de Login -->
@@ -124,15 +84,11 @@
             const card = document.querySelector('.card');
 
             if (prefersDarkScheme) {
-                body.classList.remove('light');
-                body.classList.add('dark');
-                card.classList.remove('light');
-                card.classList.add('dark');
+                body.classList.add('bg-dark', 'text-light');
+                card.classList.add('bg-dark', 'text-light');
             } else {
-                body.classList.remove('dark');
-                body.classList.add('light');
-                card.classList.remove('dark');
-                card.classList.add('light');
+                body.classList.remove('bg-dark', 'text-light');
+                card.classList.remove('bg-dark', 'text-light');
             }
         }
 
