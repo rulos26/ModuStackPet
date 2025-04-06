@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\MensajeDeBienvenidaRequest;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class MensajeDeBienvenidaController extends Controller
@@ -41,18 +42,27 @@ class MensajeDeBienvenidaController extends Controller
      */
     public function store(MensajeDeBienvenidaRequest $request): RedirectResponse
     {
-        // Validar los datos del formulario
-        $validatedData = $request->validated();
+        try {
+            // Validar los datos del formulario
+            $validatedData = $request->validated();
 
-        // Asignar un valor predeterminado al campo 'logo'
-        $validatedData['logo'] = 'public/storage/img/logo.jpg';
+            // Asignar un valor predeterminado al campo 'logo'
+            $validatedData['logo'] = 'public/storage/img/logo.jpg';
 
-        // Crear un nuevo mensaje de bienvenida con los datos validados
-        MensajeDeBienvenida::create($validatedData);
+            // Crear un nuevo mensaje de bienvenida con los datos validados
+            MensajeDeBienvenida::create($validatedData);
 
-        // Redirigir al índice con un mensaje de éxito
-        return Redirect::route('mensaje-de-bienvenidas.index')
-            ->with('success', 'El mensaje de bienvenida se creó correctamente.');
+            // Redirigir al índice con un mensaje de éxito
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('success', 'El mensaje de bienvenida se creó correctamente.');
+        } catch (\Exception $e) {
+            // Registrar el error en el log
+            Log::error('Error al crear el mensaje de bienvenida: ' . $e->getMessage());
+
+            // Redirigir al índice con un mensaje de error
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('error', 'Ocurrió un error al crear el mensaje de bienvenida.');
+        }
     }
 
     /**
@@ -84,12 +94,21 @@ class MensajeDeBienvenidaController extends Controller
      */
     public function update(MensajeDeBienvenidaRequest $request, MensajeDeBienvenida $mensajeDeBienvenida): RedirectResponse
     {
-        // Actualizar el mensaje de bienvenida con los datos validados
-        $mensajeDeBienvenida->update($request->validated());
+        try {
+            // Actualizar el mensaje de bienvenida con los datos validados
+            $mensajeDeBienvenida->update($request->validated());
 
-        // Redirigir al índice con un mensaje de éxito
-        return Redirect::route('mensaje-de-bienvenidas.index')
-            ->with('success', 'El mensaje de bienvenida se actualizó correctamente.');
+            // Redirigir al índice con un mensaje de éxito
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('success', 'El mensaje de bienvenida se actualizó correctamente.');
+        } catch (\Exception $e) {
+            // Registrar el error en el log
+            Log::error('Error al actualizar el mensaje de bienvenida: ' . $e->getMessage());
+
+            // Redirigir al índice con un mensaje de error
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('error', 'Ocurrió un error al actualizar el mensaje de bienvenida.');
+        }
     }
 
     /**
@@ -97,11 +116,20 @@ class MensajeDeBienvenidaController extends Controller
      */
     public function destroy($id): RedirectResponse
     {
-        // Buscar y eliminar el mensaje de bienvenida por su ID
-        MensajeDeBienvenida::find($id)->delete();
+        try {
+            // Buscar y eliminar el mensaje de bienvenida por su ID
+            MensajeDeBienvenida::findOrFail($id)->delete();
 
-        // Redirigir al índice con un mensaje de éxito
-        return Redirect::route('mensaje-de-bienvenidas.index')
-            ->with('success', 'El mensaje de bienvenida se eliminó correctamente.');
+            // Redirigir al índice con un mensaje de éxito
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('success', 'El mensaje de bienvenida se eliminó correctamente.');
+        } catch (\Exception $e) {
+            // Registrar el error en el log
+            Log::error('Error al eliminar el mensaje de bienvenida: ' . $e->getMessage());
+
+            // Redirigir al índice con un mensaje de error
+            return Redirect::route('mensaje-de-bienvenidas.index')
+                ->with('error', 'Ocurrió un error al eliminar el mensaje de bienvenida.');
+        }
     }
 }
