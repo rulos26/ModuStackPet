@@ -55,10 +55,10 @@
                                             <td>{{ $mensajeDeBienvenida->descripcion }}</td>
                                             <td>
                                                 <!-- Mostrar el logo si existe -->
-                                                @if ($mensajeDeBienvenida->logo)
-                                                    <img src="{{ asset('storage/' . $mensajeDeBienvenida->logo) }}" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;">
+                                                @if ($mensajeDeBienvenida->logo && file_exists(public_path($mensajeDeBienvenida->logo)))
+                                                    <img src="{{ asset($mensajeDeBienvenida->logo) }}" alt="Logo" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @else
-                                                    Sin logo
+                                                    <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo predeterminado" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @endif
                                             </td>
                                             <td>{{ $mensajeDeBienvenida->rol }}</td>

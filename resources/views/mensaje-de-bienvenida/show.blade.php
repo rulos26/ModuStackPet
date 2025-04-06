@@ -35,10 +35,10 @@
                         <!-- Mostrar el logo del mensaje -->
                         <div class="form-group mb-2 mb20">
                             <strong>Logo:</strong>
-                            @if ($mensajeDeBienvenida->logo)
-                                <img src="{{ asset('storage/' . $mensajeDeBienvenida->logo) }}" alt="Logo" style="width: 100px; height: 100px; object-fit: cover;">
+                            @if ($mensajeDeBienvenida->logo && file_exists(public_path($mensajeDeBienvenida->logo)))
+                                <img src="{{ asset($mensajeDeBienvenida->logo) }}" alt="Logo" style="width: 100px; height: 100px; object-fit: cover;">
                             @else
-                                Sin logo
+                                <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo predeterminado" style="width: 100px; height: 100px; object-fit: cover;">
                             @endif
                         </div>
                         <!-- Mostrar el rol asociado al mensaje -->
