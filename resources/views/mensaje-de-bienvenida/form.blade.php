@@ -12,28 +12,10 @@
         <!-- Campo para la descripción -->
         <div class="form-group mb-2 mb20">
             <label for="descripcion" class="form-label">Descripción</label>
-            <input type="text" name="descripcion" class="form-control @error('descripcion') is-invalid @enderror" 
-                   value="{{ old('descripcion', $mensajeDeBienvenida?->descripcion) }}" id="descripcion" placeholder="Descripción">
+            <textarea name="descripcion" class="form-control @error('descripcion') is-invalid @enderror" 
+                      id="descripcion" placeholder="Descripción" rows="4">{{ old('descripcion', $mensajeDeBienvenida?->descripcion) }}</textarea>
             <!-- Mostrar mensaje de error si el campo no es válido -->
             {!! $errors->first('descripcion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-
-        <!-- Campo para el logo -->
-        <div class="form-group mb-2 mb20">
-            <label for="logo" class="form-label">Logo</label>
-            <input type="text" name="logo" class="form-control @error('logo') is-invalid @enderror" 
-                   value="{{ old('logo', $mensajeDeBienvenida?->logo) }}" id="logo" placeholder="Ruta del logo">
-            <!-- Mostrar mensaje de error si el campo no es válido -->
-            {!! $errors->first('logo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-
-        <!-- Campo para el rol -->
-        <div class="form-group mb-2 mb20">
-            <label for="rol" class="form-label">Rol</label>
-            <input type="text" name="rol" class="form-control @error('rol') is-invalid @enderror" 
-                   value="{{ old('rol', $mensajeDeBienvenida?->rol) }}" id="rol" placeholder="Rol">
-            <!-- Mostrar mensaje de error si el campo no es válido -->
-            {!! $errors->first('rol', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
     </div>
 
