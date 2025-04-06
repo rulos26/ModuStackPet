@@ -7,56 +7,71 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
+    /**
+     * Muestra el formulario de inicio de sesión.
+     *
+     * @return \Illuminate\View\View
+     */
     public function showLoginForm()
     {
-        return view('auth.login'); // Asegúrate de tener la vista para el formulario de login
+        return view('auth.login'); // Retorna la vista del formulario de login
     }
 
+    /**
+     * Maneja el inicio de sesión del usuario.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function login(Request $request)
-    {  
+    {
+        // Validar los datos de entrada
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|email', // El campo email es obligatorio y debe ser un correo válido
+            'password' => 'required',    // El campo password es obligatorio
         ]);
 
+        // Intentar autenticar al usuario con las credenciales proporcionadas
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Autenticación exitosa
-            $user = Auth::user();
-            $roles = $user->roles->pluck('name');
-//dd($roles);
+            $user = Auth::user(); // Obtener el usuario autenticado
+            $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
+
+            // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
-                return redirect()->route('superadmin.dashboard');
-            } else {
-                dd('error');
+                return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
             }
 
             if ($roles->contains('Admin')) {
-                return redirect()->route('admin.dashboard');
-            } else {
-                dd('error');
+                return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
             }
 
             if ($roles->contains('Cliente')) {
-                return redirect()->route('cliente.dashboard');
-            } else {
-                dd('error');
+                return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
             }
 
+            // Si el usuario no tiene un rol válido
+            Auth::logout(); // Cerrar sesión
             return back()->withErrors([
-                'email' => 'Las credenciales no coinciden con nuestros registros.',
+                'email' => 'No tienes permisos para acceder.',
             ]);
-            // return redirect()->intended('dashboard'); // Redirige al usuario después del inicio de sesión
         }
 
+        // Si las credenciales no son válidas
         return back()->withErrors([
             'email' => 'Las credenciales no coinciden con nuestros registros.',
         ]);
     }
 
+    /**
+     * Cierra la sesión del usuario.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request)
     {
-        Auth::logout();
-
+        Auth::logout(); // Cerrar la sesión del usuario
         return redirect('/'); // Redirigir a la página principal o de login
     }
 }
