@@ -8,6 +8,12 @@
                 <p>Inicio</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('mensaje-de-bienvenidas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-vial"></i>
+                <p>Dashboard Mensaje de bienvenida</p>
+            </a>
+        </li>
        {{--  <li class="nav-item">
             <a href="{{ route('pruebas.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-vial"></i>

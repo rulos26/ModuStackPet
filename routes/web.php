@@ -9,6 +9,7 @@ use App\Http\Controllers\EstadosCicloController;
 use App\Http\Controllers\EstadosDeudaController;
 use App\Http\Controllers\EstadosPedidoController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
@@ -57,7 +58,7 @@ Route::resource('productos', ProductoController::class);
 Route::resource('estados-pedidos', EstadosPedidoController::class);
 Route::resource('estados-deudas', EstadosDeudaController::class);
 Route::resource('pedidos', PedidoController::class);
-
+Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
 Route::get('/logout', function () {
     Auth::logout();
     session()->invalidate();
