@@ -9,11 +9,11 @@
     <div class="sidebar">
         <!-- Permisos por rol -->
         @if($roles->contains('Admin'))
-            @include('admin.sidebar')
+            {{-- @include('admin.sidebar') --}}
         @endif
 
         @if($roles->contains('Cliente'))
-            @include('cliente.sidebar')
+          {{-- @include('cliente.sidebar') --}}
         @endif
 
         @if($roles->contains('Superadmin'))
