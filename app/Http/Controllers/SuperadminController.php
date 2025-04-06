@@ -19,7 +19,8 @@ class SuperadminController extends Controller
         // Verificar si el usuario tiene al menos un rol asignado
         if ($roles->isEmpty()) {
             Auth::logout(); // Cerrar sesión
-            return redirect()->route('login')->withErrors(['message' => 'No tienes permisos para acceder.']);
+            session()->invalidate(); // Invalidar la sesión
+            return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
         }
 
         // Retornar la vista del dashboard con los roles
