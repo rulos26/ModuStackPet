@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ url('/') }}" class="brand-link">
-        <span class="brand-text font-weight-light">NovavenraCaroLTE</span>
+        <span class="brand-text font-weight-light">ModuStackPetLTE</span>
     </a>
     <div class="sidebar">
         <!-- Permisos por rol -->
