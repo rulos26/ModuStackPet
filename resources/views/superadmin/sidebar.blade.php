@@ -8,7 +8,7 @@
                 <p>Inicio</p>
             </a>
         </li>
-        <li class="nav-item">
+       {{--  <li class="nav-item">
             <a href="{{ route('pruebas.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-vial"></i>
                 <p>Pruebas</p>
@@ -55,7 +55,7 @@
                 <i class="nav-icon fas fa-shopping-cart"></i>
                 <p>Pedidos</p>
             </a>
-        </li>
+        </li> --}}
         >
     </ul>
 </nav>
