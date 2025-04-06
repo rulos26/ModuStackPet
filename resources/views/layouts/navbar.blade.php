@@ -6,14 +6,13 @@
                 <i class="fas fa-bars"></i>
             </a>
         </li>
-
     </ul>
     <!-- Información del usuario -->
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
                 <!-- Imagen del usuario -->
-                <img src="{{ auth()->user()->profile_picture_url ? asset('storage/' . auth()->user()->profile_picture_url) : asset('ruta_default_avatar.png') }}"
+                <img src="{{ auth()->user()->profile_picture_url ? asset('storage/' . auth()->user()->profile_picture_url) : asset('public/storage/img/avatar/default.png') }}"
                     alt="Imagen del usuario" class="img-circle elevation-2" style="width: 30px; height: 30px;">
 
                 <span>{{ auth()->user()->name }}</span>
