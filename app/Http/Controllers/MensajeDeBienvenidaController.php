@@ -41,8 +41,14 @@ class MensajeDeBienvenidaController extends Controller
      */
     public function store(MensajeDeBienvenidaRequest $request): RedirectResponse
     {
+        // Validar los datos del formulario
+        $validatedData = $request->validated();
+
+        // Asignar un valor predeterminado al campo 'logo'
+        $validatedData['logo'] = 'public/storage/img/logo.jpg';
+
         // Crear un nuevo mensaje de bienvenida con los datos validados
-        MensajeDeBienvenida::create($request->validated());
+        MensajeDeBienvenida::create($validatedData);
 
         // Redirigir al índice con un mensaje de éxito
         return Redirect::route('mensaje-de-bienvenidas.index')

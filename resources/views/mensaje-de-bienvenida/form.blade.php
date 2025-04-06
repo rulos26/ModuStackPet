@@ -17,6 +17,19 @@
             <!-- Mostrar mensaje de error si el campo no es válido -->
             {!! $errors->first('descripcion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
+
+        <!-- Campo para el rol -->
+        <div class="form-group mb-2 mb20">
+            <label for="rol" class="form-label">Rol</label>
+            <select name="rol" id="rol" class="form-control @error('rol') is-invalid @enderror">
+                <option value="">Seleccione un rol</option>
+                <option value="Superadmin" {{ old('rol', $mensajeDeBienvenida?->rol) == 'Superadmin' ? 'selected' : '' }}>Superadmin</option>
+                <option value="Admin" {{ old('rol', $mensajeDeBienvenida?->rol) == 'Admin' ? 'selected' : '' }}>Admin</option>
+                <option value="Cliente" {{ old('rol', $mensajeDeBienvenida?->rol) == 'Cliente' ? 'selected' : '' }}>Cliente</option>
+            </select>
+            <!-- Mostrar mensaje de error si el campo no es válido -->
+            {!! $errors->first('rol', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
     </div>
 
     <!-- Botón para enviar el formulario -->
