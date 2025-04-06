@@ -5,14 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard')</title>
-    <!-- Cargar archivo app.css de manera estática -->
 
     <!-- AdminLTE CSS desde CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <!-- Bootstrap (opcional, para mayor compatibilidad) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Cargar archivo app.css de manera estática -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -41,8 +40,8 @@
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE JS -->
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
@@ -71,11 +70,11 @@
         document.onkeydown = resetInactivityTimer;
         document.onscroll = resetInactivityTimer;
         document.onclick = resetInactivityTimer;
-        
     </script>
+
+    <!-- Detectar el esquema de color del sistema -->
     <script>
-        // Detectar el esquema de color del sistema
-    const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = userPrefersDark ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
 
@@ -85,6 +84,7 @@
             document.documentElement.setAttribute("data-theme", newTheme);
         });
     </script>
+
     <!-- Cargar archivo app.js de manera estática -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>
