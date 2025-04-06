@@ -1,6 +1,10 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ url('/') }}" class="brand-link">
-        <span class="brand-text font-weight-light">ModuStackPetLTE</span>
+    <!-- Logo y nombre de la empresa -->
+    <a href="{{ url('/') }}" class="brand-link d-flex align-items-center">
+        <!-- Logo de la empresa -->
+        <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+        <!-- Nombre de la empresa -->
+        <span class="brand-text font-weight-light ml-2">ModuStackPetLTE</span>
     </a>
     <div class="sidebar">
         <!-- Permisos por rol -->
@@ -15,16 +19,5 @@
         @if($roles->contains('Superadmin'))
             @include('superadmin.sidebar')
         @endif
-
-       {{--  <!-- Botón de logout -->
-        <div class="mt-3">
-            <form action="{{ route('logout') }}" method="POST" class="d-flex justify-content-center">
-                @csrf
-                
-                <button type="submit" class="btn btn-danger rounded-circle" style="width: 50px; height: 50px;">
-                    <i class="fas fa-power-off"></i>
-                </button>
-            </form>
-        </div> --}}
     </div>
 </aside>

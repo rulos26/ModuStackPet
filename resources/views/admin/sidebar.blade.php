@@ -3,7 +3,7 @@
         <li class="nav-header">Configuraciones del Sistema</li>
     
         <li class="nav-item">
-            <a href="{{ url('/') }}" class="nav-link">
+            <a href="{{ route('pruebas.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-home"></i>
                 <p>Inicio</p>
             </a>
