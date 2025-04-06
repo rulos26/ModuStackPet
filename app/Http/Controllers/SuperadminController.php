@@ -8,11 +8,21 @@ class SuperadminController extends Controller
 {
     public function index()
     {
+        // Verificar si el usuario está autenticado
+        if (!Auth::check()) {
+            return redirect()->route('login')->withErrors(['message' => 'Debes iniciar sesión para acceder.']);
+        }
 
-        $user = Auth::user(); // Equivalente a auth()->user()
-        $roles = $user->roles->pluck('name');
+        $user = Auth::user(); // Obtener el usuario autenticado
+        $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
 
-        // dd($roles);
-        return view('superadmin.dashboard', compact('roles')); // Cambia a la vista que prefieras
+        // Verificar si el usuario tiene al menos un rol asignado
+        if ($roles->isEmpty()) {
+            Auth::logout(); // Cerrar sesión
+            return redirect()->route('login')->withErrors(['message' => 'No tienes permisos para acceder.']);
+        }
+
+        // Retornar la vista del dashboard con los roles
+        return view('superadmin.dashboard', compact('roles'));
     }
 }

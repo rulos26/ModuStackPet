@@ -15,7 +15,7 @@
             ejercitarse y recibir atención especializada mientras tú estás fuera.
         </p>
         <p>
-            Contamos con amplias zonas verdes, personal capacitado y una filosofía centrada en el bienestar físico y emocional 
+            Contamos con amplias zonas , personal capacitado y una filosofía centrada en el bienestar físico y emocional 
             de cada uno de nuestros huéspedes peludos. Aquí, tu mascota no solo es bienvenida… ¡es parte de nuestra manada!
         </p>
     </div>
