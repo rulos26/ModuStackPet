@@ -23,7 +23,7 @@ class LoginController extends Controller
             // Autenticación exitosa
             $user = Auth::user();
             $roles = $user->roles->pluck('name');
-dd($roles);
+//dd($roles);
             if ($roles->contains('Superadmin')) {
                 return redirect()->route('superadmin.dashboard');
             } else {
