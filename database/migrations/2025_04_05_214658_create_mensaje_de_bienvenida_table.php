@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mensaje_de_bienvenida', function (Blueprint $table) {
+        Schema::create('mensaje_de_bienvenidas', function (Blueprint $table) {
             $table->id(); // Campo ID autoincremental
             $table->string('titulo'); // Campo para el título
             $table->text('descripcion'); // Campo para la descripción
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mensaje_de_bienvenida');
+        Schema::dropIfExists('mensaje_de_bienvenidas');
     }
 };
