@@ -8,24 +8,27 @@
         </li>
     </ul>
 
-    <!-- Icono de notificaciones -->
-    @if(isset($notificaciones) && $notificaciones->count())
-        <ul class="navbar-nav ms-auto me-3">
-            <li class="nav-item dropdown">
-                <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button">
-                    <i class="far fa-bell"></i>
+    <!-- Menú del lado derecho -->
+    <ul class="navbar-nav ms-auto me-3">
+        <!-- Icono de notificaciones -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button">
+                <i class="far fa-bell"></i>
+                @if(isset($notificaciones) && $notificaciones->count())
                     <span class="badge bg-danger">{{ $notificaciones->count() }}</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    @forelse($notificaciones as $notificacion)
-                        <li class="dropdown-item">
-                            {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
-                        </li>
-                    @empty
-                        <li class="dropdown-item text-muted">Sin notificaciones</li>
-                    @endforelse
+                @endif
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                @forelse($notificaciones as $notificacion)
+                    <li class="dropdown-item">
+                        {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
+                    </li>
+                @empty
+                    <li class="dropdown-item text-muted">Sin notificaciones</li>
+                @endforelse
 
-                    {{-- Opción para marcar todas como leídas --}}
+                {{-- Opción para marcar todas como leídas --}}
+                @if(isset($notificaciones) && $notificaciones->count())
                     <li>
                         <hr class="dropdown-divider">
                     </li>
@@ -35,14 +38,11 @@
                             <button type="submit" class="btn btn-sm btn-link">Marcar todas como leídas</button>
                         </form>
                     </li>
-                </ul>
-            </li>
-        </ul>
-    @endif
-    
+                @endif
+            </ul>
+        </li>
 
-    <!-- Información del usuario (al lado derecho) -->
-    <ul class="navbar-nav">
+        <!-- Información del usuario -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="{{ auth()->user()->profile_picture_url ? asset('storage/' . auth()->user()->profile_picture_url) : asset('public/storage/img/desfault.png') }}"
