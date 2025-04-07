@@ -44,8 +44,6 @@ class LoginController extends Controller
 
             if ($roles->contains('Admin')) {
                 return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
-            }else{
-                return redirect()->route('admin.dashboard');
             }
 
             if ($roles->contains('Cliente')) {
