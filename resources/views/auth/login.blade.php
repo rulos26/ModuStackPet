@@ -35,7 +35,7 @@
                         @endif
 
                         <!-- Formulario de inicio de sesión -->
-                        <form method="POST" action="{{ route('login') }}">
+                        <form method="GET" action="{{ route('login') }}">
                             @csrf
                             <!-- Campo de correo electrónico -->
                             <div class="mb-3">
