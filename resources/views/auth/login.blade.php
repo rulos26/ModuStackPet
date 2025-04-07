@@ -53,7 +53,9 @@
                                     </button>
                                 </div>
                             </div>
-
+                            <label>
+                                <input type="checkbox" name="remember"> Recordarme
+                            </label>
                             <!-- Botón de inicio de sesión -->
                             <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
                         </form>

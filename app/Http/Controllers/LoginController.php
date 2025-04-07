@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Notifications\NotificacionSimple;
 class LoginController extends Controller
 {
     /**
@@ -39,14 +39,17 @@ class LoginController extends Controller
 //dd  ($roles);
             // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
+                $user->notify(new NotificacionSimple());
                 return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
             }
 
             if ($roles->contains('Admin')) {
+                $user->notify(new NotificacionSimple());
                 return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
             }
 
             if ($roles->contains('Cliente')) {
+                $user->notify(new NotificacionSimple());
                 return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
             }
 

@@ -14,9 +14,11 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
 use App\Http\Controllers\SuperadminController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -67,3 +69,31 @@ Route::get('/logout', function () {
 
     return redirect('/');
 })->name('logout');
+
+// Middleware para proteger el dashboard
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Rutas para Superadmin
+Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
+});
+
+// Ruta para verificar email
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// Ruta que maneja el enlace de verificación
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/dashboard');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Reenvío de verificación
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', '¡Se ha enviado un nuevo enlace de verificación!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::post('/notificaciones/leidas', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return back();
+})->name('notificaciones.marcar.leidas');
