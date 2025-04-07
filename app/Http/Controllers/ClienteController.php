@@ -2,92 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ClienteRequest;
-use App\Models\Cliente;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use App\Models\MensajeDeBienvenida;
 
 class ClienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request): View
+    public function index()
     {
-        $clientes = Cliente::paginate();
-        $user = Auth::user(); // Equivalente a auth()->user()
-        $roles = $user->roles->pluck('name');
+        // Verificar si el usuario está autenticado
+        if (!Auth::check()) {
+            return redirect()->route('login')->withErrors(['message' => 'Debes iniciar sesión para acceder.']);
+        }
 
-        return view('cliente.index', compact('clientes', 'roles'))
-            ->with('i', ($request->input('page', 1) - 1) * $clientes->perPage());
-    }
+        $user = Auth::user(); // Obtener el usuario autenticado
+        $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): View
-    {
-        $cliente = new Cliente;
-        $user = Auth::user(); // Equivalente a auth()->user()
-        $roles = $user->roles->pluck('name');
+        // Verificar si el usuario tiene al menos un rol asignado
+        if ($roles->isEmpty()) {
+            Auth::logout(); // Cerrar sesión
+            session()->invalidate(); // Invalidar la sesión
+            return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
+        }
 
-        return view('cliente.create', compact('cliente', 'roles'));
-    }
+        // Buscar el mensaje de bienvenida que coincida con el rol del usuario
+        $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', $roles->first())->first();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(ClienteRequest $request): RedirectResponse
-    {
-        Cliente::create($request->validated());
+        // Verificar si se encontró un mensaje de bienvenida
+        if (!$mensajeDeBienvenida) {
+            return redirect()->route('dashboard')->withErrors(['message' => 'No se encontró un mensaje de bienvenida para tu rol.']);
+        }
 
-        return Redirect::route('clientes.index')
-            ->with('success', 'Cliente created successfully.');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show($id): View
-    {
-        $cliente = Cliente::find($id);
-        $user = Auth::user(); // Equivalente a auth()->user()
-        $roles = $user->roles->pluck('name');
-
-        return view('cliente.show', compact('cliente', 'roles'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id): View
-    {
-        $cliente = Cliente::find($id);
-        $user = Auth::user(); // Equivalente a auth()->user()
-        $roles = $user->roles->pluck('name');
-
-        return view('cliente.edit', compact('cliente', 'roles'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ClienteRequest $request, Cliente $cliente): RedirectResponse
-    {
-        $cliente->update($request->validated());
-
-        return Redirect::route('clientes.index')
-            ->with('success', 'Cliente updated successfully');
-    }
-
-    public function destroy($id): RedirectResponse
-    {
-        Cliente::find($id)->delete();
-
-        return Redirect::route('clientes.index')
-            ->with('success', 'Cliente deleted successfully');
+        // Retornar la vista del dashboard con los roles y el mensaje de bienvenida
+        return view('cliente.dashboard', [
+            'roles' => $roles,
+            'titulo' => $mensajeDeBienvenida->titulo,
+            'descripcion' => $mensajeDeBienvenida->descripcion,
+            'logo' => $mensajeDeBienvenida->logo,
+        ]);
     }
 }
