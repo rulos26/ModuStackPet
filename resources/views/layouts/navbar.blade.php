@@ -8,38 +8,49 @@
         </li>
     </ul>
 
-    <!-- Información del usuario (ubicada al lado derecho) -->
-    <ul class="navbar-nav ms-auto">
+    <!-- Icono de notificaciones -->
+    <ul class="navbar-nav ms-auto me-3">
         <li class="nav-item dropdown">
-            <!-- Botón desplegable con imagen y nombre del usuario -->
+            <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button">
+                <i class="far fa-bell"></i>
+                @if(isset($notificaciones) && $notificaciones->count())
+                    <span class="badge bg-danger">{{ $notificaciones->count() }}</span>
+                @endif
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+                @forelse($notificaciones as $notificacion)
+                    <li class="dropdown-item">
+                        {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
+                    </li>
+                @empty
+                    <li class="dropdown-item text-muted">Sin notificaciones</li>
+                @endforelse
+            </ul>
+        </li>
+    </ul>
+
+    <!-- Información del usuario (al lado derecho) -->
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <!-- Imagen del usuario -->
                 <img src="{{ auth()->user()->profile_picture_url ? asset('storage/' . auth()->user()->profile_picture_url) : asset('public/storage/img/desfault.png') }}"
                     alt="Imagen del usuario" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                 <span class="ms-2">{{ auth()->user()->name }}</span>
             </a>
 
-            <!-- Menú desplegable -->
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <!-- Información del usuario -->
                 <li class="dropdown-item text-center">
                     <strong>{{ auth()->user()->email }}</strong>
                     <br>
-                    <small class="text-muted">
-                        <!-- Mostrar el rol del usuario -->
-                        {{ auth()->user()->roles->pluck('name')->first() }}
-                    </small>
+                    <small class="text-muted">{{ auth()->user()->roles->pluck('name')->first() }}</small>
                 </li>
                 <li><hr class="dropdown-divider"></li>
 
-                <!-- Opción de perfil -->
                 <li>
                     <a href="#" class="dropdown-item">
                         <i class="fas fa-user me-2"></i> Perfil
                     </a>
                 </li>
-
-                <!-- Opción de cerrar sesión -->
                 <li>
                     <a href="{{ route('logout') }}" class="dropdown-item text-danger">
                         <i class="fas fa-power-off me-2"></i> Cerrar sesión
