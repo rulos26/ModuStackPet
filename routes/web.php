@@ -18,39 +18,48 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 
+// Página principal muestra el login
 Route::get('/', function () {
     return view('auth.login');
-});
+})->name('login');
 
-Route::middleware(['web'])->group(function () {
-    Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-});
+// Mostrar formulario de login (GET) y procesar login (POST)
+Route::get('login', [LoginController::class, 'login'])->name('login.form');
+Route::post('login', [LoginController::class, 'authenticate'])->name('login.perform');
 
-// Ruta para mostrar el formulario de registro
-Route::get('register', [RegisterController::class, 'showRegisterForm'])->name('register');
+// Logout
+Route::get('/logout', function () {
+    Auth::logout();
+    session()->invalidate();
+    return redirect('/');
+})->name('logout');
 
-// Ruta para manejar el registro
-Route::post('register', [RegisterController::class, 'register']);
+// Registro de usuario
+Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
 
+// Restablecimiento de contraseña
 Route::get('password/reset', [ResetPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+// Panel general (puedes redirigir según el tipo de usuario)
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('temp.index');
-Route::resource('pruebas', PruebaController::class);
-Route::get('login', [LoginController::class, 'login'])->name('login');
+})->name('dashboard');
 
 // Rutas para Superadmin
 Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
 
 // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-// Rutas para Admin
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home');
+
 // Rutas para Cliente
 Route::get('/cliente/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
+
+// Recursos generales
+Route::resource('pruebas', PruebaController::class);
 Route::resource('estados-ciclos', EstadosCicloController::class);
 Route::resource('ciclos', CicloController::class);
 Route::resource('clientes', ClienteController::class);
@@ -59,9 +68,3 @@ Route::resource('estados-pedidos', EstadosPedidoController::class);
 Route::resource('estados-deudas', EstadosDeudaController::class);
 Route::resource('pedidos', PedidoController::class);
 Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
-Route::get('/logout', function () {
-    Auth::logout();
-    session()->invalidate();
-
-    return redirect('/');
-})->name('logout');
