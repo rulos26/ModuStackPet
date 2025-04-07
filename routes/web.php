@@ -40,7 +40,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('temp.index');
 Route::resource('pruebas', PruebaController::class);
-Route::post('login', [LoginController::class, 'login'])->name('login');
+Route::get('login', [LoginController::class, 'login'])->name('login');
 
 // Rutas para Superadmin
 Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
