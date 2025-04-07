@@ -1,6 +1,4 @@
-@php
-    $notificaciones = auth()->user()->unreadNotifications;
-@endphp
+
 
 <li class="nav-item dropdown">
     <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
@@ -30,3 +28,6 @@
         </li>
     </ul>
 </li>
+@php
+    $notificaciones = auth()->user()->unreadNotifications;
+@endphp
