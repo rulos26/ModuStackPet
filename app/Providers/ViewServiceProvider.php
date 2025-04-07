@@ -15,7 +15,8 @@ class ViewServiceProvider extends ServiceProvider
         // Compartir notificaciones con la vista del navbar
         View::composer('layouts.navbar', function ($view) {
             if (auth()->check()) {
-                $notificaciones = auth()->user()->notifications()->take(5)->get();
+                $notificaciones = auth()->user()->unreadNotifications()->take(5)->get();
+
                 $view->with('notificaciones', $notificaciones);
             } else {
                 $view->with('notificaciones', collect());
