@@ -25,9 +25,23 @@
                 @empty
                     <li class="dropdown-item text-muted">Sin notificaciones</li>
                 @endforelse
+    
+                {{-- Opción para marcar todas como leídas --}}
+                @if($notificaciones->count())
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li class="dropdown-item text-center">
+                        <form action="{{ route('notificaciones.marcar.leidas') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-link">Marcar todas como leídas</button>
+                        </form>
+                    </li>
+                @endif
             </ul>
         </li>
     </ul>
+    
 
     <!-- Información del usuario (al lado derecho) -->
     <ul class="navbar-nav">
