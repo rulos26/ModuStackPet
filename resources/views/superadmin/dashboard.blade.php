@@ -5,7 +5,7 @@
 @section('content')
     <div class="container my-5">
         <!-- Tarjeta para el contenido -->
-        <div class="card shadow-sm">
+        <div class="card shadow-sm" style="border: 2px solid #ddd; border-radius: 15px;">
             <div class="card-body">
                 <!-- Logo centrado y grande -->
                 <div class="text-center">
