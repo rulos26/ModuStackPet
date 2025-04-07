@@ -36,7 +36,7 @@ Route::middleware(['web'])->group(function () {
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
     // Login
-    Route::post('login', [LoginController::class, 'login'])->name('login.post');
+    Route::get('login', [LoginController::class, 'login'])->name('login.post');
 });
 
 // Rutas protegidas (requieren autenticación)
