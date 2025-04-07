@@ -14,6 +14,8 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
 use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\TipoDocumentoController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +43,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('temp.index');
-Route::resource('pruebas', PruebaController::class);
+
 Route::get('login', [LoginController::class, 'login'])->name('login');
 
 // Rutas para Superadmin
@@ -54,14 +56,7 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.d
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home'); */
 
 // Rutas para Cliente
-Route::get('/cliente/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
-Route::resource('estados-ciclos', EstadosCicloController::class);
-Route::resource('ciclos', CicloController::class);
-Route::resource('clientes', ClienteController::class);
-Route::resource('productos', ProductoController::class);
-Route::resource('estados-pedidos', EstadosPedidoController::class);
-Route::resource('estados-deudas', EstadosDeudaController::class);
-Route::resource('pedidos', PedidoController::class);
+
 Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
 Route::get('/logout', function () {
     Auth::logout();
@@ -97,3 +92,5 @@ Route::post('/notificaciones/leidas', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
 })->name('notificaciones.marcar.leidas');
+Route::resource('users', UserController::class);
+Route::resource('tipo-documentos', TipoDocumentoController::class);

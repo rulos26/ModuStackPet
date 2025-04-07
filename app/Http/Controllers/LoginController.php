@@ -37,24 +37,24 @@ class LoginController extends Controller
             $user = Auth::user(); // Obtener el usuario autenticado
             $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
 //dd  ($roles);
-$user->notify(new NotificacionSimple());
+//$user->notify(new NotificacionSimple());
             // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
                 return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
-                $user->notify(new NotificacionSimple());
+                //$user->notify(new NotificacionSimple());
                 
             }
 
             if ($roles->contains('Admin')) {
                 
                 return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
-                $user->notify(new NotificacionSimple());
+                //$user->notify(new NotificacionSimple());
             }
 
             if ($roles->contains('Cliente')) {
                 
                 return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
-                $user->notify(new NotificacionSimple());
+                //$user->notify(new NotificacionSimple());
             }
 
             // Si el usuario no tiene un rol válido
