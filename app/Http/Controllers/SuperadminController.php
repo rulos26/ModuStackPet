@@ -8,6 +8,7 @@ class SuperadminController extends Controller
 {
     public function index()
     {
+        dd('SuperadminController@index');
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {
             return redirect()->route('login')->withErrors(['message' => 'Debes iniciar sesión para acceder.']);
