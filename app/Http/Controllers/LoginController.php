@@ -45,13 +45,15 @@ class LoginController extends Controller
             }
 
             if ($roles->contains('Admin')) {
-                $user->notify(new NotificacionSimple());
+                
                 return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
+                $user->notify(new NotificacionSimple());
             }
 
             if ($roles->contains('Cliente')) {
-                $user->notify(new NotificacionSimple());
+                
                 return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
+                $user->notify(new NotificacionSimple());
             }
 
             // Si el usuario no tiene un rol válido

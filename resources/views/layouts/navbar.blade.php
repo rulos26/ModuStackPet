@@ -1,6 +1,21 @@
-{{-- @php
-    $notificaciones = auth()->user()->unreadNotifications;
-@endphp --}}
+<li class="nav-item dropdown">
+    <a class="nav-link" data-bs-toggle="dropdown" href="#">
+        <i class="far fa-bell"></i>
+        @if($notificaciones->count())
+            <span class="badge bg-danger">{{ $notificaciones->count() }}</span>
+        @endif
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end">
+        @forelse($notificaciones as $notificacion)
+            <li class="dropdown-item">
+                {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
+            </li>
+        @empty
+            <li class="dropdown-item text-muted">Sin notificaciones</li>
+        @endforelse
+    </ul>
+</li>
+
 
 <li class="nav-item dropdown">
     <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
