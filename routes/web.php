@@ -47,8 +47,10 @@ Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->nam
 
 // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
 // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home');
+
 // Rutas para Cliente
 Route::get('/cliente/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
 Route::resource('estados-ciclos', EstadosCicloController::class);
