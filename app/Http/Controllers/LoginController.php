@@ -39,8 +39,9 @@ class LoginController extends Controller
 //dd  ($roles);
             // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
-                $user->notify(new NotificacionSimple());
                 return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
+                $user->notify(new NotificacionSimple());
+                
             }
 
             if ($roles->contains('Admin')) {
