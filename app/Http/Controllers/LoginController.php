@@ -36,7 +36,7 @@ class LoginController extends Controller
             // Autenticación exitosa
             $user = Auth::user(); // Obtener el usuario autenticado
             $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
-
+dd  ($roles);
             // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
                 return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
