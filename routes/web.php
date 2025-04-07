@@ -23,7 +23,10 @@ Route::get('/', function () {
     return view('auth.login');
 })->name('login');
 
+ // Login
+ Route::get('login', [LoginController::class, 'login'])->name('login.post');
 // Rutas públicas (sin autenticación)
+
 Route::middleware(['web'])->group(function () {
     // Registro de usuarios
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -35,8 +38,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
     Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-    // Login
-    Route::get('login', [LoginController::class, 'login'])->name('login.post');
+   
 });
 
 // Rutas protegidas (requieren autenticación)
