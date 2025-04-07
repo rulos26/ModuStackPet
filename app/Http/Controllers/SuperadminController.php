@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Models\MensajeDeBienvenida;
 
 class SuperadminController extends Controller
 {
     public function index()
     {
-        //dd('SuperadminController@index');
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {
             return redirect()->route('login')->withErrors(['message' => 'Debes iniciar sesión para acceder.']);
@@ -24,7 +24,20 @@ class SuperadminController extends Controller
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
         }
 
-        // Retornar la vista del dashboard con los roles
-        return view('superadmin.dashboard', compact('roles'));
+        // Buscar el mensaje de bienvenida que coincida con el rol del usuario
+        $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', $roles->first())->first();
+
+        // Verificar si se encontró un mensaje de bienvenida
+        if (!$mensajeDeBienvenida) {
+            return redirect()->route('dashboard')->withErrors(['message' => 'No se encontró un mensaje de bienvenida para tu rol.']);
+        }
+
+        // Retornar la vista del dashboard con los roles y el mensaje de bienvenida
+        return view('superadmin.dashboard', [
+            'roles' => $roles,
+            'titulo' => $mensajeDeBienvenida->titulo,
+            'descripcion' => $mensajeDeBienvenida->descripcion,
+            'logo' => $mensajeDeBienvenida->logo,
+        ]);
     }
 }
