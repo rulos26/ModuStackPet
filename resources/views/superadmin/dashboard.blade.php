@@ -9,8 +9,14 @@
 
         <!-- Texto de bienvenida -->
         <h1 class="mt-4">🐾 {{ $titulo }}</h1>
-        <p class="mt-3">
-            {{ $descripcion }}
-        </p>
+
+        <!-- Descripción en formato de párrafos -->
+        <div class="mt-3">
+            @foreach (explode('.', $descripcion) as $oracion)
+                @if (trim($oracion) !== '')
+                    <p>{{ trim($oracion) }}.</p>
+                @endif
+            @endforeach
+        </div>
     </div>
 @endsection
