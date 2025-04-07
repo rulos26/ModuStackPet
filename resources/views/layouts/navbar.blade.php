@@ -1,6 +1,6 @@
-@php
+{{-- @php
     $notificaciones = auth()->user()->unreadNotifications;
-@endphp
+@endphp --}}
 
 <li class="nav-item dropdown">
     <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
