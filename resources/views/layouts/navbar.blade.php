@@ -9,25 +9,23 @@
     </ul>
 
     <!-- Icono de notificaciones -->
-    <ul class="navbar-nav ms-auto me-3">
-        <li class="nav-item dropdown">
-            <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button">
-                <i class="far fa-bell"></i>
-                @if(isset($notificaciones) && $notificaciones->count())
+    @if(isset($notificaciones) && $notificaciones->count())
+        <ul class="navbar-nav ms-auto me-3">
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button">
+                    <i class="far fa-bell"></i>
                     <span class="badge bg-danger">{{ $notificaciones->count() }}</span>
-                @endif
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-                @forelse($notificaciones as $notificacion)
-                    <li class="dropdown-item">
-                        {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
-                    </li>
-                @empty
-                    <li class="dropdown-item text-muted">Sin notificaciones</li>
-                @endforelse
-    
-                {{-- Opción para marcar todas como leídas --}}
-                @if($notificaciones->count())
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @forelse($notificaciones as $notificacion)
+                        <li class="dropdown-item">
+                            {{ $notificacion->data['message'] ?? 'Tienes una nueva notificación' }}
+                        </li>
+                    @empty
+                        <li class="dropdown-item text-muted">Sin notificaciones</li>
+                    @endforelse
+
+                    {{-- Opción para marcar todas como leídas --}}
                     <li>
                         <hr class="dropdown-divider">
                     </li>
@@ -37,10 +35,10 @@
                             <button type="submit" class="btn btn-sm btn-link">Marcar todas como leídas</button>
                         </form>
                     </li>
-                @endif
-            </ul>
-        </li>
-    </ul>
+                </ul>
+            </li>
+        </ul>
+    @endif
     
 
     <!-- Información del usuario (al lado derecho) -->
