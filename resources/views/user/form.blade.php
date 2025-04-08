@@ -33,9 +33,19 @@
         </div>
         
         <div class="form-group mb-2 mb20">
-            <label for="avatar" class="form-label">{{ __('Avatar') }}</label>
-            <input type="url" name="avatar" class="form-control @error('avatar') is-invalid @enderror" value="{{ old('avatar', $user?->avatar) }}" id="avatar" placeholder="URL del Avatar">
+            <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input type="file" name="avatar" class="custom-file-input @error('avatar') is-invalid @enderror" id="avatar" accept="image/*">
+                    <label class="custom-file-label" for="avatar">{{ __('Seleccionar Imagen') }}</label>
+                </div>
+            </div>
             {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            @if($user?->avatar)
+                <div class="mt-3">
+                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                </div>
+            @endif
         </div>
         
         <div class="form-group mb-2 mb20">
