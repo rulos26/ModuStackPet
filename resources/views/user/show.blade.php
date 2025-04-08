@@ -12,14 +12,10 @@
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            {{ $user->avatar }}
-                            <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                            <img src="{{ asset('public/avatars/34/34.png') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                            <img src="{{ asset('public/{{ $user->avatar }}) }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
                             <!-- Foto de Perfil -->
-                            @if(file_exists(public_path($user->avatar)) && $user->avatar)
+                            @if($user->avatar && file_exists(public_path($user->avatar)))
                                 <img class="profile-user-img img-fluid img-circle"
-                                     src="{{ asset( $user->avatar) }}"
+                                     src="{{ asset($user->avatar) }}"
                                      alt="Foto de Perfil">
                             @else
                                 <img class="profile-user-img img-fluid img-circle"
@@ -42,6 +38,14 @@
                                 <b>{{ __('WhatsApp') }}</b> <a class="float-right">{{ $user->whatsapp }}</a>
                             </li>
                         </ul>
+
+                        <!-- Bloque adicional para mostrar las imágenes de ejemplo -->
+                        <div class="text-center mt-3">
+                            <h5>{{ __('Imágenes de Ejemplo') }}</h5>
+                            <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="{{ asset('avatars/34/34.png') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="{{ asset($user->avatar) }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+                        </div>
                     </div>
                 </div>
             </div>
