@@ -46,7 +46,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request,$request->validated());
+        dd($request->all());
         
         User::create($request->validated());
 
