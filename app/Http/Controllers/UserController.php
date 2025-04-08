@@ -62,11 +62,21 @@ class UserController extends Controller
 
         // Manejar la subida de la imagen
         if ($request->hasFile('avatar')) {
-            $avatarName = time() . '.' . $request->file('avatar')->getClientOriginalExtension();
-            $request->file('avatar')->move(public_path('avatars'), $avatarName);
+            // Crear una carpeta específica para el usuario basada en su cédula
+            $cedula = $validatedData['cedula'];
+            $avatarPath = 'avatars/' . $cedula;
+
+            // Crear el nombre del archivo basado en la cédula
+            $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
+
+            // Mover la imagen a la carpeta pública con el nombre generado
+            $request->file('avatar')->move(public_path($avatarPath), $avatarName);
+
+            // Guardar la ruta relativa en la base de datos
+            $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
         }
 
-        // Crear el usuario con los datos validados (sin guardar la imagen en la base de datos)
+        // Crear el usuario con los datos validados
         $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
         User::create($validatedData);
 
