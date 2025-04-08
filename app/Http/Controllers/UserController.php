@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\TipoDocumento;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
@@ -28,8 +29,9 @@ class UserController extends Controller
     public function create(): View
     {
         $user = new User();
+        $tiposDocumento = TipoDocumento::all(); // Obtener todos los tipos de documento
 
-        return view('user.create', compact('user'));
+        return view('user.create', compact('user', 'tiposDocumento')); // Pasar los datos a la vista
     }
 
     /**
@@ -58,9 +60,10 @@ class UserController extends Controller
      */
     public function edit($id): View
     {
-        $user = User::find($id);
+        $user = User::findOrFail($id); // Obtener el usuario por ID
+        $tiposDocumento = TipoDocumento::all(); // Obtener todos los tipos de documento
 
-        return view('user.edit', compact('user'));
+        return view('user.edit', compact('user', 'tiposDocumento')); // Pasar los datos a la vista
     }
 
     /**

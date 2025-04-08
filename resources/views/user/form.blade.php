@@ -15,7 +15,14 @@
         
         <div class="form-group mb-2 mb20">
             <label for="tipo_documento" class="form-label">{{ __('Tipo de Documento') }}</label>
-            <input type="text" name="tipo_documento" class="form-control @error('tipo_documento') is-invalid @enderror" value="{{ old('tipo_documento', $user?->tipo_documento) }}" id="tipo_documento" placeholder="Tipo de Documento">
+            <select name="tipo_documento" class="form-select @error('tipo_documento') is-invalid @enderror" id="tipo_documento">
+                <option value="">{{ __('Seleccione un tipo de documento') }}</option>
+                @foreach($tiposDocumento as $tipo)
+                    <option value="{{ $tipo->id }}" {{ old('tipo_documento', $user?->tipo_documento) == $tipo->id ? 'selected' : '' }}>
+                        {{ $tipo->nombre }}
+                    </option>
+                @endforeach
+            </select>
             {!! $errors->first('tipo_documento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
         
