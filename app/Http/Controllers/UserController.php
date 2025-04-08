@@ -44,11 +44,31 @@ class UserController extends Controller
     /**
      * Almacenar un recurso recién creado en el almacenamiento.
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        dd($request->all());
-        
-        User::create($request->validated());
+        // Validar los datos del formulario
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'tipo_documento' => 'required|exists:tipo_documentos,id',
+            'cedula' => 'required|numeric|unique:users,cedula',
+            'fecha_nacimiento' => 'nullable|date',
+            'telefono' => 'nullable|string|max:15',
+            'whatsapp' => 'nullable|string|max:15',
+            'password' => 'nullable|string|min:8|confirmed',
+            'activo' => 'boolean',
+            'avatar' => 'nullable|image|max:2048', // Validar que sea una imagen
+        ]);
+
+        // Manejar la subida de la imagen
+        if ($request->hasFile('avatar')) {
+            $avatarName = time() . '.' . $request->file('avatar')->getClientOriginalExtension();
+            $request->file('avatar')->move(public_path('avatars'), $avatarName);
+        }
+
+        // Crear el usuario con los datos validados (sin guardar la imagen en la base de datos)
+        $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
+        User::create($validatedData);
 
         return Redirect::route('users.index')
             ->with('success', 'Usuario creado exitosamente.');
