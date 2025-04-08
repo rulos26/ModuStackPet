@@ -45,12 +45,12 @@
                             <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
                             <img src="{{ asset('avatars/34/34.png') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
                             <img src="{{ asset($user->avatar) }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                            @if(file_exists(public_path('avatars/34/34.png')))
-                            <p>El archivo existe: {{ public_path('avatars/34/34.png') }}</p>
-                        @else
-                            <p>El archivo no existe: {{ public_path('avatars/34/34.png') }}</p>
-                        @endif
-                        
+                        </div>
+                        <div class="text-center mt-3">
+                            <h5>{{ __('Imágenes de Ejemplo') }}</h5>
+                            <p>Ruta generada para logo.jpg: {{ asset('storage/img/logo.jpg') }}</p>
+                            <p>Ruta generada para 34.png: {{ asset('avatars/34/34.png') }}</p>
+                            <p>Ruta generada para avatar del usuario: {{ asset($user->avatar) }}</p>
                         </div>
                     </div>
                 </div>
