@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('TipoDocumentos')) {
-            Schema::create('TipoDocumentos', function (Blueprint $table) {
+        if (!Schema::hasTable('Tipo_documentos')) {
+            Schema::create('Tipo_documentos', function (Blueprint $table) {
                 $table->id();
                 $table->string('nombre');
                 $table->timestamps();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('TipoDocumentos');
+        Schema::dropIfExists('Tipo_documentos');
     }
 };

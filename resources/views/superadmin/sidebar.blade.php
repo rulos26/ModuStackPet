@@ -15,7 +15,7 @@
             </a>
         </li>
         <li class="nav-item">
-            < href="{{ route('users.index') }}" class="nav-link">
+            <a href="{{ route('users.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Usuarios</p>
              </a>
