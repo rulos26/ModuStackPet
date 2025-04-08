@@ -10,8 +10,15 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+use App\Http\Controllers\Controller; // Asegúrate de que este namespace esté presente
+
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth'); // Asegura que solo usuarios autenticados puedan acceder
+    }
+
     /**
      * Mostrar una lista de los recursos.
      */
