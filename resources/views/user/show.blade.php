@@ -13,6 +13,9 @@
                     <div class="card-body box-profile">
                         <div class="text-center">
                             {{ $user->avatar }}
+                            <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="{{ asset('public/avatars/34/34.png') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="{{ asset('public/{{ $user->avatar }}) }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
                             <!-- Foto de Perfil -->
                             @if(file_exists(public_path($user->avatar)) && $user->avatar)
                                 <img class="profile-user-img img-fluid img-circle"
