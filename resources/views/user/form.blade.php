@@ -1,19 +1,15 @@
 <div class="row padding-1 p-1">
+    <!-- Sección: Datos Personales -->
+    <div class="col-12">
+        <h5 class="mb-3">{{ __('Datos Personales') }}</h5>
+    </div>
+
     <div class="col-md-6">
         <!-- Nombre -->
         <div class="form-group mb-3">
             <label for="name" class="form-label">{{ __('Nombre') }}</label>
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $user?->name) }}" id="name" placeholder="Nombre">
             {!! $errors->first('name', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <!-- Correo Electrónico -->
-        <div class="form-group mb-3">
-            <label for="email" class="form-label">{{ __('Correo Electrónico') }}</label>
-            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user?->email) }}" id="email" placeholder="Correo Electrónico">
-            {!! $errors->first('email', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
     </div>
 
@@ -43,6 +39,29 @@
     </div>
 
     <div class="col-md-6">
+        <!-- Fecha de Nacimiento -->
+        <div class="form-group mb-3">
+            <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
+            <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror" value="{{ old('fecha_nacimiento', $user?->fecha_nacimiento) }}" id="fecha_nacimiento">
+            {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+    </div>
+
+    <!-- Sección: Datos de Contacto -->
+    <div class="col-12">
+        <h5 class="mb-3">{{ __('Datos de Contacto') }}</h5>
+    </div>
+
+    <div class="col-md-6">
+        <!-- Correo Electrónico -->
+        <div class="form-group mb-3">
+            <label for="email" class="form-label">{{ __('Correo Electrónico') }}</label>
+            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user?->email) }}" id="email" placeholder="Correo Electrónico">
+            {!! $errors->first('email', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+    </div>
+
+    <div class="col-md-6">
         <!-- Teléfono -->
         <div class="form-group mb-3">
             <label for="telefono" class="form-label">{{ __('Teléfono') }}</label>
@@ -60,45 +79,9 @@
         </div>
     </div>
 
-    <div class="col-md-6">
-        <!-- Fecha de Nacimiento -->
-        <div class="form-group mb-3">
-            <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
-            <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror" value="{{ old('fecha_nacimiento', $user?->fecha_nacimiento) }}" id="fecha_nacimiento">
-            {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <!-- Activo -->
-        <div class="form-group mb-3">
-            <label for="activo" class="form-label">{{ __('Activo') }}</label>
-            <div class="form-check form-switch">
-                <input type="checkbox" name="activo" class="form-check-input @error('activo') is-invalid @enderror" id="activo" value="1" 
-                    {{ old('activo', $user?->activo) == 1 ? 'checked' : '' }}>
-                <label class="form-check-label" for="activo">{{ __('¿Está activo?') }}</label>
-            </div>
-            {!! $errors->first('activo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <!-- Foto de Perfil -->
-        <div class="form-group mb-3">
-            <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>
-            <div class="input-group">
-                <div class="custom-file">
-                    <input type="file" name="avatar" class="custom-file-input @error('avatar') is-invalid @enderror" id="avatar" accept="image/*">
-                    <label class="custom-file-label" for="avatar">{{ __('Seleccionar Imagen') }}</label>
-                </div>
-            </div>
-            {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-            @if($user?->avatar)
-                <div class="mt-3">
-                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
-                </div>
-            @endif
-        </div>
+    <!-- Sección: Datos de Cuenta -->
+    <div class="col-12">
+        <h5 class="mb-3">{{ __('Datos de Cuenta') }}</h5>
     </div>
 
     <div class="col-md-6">
@@ -140,6 +123,43 @@
                 </div>
             </div>
             {!! $errors->first('password_confirmation', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+    </div>
+
+    <!-- Sección: Otros -->
+    <div class="col-12">
+        <h5 class="mb-3">{{ __('Otros') }}</h5>
+    </div>
+
+    <div class="col-md-6">
+        <!-- Activo -->
+        <div class="form-group mb-3">
+            <label for="activo" class="form-label">{{ __('Activo') }}</label>
+            <div class="form-check form-switch">
+                <input type="checkbox" name="activo" class="form-check-input @error('activo') is-invalid @enderror" id="activo" value="1" 
+                    {{ old('activo', $user?->activo) == 1 ? 'checked' : '' }}>
+                <label class="form-check-label" for="activo">{{ __('¿Está activo?') }}</label>
+            </div>
+            {!! $errors->first('activo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <!-- Foto de Perfil -->
+        <div class="form-group mb-3">
+            <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input type="file" name="avatar" class="custom-file-input @error('avatar') is-invalid @enderror" id="avatar" accept="image/*">
+                    <label class="custom-file-label" for="avatar">{{ __('Seleccionar Imagen') }}</label>
+                </div>
+            </div>
+            {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            @if($user?->avatar)
+                <div class="mt-3">
+                    <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                </div>
+            @endif
         </div>
     </div>
 
