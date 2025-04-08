@@ -44,7 +44,7 @@ class UserController extends Controller
     /**
      * Almacenar un recurso recién creado en el almacenamiento.
      */
-    public function store(UserRequest $request): RedirectResponse
+    public function store(Request $request)
     {
         dd($request,$request->validated());
         
