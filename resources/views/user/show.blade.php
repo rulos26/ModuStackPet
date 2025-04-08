@@ -13,7 +13,7 @@
                     <div class="card-body box-profile">
                         <div class="text-center">
                             <!-- Foto de Perfil -->
-                            @if(file_exists(public_path('avatars/' . $user->avatar)) && $user->avatar)
+                            @if(file_exists(public_path($user->avatar)) && $user->avatar)
                                 <img class="profile-user-img img-fluid img-circle"
                                      src="{{ asset('avatars/' . $user->avatar) }}"
                                      alt="Foto de Perfil">
