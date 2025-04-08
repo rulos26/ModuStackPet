@@ -85,6 +85,11 @@
                     </span>
                 </div>
                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="{{ __('Ingrese una contraseña') }}">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password">
+                        <i class="fas fa-eye"></i> <!-- Ícono de ojo -->
+                    </button>
+                </div>
             </div>
             {!! $errors->first('password', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
@@ -98,6 +103,11 @@
                     </span>
                 </div>
                 <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" placeholder="{{ __('Confirme la contraseña') }}">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password_confirmation">
+                        <i class="fas fa-eye"></i> <!-- Ícono de ojo -->
+                    </button>
+                </div>
             </div>
             {!! $errors->first('password_confirmation', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
@@ -107,3 +117,26 @@
         <button type="submit" class="btn btn-primary">{{ __('Enviar') }}</button>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const target = document.querySelector(this.getAttribute('data-target'));
+                const icon = this.querySelector('i');
+
+                if (target.type === 'password') {
+                    target.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    target.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+</script>
