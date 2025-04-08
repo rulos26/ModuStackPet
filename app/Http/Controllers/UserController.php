@@ -46,6 +46,8 @@ class UserController extends Controller
      */
     public function store(UserRequest $request): RedirectResponse
     {
+        dd($request,$request->validated());
+        
         User::create($request->validated());
 
         return Redirect::route('users.index')
