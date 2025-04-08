@@ -187,8 +187,14 @@
             </div>
         </div>
 
-        <div class="col-md-12 mt-3">
-            <button type="submit" class="btn btn-primary w-100">{{ __('Enviar') }}</button>
+        <!-- Botones de acción -->
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{{ route('users.index') }}" class="btn btn-secondary w-100">{{ __('Volver al Index') }}</a>
+            </div>
+            <div class="col-md-6">
+                <button type="submit" class="btn btn-primary w-100">{{ __('Enviar') }}</button>
+            </div>
         </div>
     </div>
 </div>
