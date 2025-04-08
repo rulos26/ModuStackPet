@@ -12,6 +12,7 @@
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
+                            {{ $user->avatar }}
                             <!-- Foto de Perfil -->
                             @if(file_exists(public_path($user->avatar)) && $user->avatar)
                                 <img class="profile-user-img img-fluid img-circle"
