@@ -40,10 +40,11 @@
         
         <div class="form-group mb-2 mb20">
             <label for="activo" class="form-label">{{ __('Activo') }}</label>
-            <select name="activo" class="form-select @error('activo') is-invalid @enderror" id="activo">
-                <option value="1" {{ old('activo', $user?->activo) == 1 ? 'selected' : '' }}>Sí</option>
-                <option value="0" {{ old('activo', $user?->activo) == 0 ? 'selected' : '' }}>No</option>
-            </select>
+            <div class="form-check form-switch">
+                <input type="checkbox" name="activo" class="form-check-input @error('activo') is-invalid @enderror" id="activo" value="1" 
+                    {{ old('activo', $user?->activo) == 1 ? 'checked' : '' }}>
+                <label class="form-check-label" for="activo">{{ __('¿Está activo?') }}</label>
+            </div>
             {!! $errors->first('activo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
         

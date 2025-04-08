@@ -1,4 +1,4 @@
-INSERT INTO `TipoDocumentos` (`id`, `nombre`) VALUES
+INSERT INTO `tipo_documentos` (`id`, `nombre`) VALUES
 (1, 'Cédula de Ciudadanía'),
 (2, 'Tarjeta de Identidad'),
 (3, 'Cédula de Extranjería'),
