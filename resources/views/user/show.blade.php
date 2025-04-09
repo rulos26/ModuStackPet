@@ -13,14 +13,16 @@
                     <div class="card-header bg-dark text-white">
                         <h3 class="card-title">{{ __('Perfil de Usuario') }}</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body text-center">
                         <!-- Foto de Perfil -->
                         @if($user->avatar && file_exists(public_path($user->avatar)))
-                            <img class="profile-user-img img-fluid img-circle border border-primary"
+                            <img class="profile-user-img img-fluid img-circle"
+                                 style="border: 5px solid #007bff;" 
                                  src="{{ asset('public/' . $user->avatar) }}"
                                  alt="Foto de Perfil">
                         @else
-                            <img class="profile-user-img img-fluid img-circle border border-primary"
+                            <img class="profile-user-img img-fluid img-circle"
+                                 style="border: 5px solid #007bff;" 
                                  src="{{ asset('default-avatar.png') }}" 
                                  alt="Foto de Perfil">
                         @endif
