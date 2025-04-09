@@ -21,7 +21,9 @@ class RoleAssignmentController extends Controller
             'roles' => 'array|exists:roles,name',
         ]);
 
-        $user->assignRole($request->roles);
-        return back()->with('success', 'Roles asignados correctamente.');
+        $user->assignRole($request->roles); 
+        $usuarios = User::with('roles')->get();
+        $roles = Role::all();
+        return view('user.roles', compact('usuarios', 'roles'));
     }
 }
