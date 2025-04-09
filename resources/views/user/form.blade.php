@@ -1,4 +1,4 @@
- <!-- Sección: Datos Personales -->
+<!-- Sección: Datos Personales -->
  <div class="card mb-4">
     <div class="card-header">
         <h5 class="card-title mb-0">{{ __('Datos Personales') }}</h5>
