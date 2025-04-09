@@ -14,10 +14,10 @@ use App\Http\Controllers\Controller; // Asegúrate de que este namespace esté p
 
 class UserController extends Controller
 {
-    public function __construct()
+    /* public function __construct()
     {
         $this->middleware('auth'); // Asegura que solo usuarios autenticados puedan acceder
-    }
+    } */
 
     /**
      * Mostrar una lista de los recursos.
