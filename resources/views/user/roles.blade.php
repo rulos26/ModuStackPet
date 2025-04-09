@@ -25,7 +25,7 @@
 
                     <div class="card-body bg-white">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                            <table id="rolesTable" class="table table-striped table-hover">
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
@@ -62,8 +62,27 @@
                         </div>
                     </div>
                 </div>
-               
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <!-- DataTables Script -->
+    <script>
+        $(document).ready(function() {
+            $('#rolesTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json" // Traducción al español
+                },
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true
+            });
+        });
+    </script>
 @endsection
