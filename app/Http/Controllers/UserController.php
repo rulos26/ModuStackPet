@@ -51,8 +51,17 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'tipo_documento' => 'required|exists:tipo_documentos,id',
-            'cedula' => 'required|numeric|unique:users,cedula',
-            'fecha_nacimiento' => 'nullable|date',
+            'cedula' => 'required|numeric|digits_between:6,12|unique:users,cedula', // Validación de cédula
+            'fecha_nacimiento' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $age = \Carbon\Carbon::parse($value)->age;
+                    if ($age < 18) {
+                        $fail('Debe tener al menos 18 años.');
+                    }
+                },
+            ],
             'telefono' => 'nullable|string|max:15',
             'whatsapp' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8|confirmed',
@@ -62,17 +71,10 @@ class UserController extends Controller
 
         // Manejar la subida de la imagen
         if ($request->hasFile('avatar')) {
-            // Crear una carpeta específica para el usuario basada en su cédula
             $cedula = $validatedData['cedula'];
             $avatarPath = 'avatars/' . $cedula;
-
-            // Crear el nombre del archivo basado en la cédula
             $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
-
-            // Mover la imagen a la carpeta pública con el nombre generado
             $request->file('avatar')->move(public_path($avatarPath), $avatarName);
-
-            // Guardar la ruta relativa en la base de datos
             $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
         }
 
@@ -110,14 +112,22 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user): RedirectResponse
     {
-        //dd($user, $request->all());
         // Validar los datos del formulario
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id, // Ignorar el email del usuario actual
             'tipo_documento' => 'required|exists:tipo_documentos,id',
-            'cedula' => 'required|numeric|unique:users,cedula,' . $user->id, // Ignorar la cédula del usuario actual
-            'fecha_nacimiento' => 'nullable|date',
+            'cedula' => 'required|numeric|digits_between:6,12|unique:users,cedula,' . $user->id, // Validación de cédula
+            'fecha_nacimiento' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $age = \Carbon\Carbon::parse($value)->age;
+                    if ($age < 18) {
+                        $fail('Debe tener al menos 18 años.');
+                    }
+                },
+            ],
             'telefono' => 'nullable|string|max:15',
             'whatsapp' => 'nullable|string|max:15',
             'password' => 'nullable|string|min:8|confirmed',
@@ -127,11 +137,8 @@ class UserController extends Controller
 
         // Manejar la subida de la imagen
         if ($request->hasFile('avatar')) {
-            // Crear una carpeta específica para el usuario basada en su cédula
             $cedula = $validatedData['cedula'];
             $avatarPath = 'avatars/' . $cedula;
-
-            // Crear el nombre del archivo basado en la cédula
             $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
 
             // Eliminar la imagen anterior si existe
@@ -139,10 +146,7 @@ class UserController extends Controller
                 unlink(public_path($user->avatar));
             }
 
-            // Mover la nueva imagen a la carpeta pública con el nombre generado
             $request->file('avatar')->move(public_path($avatarPath), $avatarName);
-
-            // Guardar la ruta relativa en la base de datos
             $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
         }
 
