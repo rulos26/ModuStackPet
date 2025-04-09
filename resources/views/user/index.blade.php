@@ -56,6 +56,7 @@
                                             <td>{{ $user->tipo_documento }}</td>
                                             <td>{{ $user->cedula }}</td>
                                             <td>
+                                                <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @if ($user->avatar && file_exists(public_path('public/' . $user->avatar)))
                                                     <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @else
