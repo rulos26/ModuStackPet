@@ -14,7 +14,7 @@
                 <th>Usuario</th>
                 <th>Email</th>
                 <th>Roles actuales</th>
-                <th>Asignar nuevos roles</th>
+                <th>Acceso rápido</th>
             </tr>
         </thead>
         <tbody>
@@ -24,17 +24,17 @@
                     <td>{{ $usuario->email }}</td>
                     <td>{{ $usuario->roles->pluck('name')->join(', ') }}</td>
                     <td>
-                        {{-- <form method="POST" action="{{ route('usuarios.roles.asignar', $usuario) }}">
+                        <form action="{{ route('usuarios.asignar-rol', $usuario) }}" method="POST" class="d-inline">
                             @csrf
-                            <select name="roles[]" multiple class="form-control">
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->id }}" @if($usuario->roles->contains('id', $role->id)) selected @endif>
-                                        {{ $role->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <button class="btn btn-sm btn-primary mt-2">Asignar</button>
-                        </form> --}}
+                            <input type="hidden" name="rol" value="Cliente">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Cliente</button>
+                        </form>
+
+                        <form action="{{ route('usuarios.asignar-rol', $usuario) }}" method="POST" class="d-inline ms-2">
+                            @csrf
+                            <input type="hidden" name="rol" value="Paseador">
+                            <button type="submit" class="btn btn-outline-success btn-sm">Paseador</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach
