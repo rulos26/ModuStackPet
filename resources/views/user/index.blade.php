@@ -56,11 +56,10 @@
                                             <td>{{ $user->tipo_documento }}</td>
                                             <td>{{ $user->cedula }}</td>
                                             <td>
-                                                <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
-                                                @if ($user->avatar && file_exists(public_path('public/' . $user->avatar)))
+                                                @if ($user->avatar)
                                                     <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @else
-                                                    <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;"></div>
+                                                    <img src="{{ asset('public/storage/img/default.png') }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @endif
                                             </td>
                                             <td>{{ $user->activo ? __('Sí') : __('No') }}</td>
