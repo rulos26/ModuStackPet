@@ -36,6 +36,12 @@ return [
         'string' => 'El campo :attribute debe tener más de :value caracteres.',
         'array' => 'El campo :attribute debe tener más de :value elementos.',
     ],
+    'max' => [
+        'numeric' => 'El campo :attribute no debe ser mayor que :max.',
+        'file' => 'El archivo :attribute no debe pesar más de :max kilobytes.',
+        'string' => 'El campo :attribute no debe tener más de :max caracteres.',
+        'array' => 'El campo :attribute no debe tener más de :max elementos.',
+    ],
     // Otros mensajes de validación...
 
     'attributes' => [
