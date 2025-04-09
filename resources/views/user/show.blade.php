@@ -13,20 +13,20 @@
                     <div class="card-header bg-dark text-white">
                         <h3 class="card-title">{{ __('Perfil de Usuario') }}</h3>
                     </div>
-                    <div class="card-body text-center">
+                    <div class="card-body">
                         <!-- Foto de Perfil -->
                         @if($user->avatar && file_exists(public_path($user->avatar)))
-                            <img class="profile-user-img img-fluid img-circle border border-light"
+                            <img class="profile-user-img img-fluid img-circle border border-primary"
                                  src="{{ asset('public/' . $user->avatar) }}"
                                  alt="Foto de Perfil">
                         @else
-                            <img class="profile-user-img img-fluid img-circle border border-light"
+                            <img class="profile-user-img img-fluid img-circle border border-primary"
                                  src="{{ asset('default-avatar.png') }}" 
                                  alt="Foto de Perfil">
                         @endif
 
-                        <h3 class="profile-username text-center mt-3">{{ $user->name }}</h3>
-                        <p class="text-muted text-center">{{ __('Usuario Activo') }}</p>
+                        <h3 class="profile-username mt-3">{{ $user->name }}</h3>
+                        <p class="text-muted">{{ __('Usuario Activo') }}</p>
 
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
