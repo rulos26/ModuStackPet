@@ -13,6 +13,7 @@ use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
+use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\UserController;
@@ -94,3 +95,7 @@ Route::post('/notificaciones/leidas', function () {
 })->name('notificaciones.marcar.leidas');
 Route::resource('users', UserController::class);
 Route::resource('tipo-documentos', TipoDocumentoController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name('usuarios.roles.index');
+    Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
+});
