@@ -33,7 +33,7 @@ class RoleAssignmentController extends Controller
             ['email' => $user->email], // criterio de búsqueda
             ['name' => $user->name] // datos a actualizar o crear
         )->syncRoles('Paseador');
-
+        return redirect()->route('usuarios.roles.index')->with('success', 'Roles asignados correctamente.');
         // Asignar los roles al usuario
        /*  try {
             $user->syncRoles($request->roles); // Reemplaza los roles existentes con los nuevos
