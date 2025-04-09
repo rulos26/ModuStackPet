@@ -55,8 +55,14 @@
                                             <td>{{ $user->email }}</td>
                                             <td>{{ $user->tipo_documento }}</td>
                                             <td>{{ $user->cedula }}</td>
-                                            <td>{{ $user->avatar }}</td>
-                                            <td>{{ $user->activo }}</td>
+                                            <td>
+                                                @if ($user->avatar && file_exists(public_path('public/' . $user->avatar)))
+                                                    <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                @else
+                                                    <div style="width: 50px; height: 50px; background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 5px;"></div>
+                                                @endif
+                                            </td>
+                                            <td>{{ $user->activo ? __('Sí') : __('No') }}</td>
                                             <td>{{ $user->telefono }}</td>
                                             <td>{{ $user->whatsapp }}</td>
                                             <td>{{ $user->fecha_nacimiento }}</td>
