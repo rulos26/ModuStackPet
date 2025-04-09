@@ -17,6 +17,7 @@ class RoleAssignmentController extends Controller
 
     public function asignarRoles(Request $request, User $user)
     {
+       dd($user, $request);
         // Validar que los roles enviados existan
         $request->validate([
             'roles' => 'array|exists:roles,name',
