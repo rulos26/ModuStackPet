@@ -38,20 +38,6 @@
                                 <b>{{ __('WhatsApp') }}</b> <a class="float-right">{{ $user->whatsapp }}</a>
                             </li>
                         </ul>
-
-                        <!-- Bloque adicional para mostrar las imágenes de ejemplo -->
-                        <div class="text-center mt-3">
-                            <h5>{{ __('Imágenes de Ejemplo') }}</h5>
-                            <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                            <img src="{{ asset('public/avatars/34/34.png') }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                            <img src="{{ asset('public/' . $user->avatar) }}" alt="Logo de la empresa" class="brand-image img-circle elevation-3" style="width: 30px; height: 30px; object-fit: cover;">
-                        </div>
-                        <div class="text-center mt-3">
-                            <h5>{{ __('Imágenes de Ejemplo') }}</h5>
-                            <p>Ruta generada para logo.jpg: {{ asset('storage/img/logo.jpg') }}</p>
-                            <p>Ruta generada para 34.png: {{ asset('avatars/34/34.png') }}</p>
-                            <p>Ruta generada para avatar del usuario: {{ asset($user->avatar) }}</p>
-                        </div>
                     </div>
                 </div>
             </div>
