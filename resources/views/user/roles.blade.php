@@ -62,8 +62,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- Paginación (si es necesaria) --}}
-                {!! $usuarios->links() !!}
+               
             </div>
         </div>
     </div>
