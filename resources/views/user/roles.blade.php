@@ -47,13 +47,13 @@
                                                     <form action="{{ route('usuarios.roles.asignar', $usuario) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         <input type="hidden" name="rol" value="Cliente">
-                                                        <button type="submit" class="btn btn-outline-primary btn-sm">Cliente</button>
+                                                        <button type="submit" class="btn btn-primary btn-sm">Cliente</button>
                                                     </form>
 
                                                     <form action="{{ route('usuarios.roles.asignar', $usuario) }}" method="POST" class="d-inline ms-2">
                                                         @csrf
                                                         <input type="hidden" name="rol" value="Paseador">
-                                                        <button type="submit" class="btn btn-outline-success btn-sm">Paseador</button>
+                                                        <button type="submit" class="btn btn-success btn-sm">Paseador</button>
                                                     </form>
                                                 @else
                                                     <span class="text-muted">No se pueden modificar roles</span>
