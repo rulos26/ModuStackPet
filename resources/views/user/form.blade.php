@@ -34,7 +34,9 @@
                 <!-- Cédula -->
                 <div class="form-group mb-3">
                     <label for="cedula" class="form-label">{{ __('Cédula') }}</label>
-                    <input type="number" name="cedula" class="form-control @error('cedula') is-invalid @enderror" value="{{ old('cedula', $user?->cedula) }}" id="cedula" placeholder="Cédula">
+                    <input type="number" name="cedula" class="form-control @error('cedula') is-invalid @enderror" 
+                           value="{{ old('cedula', $user?->cedula) }}" id="cedula" placeholder="Cédula" 
+                           minlength="6" maxlength="12" required>
                     {!! $errors->first('cedula', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
@@ -43,7 +45,9 @@
                 <!-- Fecha de Nacimiento -->
                 <div class="form-group mb-3">
                     <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
-                    <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror" value="{{ old('fecha_nacimiento', $user?->fecha_nacimiento) }}" id="fecha_nacimiento">
+                    <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror" 
+                           value="{{ old('fecha_nacimiento', $user?->fecha_nacimiento) }}" id="fecha_nacimiento" 
+                           max="{{ now()->subYears(18)->format('Y-m-d') }}" required>
                     {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
