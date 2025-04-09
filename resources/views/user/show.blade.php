@@ -84,11 +84,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <a href="{{ route('users.index') }}" class="btn btn-warning btn-block"><b>{{ __('Volver') }}</b></a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
