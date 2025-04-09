@@ -7,9 +7,9 @@
 @section('content')
     <section class="content container-fluid">
         <div class="row">
-            <!-- Estilo 1: Profile Widget -->
+            <!-- Estilo 1: Profile Widget (Modo Dark) -->
             <div class="col-md-4">
-                <div class="card card-primary">
+                <div class="card bg-dark text-white">
                     <div class="card-header">
                         <h3 class="card-title">{{ __('Perfil de Usuario (Widget)') }}</h3>
                     </div>
@@ -28,13 +28,13 @@
                         <h3 class="profile-username text-center">{{ $user->name }}</h3>
                         <p class="text-muted text-center">{{ __('Usuario Activo') }}</p>
                         <ul class="list-group list-group-unbordered mb-3">
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('Correo Electrónico') }}</b> <a class="float-right">{{ $user->email }}</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('Teléfono') }}</b> <a class="float-right">{{ $user->telefono }}</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('WhatsApp') }}</b> <a class="float-right">{{ $user->whatsapp }}</a>
                             </li>
                         </ul>
@@ -43,9 +43,9 @@
                 </div>
             </div>
 
-            <!-- Estilo 2: User Card -->
+            <!-- Estilo 2: User Card (Modo Dark) -->
             <div class="col-md-4">
-                <div class="card card-widget widget-user">
+                <div class="card card-widget widget-user bg-dark text-white">
                     <div class="widget-user-header bg-primary">
                         <h3 class="widget-user-username">{{ $user->name }}</h3>
                         <h5 class="widget-user-desc">{{ __('Usuario Activo') }}</h5>
@@ -57,7 +57,7 @@
                             <img class="img-circle elevation-2" src="{{ asset('default-avatar.png') }}" alt="Foto de Perfil">
                         @endif
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer bg-dark text-white">
                         <ul class="nav flex-column">
                             <li class="nav-item">
                                 <span class="nav-link">
@@ -79,9 +79,9 @@
                 </div>
             </div>
 
-            <!-- Estilo 3: Profile Overlay -->
+            <!-- Estilo 3: Profile Overlay (Modo Dark) -->
             <div class="col-md-4">
-                <div class="card card-primary card-outline">
+                <div class="card card-primary card-outline bg-dark text-white">
                     <div class="card-body box-profile">
                         <div class="text-center">
                             @if($user->avatar && file_exists(public_path($user->avatar)))
@@ -97,13 +97,13 @@
                         <h3 class="profile-username text-center">{{ $user->name }}</h3>
                         <p class="text-muted text-center">{{ __('Usuario Activo') }}</p>
                         <ul class="list-group list-group-unbordered mb-3">
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('Correo Electrónico') }}</b> <a class="float-right">{{ $user->email }}</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('Teléfono') }}</b> <a class="float-right">{{ $user->telefono }}</a>
                             </li>
-                            <li class="list-group-item">
+                            <li class="list-group-item bg-dark text-white">
                                 <b>{{ __('WhatsApp') }}</b> <a class="float-right">{{ $user->whatsapp }}</a>
                             </li>
                         </ul>
