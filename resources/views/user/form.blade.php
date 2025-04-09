@@ -175,7 +175,7 @@
                     {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                     @if($user?->avatar)
                         <div class="mt-3">
-                            <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                            <img src="{{ asset('public/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
                         </div>
                     @endif
                 </div>
