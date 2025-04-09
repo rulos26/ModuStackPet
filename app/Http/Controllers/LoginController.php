@@ -35,32 +35,34 @@ class LoginController extends Controller
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Autenticación exitosa
             $user = Auth::user(); // Obtener el usuario autenticado
+
+            // Verificar si el usuario está activo
+            if (!$user->activo) {
+                Auth::logout(); // Cerrar sesión
+                return back()->withErrors([
+                    'email' => 'Tu cuenta está inactiva. Por favor, contacta al administrador.',
+                ]);
+            }
+
             $roles = $user->roles->pluck('name'); // Obtener los roles del usuario
-//dd  ($roles);
-//$user->notify(new NotificacionSimple());
+
             // Verificar los roles del usuario y redirigir al dashboard correspondiente
             if ($roles->contains('Superadmin')) {
                 return redirect()->route('superadmin.dashboard'); // Redirigir al dashboard de Superadmin
-                //$user->notify(new NotificacionSimple());
-                
             }
 
             if ($roles->contains('Admin')) {
-                
                 return redirect()->route('admin.dashboard'); // Redirigir al dashboard de Admin
-                //$user->notify(new NotificacionSimple());
             }
 
             if ($roles->contains('Cliente')) {
-                
                 return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
-                //$user->notify(new NotificacionSimple());
             }
+
             if ($roles->contains('Paseador')) {
-                
-                return redirect()->route('paseador.dashboard'); // Redirigir al dashboard de Cliente
-                //$user->notify(new NotificacionSimple());
+                return redirect()->route('paseador.dashboard'); // Redirigir al dashboard de Paseador
             }
+
             // Si el usuario no tiene un rol válido
             Auth::logout(); // Cerrar sesión
             return back()->withErrors([
