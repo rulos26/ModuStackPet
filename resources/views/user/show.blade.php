@@ -15,7 +15,7 @@
                             <!-- Foto de Perfil -->
                             @if($user->avatar && file_exists(public_path($user->avatar)))
                                 <img class="profile-user-img img-fluid img-circle"
-                                     src="{{ asset($user->avatar) }}"
+                                     src="{{ asset('public/' . $user->avatar) }}"
                                      alt="Foto de Perfil">
                             @else
                                 <img class="profile-user-img img-fluid img-circle"
