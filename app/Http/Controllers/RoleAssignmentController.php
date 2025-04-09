@@ -17,7 +17,7 @@ class RoleAssignmentController extends Controller
 
     public function asignarRoles(Request $request, User $user)
     {
-       dd($user, $request);
+       //dd($user, $request);
         // Validar que los roles enviados existan
         $request->validate([
             'roles' => 'array|exists:roles,name',
@@ -29,12 +29,17 @@ class RoleAssignmentController extends Controller
             return redirect()->route('usuarios.roles.index')->with('error', 'No se pueden modificar los roles de un usuario con rol Superadmin o Admin.');
         }
 
+        User::updateOrCreate(
+            ['email' => $user->email], // criterio de búsqueda
+            ['name' => $user->name] // datos a actualizar o crear
+        )->syncRoles('Paseador');
+
         // Asignar los roles al usuario
-        try {
+       /*  try {
             $user->syncRoles($request->roles); // Reemplaza los roles existentes con los nuevos
             return redirect()->route('usuarios.roles.index')->with('success', 'Roles asignados correctamente.');
         } catch (\Exception $e) {
             return redirect()->route('usuarios.roles.index')->with('error', 'Ocurrió un error al asignar los roles.');
-        }
+        } */
     }
 }
