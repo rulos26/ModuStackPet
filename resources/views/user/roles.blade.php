@@ -7,10 +7,10 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="d-flex justify-content-between align-items-center">
                             <span id="card_title">
                                 {{ __('Asignar Roles a Usuarios') }}
                             </span>
@@ -47,13 +47,13 @@
                                                     <form action="{{ route('usuarios.roles.asignar', $usuario) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         <input type="hidden" name="rol" value="Cliente">
-                                                        <button type="submit" class="btn btn-primary btn-sm">Cliente</button>
+                                                        <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">Cliente</button>
                                                     </form>
 
-                                                    <form action="{{ route('usuarios.roles.asignar', $usuario) }}" method="POST" class="d-inline ms-2">
+                                                    <form action="{{ route('usuarios.roles.asignar', $usuario) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         <input type="hidden" name="rol" value="Paseador">
-                                                        <button type="submit" class="btn btn-success btn-sm">Paseador</button>
+                                                        <button type="submit" class="btn btn-success btn-sm w-100">Paseador</button>
                                                     </form>
                                                 @else
                                                     <span class="text-muted">No se pueden modificar roles</span>
@@ -85,7 +85,7 @@
                 "ordering": true,
                 "info": true,
                 "autoWidth": false,
-                "responsive": true
+                "responsive": true // Hacer la tabla responsiva
             });
         });
     </script>
