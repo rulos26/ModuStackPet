@@ -152,6 +152,8 @@
                 <div class="form-group mb-3">
                     <label for="activo" class="form-label">{{ __('Activo') }}</label>
                     <div class="form-check form-switch">
+                        <!-- Campo oculto para enviar 0 si el checkbox no está marcado -->
+                        <input type="hidden" name="activo" value="0">
                         <input type="checkbox" name="activo" class="form-check-input @error('activo') is-invalid @enderror" id="activo" value="1" 
                             {{ old('activo', $user?->activo) == 1 ? 'checked' : '' }}>
                         <label class="form-check-label" for="activo">{{ __('¿Está activo?') }}</label>
