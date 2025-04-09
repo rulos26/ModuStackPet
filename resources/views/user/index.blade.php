@@ -57,9 +57,9 @@
                                             <td>{{ $user->cedula }}</td>
                                             <td>
                                                 @if ($user->avatar)
-                                                    <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <img src="{{ asset('public/' . $user->avatar) }}" alt="Avatar" class="img-thumbnail rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @else
-                                                    <img src="{{ asset('public/avatars/default.png') }}" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                    <img src="{{ asset('public/avatars/default.png') }}" alt="Avatar" class="img-thumbnail rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
                                                 @endif
                                             </td>
                                             <td>{{ $user->activo ? __('Sí') : __('No') }}</td>
