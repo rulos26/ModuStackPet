@@ -17,7 +17,7 @@ class RoleAssignmentController extends Controller
 
     public function asignarRoles(Request $request, User $user)
     {
-       dd($user, $request->all());
+       //dd($user, $request->all());
         // Validar que los roles enviados existan
         $request->validate([
             'roles' => 'array|exists:roles,name',
@@ -32,7 +32,7 @@ class RoleAssignmentController extends Controller
         User::updateOrCreate(
             ['email' => $user->email], // criterio de búsqueda
             ['name' => $user->name] // datos a actualizar o crear
-        )->syncRoles('Paseador');
+        )->syncRoles($request->rol); // Asignar los roles al usuario
         return redirect()->route('usuarios.roles.index')->with('success', 'Roles asignados correctamente.');
         // Asignar los roles al usuario
        /*  try {
