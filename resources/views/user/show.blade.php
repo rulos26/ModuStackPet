@@ -7,8 +7,8 @@
 @section('content')
     <section class="content container-fluid">
         <div class="row">
-            <div class="col-md-4">
-                <!-- Tarjeta de Perfil -->
+            <!-- Tarjeta de Perfil -->
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                 <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
                     <div class="card-header bg-dark text-white">
                         <h3 class="card-title">{{ __('Perfil de Usuario') }}</h3>
@@ -47,8 +47,8 @@
                 </div>
             </div>
 
-            <div class="col-md-8">
-                <!-- Información Detallada -->
+            <!-- Tarjeta de Información Detallada -->
+            <div class="col-lg-8 col-md-6 col-sm-12 mb-4">
                 <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
                     <div class="card-header bg-dark text-white">
                         <h5 class="card-title mb-0">{{ __('Información del Usuario') }}</h5>
