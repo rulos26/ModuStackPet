@@ -32,10 +32,10 @@
 
                         <!-- Reemplazo de la lista por filas -->
                         <div class="row mb-2" style="font-size: 0.9rem;">
-                            <div class="col-6 text-left">
+                            <div class="col-5 text-left">
                                 <b>{{ __('Correo Electrónico:') }}</b>
                             </div>
-                            <div class="col-6 text-right text-muted">
+                            <div class="col-7 text-right text-muted">
                                 {{ $user->email }}
                             </div>
                         </div>
