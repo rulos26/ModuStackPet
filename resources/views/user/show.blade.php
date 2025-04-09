@@ -9,8 +9,8 @@
         <div class="row">
             <div class="col-md-4">
                 <!-- Tarjeta de Perfil -->
-                <div class="card bg-dark text-white border border-light">
-                    <div class="card-header bg-dark border-bottom border-warning">
+                <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
+                    <div class="card-header bg-dark text-white">
                         <h3 class="card-title text-warning">{{ __('Perfil de Usuario') }}</h3>
                     </div>
                     <div class="card-body text-center">
@@ -29,15 +29,15 @@
                         <p class="text-muted text-center">{{ __('Usuario Activo') }}</p>
 
                         <ul class="list-group list-group-unbordered mb-3">
-                            <li class="list-group-item bg-dark text-white border border-light">
+                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
                                 <b class="text-warning">{{ __('Correo Electrónico') }}</b> 
                                 <a class="float-right text-muted">{{ $user->email }}</a>
                             </li>
-                            <li class="list-group-item bg-dark text-white border border-light">
+                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
                                 <b class="text-warning">{{ __('Teléfono') }}</b> 
                                 <a class="float-right text-muted">{{ $user->telefono }}</a>
                             </li>
-                            <li class="list-group-item bg-dark text-white border border-light">
+                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
                                 <b class="text-warning">{{ __('WhatsApp') }}</b> 
                                 <a class="float-right text-muted">{{ $user->whatsapp }}</a>
                             </li>
@@ -49,8 +49,8 @@
 
             <div class="col-md-8">
                 <!-- Información Detallada -->
-                <div class="card bg-dark text-white border border-light">
-                    <div class="card-header bg-dark border-bottom border-warning">
+                <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
+                    <div class="card-header bg-dark text-white">
                         <h5 class="card-title mb-0 text-warning">{{ __('Información del Usuario') }}</h5>
                     </div>
                     <div class="card-body">
