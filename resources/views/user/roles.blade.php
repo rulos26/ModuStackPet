@@ -28,7 +28,7 @@
                             @csrf
                             <select name="roles[]" multiple class="form-control">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->name }}" @if($usuario->hasRole($role->name)) selected @endif>
+                                    <option value="{{ $role->id }}" @if($usuario->roles->contains('id', $role->id)) selected @endif>
                                         {{ $role->name }}
                                     </option>
                                 @endforeach
