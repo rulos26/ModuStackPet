@@ -10,6 +10,7 @@ use App\Http\Controllers\EstadosDeudaController;
 use App\Http\Controllers\EstadosPedidoController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MensajeDeBienvenidaController;
+use App\Http\Controllers\PaseadorController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
@@ -53,6 +54,9 @@ Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->nam
 // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
+Route::get('/clientes/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
+
+route::get('/paseador/dashboard', [PaseadorController::class, 'index'])->name('paseador.dashboard');
 /* // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home'); */
 
