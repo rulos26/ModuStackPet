@@ -24,7 +24,7 @@
                     <td>{{ $usuario->email }}</td>
                     <td>{{ $usuario->roles->pluck('name')->join(', ') }}</td>
                     <td>
-                        <form method="POST" action="{{ route('usuarios.roles.asignar', $usuario) }}">
+                        {{-- <form method="POST" action="{{ route('usuarios.roles.asignar', $usuario) }}">
                             @csrf
                             <select name="roles[]" multiple class="form-control">
                                 @foreach($roles as $role)
@@ -34,7 +34,7 @@
                                 @endforeach
                             </select>
                             <button class="btn btn-sm btn-primary mt-2">Asignar</button>
-                        </form>
+                        </form> --}}
                     </td>
                 </tr>
             @endforeach
