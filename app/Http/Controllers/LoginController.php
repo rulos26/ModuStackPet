@@ -56,7 +56,11 @@ class LoginController extends Controller
                 return redirect()->route('cliente.dashboard'); // Redirigir al dashboard de Cliente
                 //$user->notify(new NotificacionSimple());
             }
-
+            if ($roles->contains('Paseador')) {
+                
+                return redirect()->route('paseador.dashboard'); // Redirigir al dashboard de Cliente
+                //$user->notify(new NotificacionSimple());
+            }
             // Si el usuario no tiene un rol válido
             Auth::logout(); // Cerrar sesión
             return back()->withErrors([
