@@ -30,20 +30,32 @@
                         <h3 class="profile-username mt-3">{{ $user->name }}</h3>
                         <p class="text-muted">{{ __('Usuario Activo') }}</p>
 
-                        <ul class="list-group list-group-unbordered mb-3">
-                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
-                                <b>{{ __('Correo Electrónico') }}</b> 
-                                <a class="float-right text-muted">{{ $user->email }}</a>
-                            </li>
-                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
-                                <b>{{ __('Teléfono') }}</b> 
-                                <a class="float-right text-muted">{{ $user->telefono }}</a>
-                            </li>
-                            <li class="list-group-item bg-dark text-white" style="border: 2px solid #000; border-radius: 15px;">
-                                <b>{{ __('WhatsApp') }}</b> 
-                                <a class="float-right text-muted">{{ $user->whatsapp }}</a>
-                            </li>
-                        </ul>
+                        <!-- Reemplazo de la lista por filas -->
+                        <div class="row mb-2" style="font-size: 0.9rem;">
+                            <div class="col-6 text-left">
+                                <b>{{ __('Correo Electrónico:') }}</b>
+                            </div>
+                            <div class="col-6 text-right text-muted">
+                                {{ $user->email }}
+                            </div>
+                        </div>
+                        <div class="row mb-2" style="font-size: 0.9rem;">
+                            <div class="col-6 text-left">
+                                <b>{{ __('Teléfono:') }}</b>
+                            </div>
+                            <div class="col-6 text-right text-muted">
+                                {{ $user->telefono }}
+                            </div>
+                        </div>
+                        <div class="row mb-2" style="font-size: 0.9rem;">
+                            <div class="col-6 text-left">
+                                <b>{{ __('WhatsApp:') }}</b>
+                            </div>
+                            <div class="col-6 text-right text-muted">
+                                {{ $user->whatsapp }}
+                            </div>
+                        </div>
+
                         <a href="{{ route('users.index') }}" class="btn btn-secondary btn-block"><b>{{ __('Volver') }}</b></a>
                     </div>
                 </div>
