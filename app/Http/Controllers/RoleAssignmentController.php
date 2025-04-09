@@ -25,15 +25,15 @@ class RoleAssignmentController extends Controller
         // Verificar si el usuario tiene roles protegidos
         $rolesProtegidos = ['Superadmin', 'Admin'];
         if ($user->roles->pluck('name')->intersect($rolesProtegidos)->isNotEmpty()) {
-            return redirect()->route('user.roles')->with('error', 'No se pueden modificar los roles de un usuario con rol Superadmin o Admin.');
+            return redirect()->route('usuarios.roles.index')->with('error', 'No se pueden modificar los roles de un usuario con rol Superadmin o Admin.');
         }
 
         // Asignar los roles al usuario
         try {
             $user->syncRoles($request->roles); // Reemplaza los roles existentes con los nuevos
-            return redirect()->route('user.roles')->with('success', 'Roles asignados correctamente.');
+            return redirect()->route('usuarios.roles.index')->with('success', 'Roles asignados correctamente.');
         } catch (\Exception $e) {
-            return redirect()->route('user.roles')->with('error', 'Ocurrió un error al asignar los roles.');
+            return redirect()->route('usuarios.roles.index')->with('error', 'Ocurrió un error al asignar los roles.');
         }
     }
 }
