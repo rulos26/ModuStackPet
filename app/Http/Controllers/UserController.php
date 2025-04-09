@@ -108,9 +108,52 @@ class UserController extends Controller
     /**
      * Actualizar el recurso especificado en el almacenamiento.
      */
-    public function update(UserRequest $request, User $user): RedirectResponse
+    public function update(Request $request, User $user): RedirectResponse
     {
-        $user->update($request->validated());
+        // Validar los datos del formulario
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id, // Ignorar el email del usuario actual
+            'tipo_documento' => 'required|exists:tipo_documentos,id',
+            'cedula' => 'required|numeric|unique:users,cedula,' . $user->id, // Ignorar la cédula del usuario actual
+            'fecha_nacimiento' => 'nullable|date',
+            'telefono' => 'nullable|string|max:15',
+            'whatsapp' => 'nullable|string|max:15',
+            'password' => 'nullable|string|min:8|confirmed',
+            'activo' => 'boolean',
+            'avatar' => 'nullable|image|max:2048', // Validar que sea una imagen
+        ]);
+
+        // Manejar la subida de la imagen
+        if ($request->hasFile('avatar')) {
+            // Crear una carpeta específica para el usuario basada en su cédula
+            $cedula = $validatedData['cedula'];
+            $avatarPath = 'avatars/' . $cedula;
+
+            // Crear el nombre del archivo basado en la cédula
+            $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
+
+            // Eliminar la imagen anterior si existe
+            if ($user->avatar && file_exists(public_path($user->avatar))) {
+                unlink(public_path($user->avatar));
+            }
+
+            // Mover la nueva imagen a la carpeta pública con el nombre generado
+            $request->file('avatar')->move(public_path($avatarPath), $avatarName);
+
+            // Guardar la ruta relativa en la base de datos
+            $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
+        }
+
+        // Encriptar la contraseña si se proporciona
+        if (!empty($validatedData['password'])) {
+            $validatedData['password'] = bcrypt($validatedData['password']);
+        } else {
+            unset($validatedData['password']); // No actualizar la contraseña si no se proporciona
+        }
+
+        // Actualizar el usuario con los datos validados
+        $user->update($validatedData);
 
         return Redirect::route('users.index')
             ->with('success', 'Usuario actualizado exitosamente.');
