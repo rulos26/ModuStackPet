@@ -63,6 +63,18 @@
                                     <strong>{{ __('Última Vacunación:') }}</strong>
                                     {{ $mascota->ultima_vacunacion ? \Carbon\Carbon::parse($mascota->ultima_vacunacion)->format('d/m/Y') : 'No especificada' }}
                                 </div>
+                                <div class="form-group">
+                                    <strong>{{ __('Raza:') }}</strong>
+                                    {{ $mascota->raza->nombre ?? 'No especificada' }}
+                                </div>
+                                <div class="form-group">
+                                    <strong>{{ __('Interior/Apartamento:') }}</strong>
+                                    {{ $mascota->interior_apto ?? 'No especificado' }}
+                                </div>
+                                <div class="form-group">
+                                    <strong>{{ __('Recomendaciones:') }}</strong>
+                                    {{ $mascota->recomendaciones ?? 'No especificadas' }}
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -80,6 +92,14 @@
                                 <div class="form-group">
                                     <strong>{{ __('Comportamiento:') }}</strong>
                                     {{ $mascota->comportamiento ?? 'No especificado' }}
+                                </div>
+                                <div class="form-group">
+                                    <strong>{{ __('Enfermedades:') }}</strong>
+                                    {{ $mascota->enfermedades ?? 'No especificadas' }}
+                                </div>
+                                <div class="form-group">
+                                    <strong>{{ __('Último Examen Médico:') }}</strong>
+                                    {{ $mascota->ultimo_examen_medico ? \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') : 'No especificado' }}
                                 </div>
                             </div>
                         </div>
