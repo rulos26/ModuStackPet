@@ -23,7 +23,7 @@ class MascotaRequest extends FormRequest
     {
         return [
 			'user_id' => 'required',
-			'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+			'avatar' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
 			'nombre' => 'required|string',
 			'vacunas_completas' => 'required|boolean',
 			'comportamiento' => 'nullable|string',
