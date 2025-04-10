@@ -7,42 +7,46 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         h1 { color: #333; text-align: center; }
-        p { line-height: 1.6; }
-        .content { border: 1px solid #ddd; padding: 15px; border-radius: 5px; }
-        .highlight { background-color: #f0f0f0; padding: 10px; margin: 10px 0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
+        .card { border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; }
+        .card-header { background-color: #007bff; color: white; padding: 10px; border-radius: 5px 5px 0 0; }
+        .card-body { padding: 15px; }
+        .list-group { list-style: none; padding: 0; }
+        .list-group-item { padding: 10px; border-bottom: 1px solid #ddd; }
+        .list-group-item:last-child { border-bottom: none; }
+        .description-header { font-weight: bold; }
+        .description-text { float: right; }
     </style>
 </head>
 <body>
     <h1>{{ $title }}</h1>
-    <div class="content">
-        <p>Este es un ejemplo de PDF generado con DomPDF en Laravel. Aquí puedes ver diferentes estilos aplicados.</p>
-        <div class="highlight">
-            <p>Texto resaltado con un fondo diferente.</p>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Información Detallada de la Mascota</h3>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Columna 1</th>
-                    <th>Columna 2</th>
-                    <th>Columna 3</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Dato 1</td>
-                    <td>Dato 2</td>
-                    <td>Dato 3</td>
-                </tr>
-                <tr>
-                    <td>Dato 4</td>
-                    <td>Dato 5</td>
-                    <td>Dato 6</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="description-header">Nombre:</span>
+                    <span class="description-text">Firulais</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Edad:</span>
+                    <span class="description-text">3 años</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Género:</span>
+                    <span class="description-text">Macho</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Raza:</span>
+                    <span class="description-text">Labrador</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Barrio:</span>
+                    <span class="description-text">Centro</span>
+                </li>
+            </ul>
+        </div>
     </div>
 </body>
 </html>
