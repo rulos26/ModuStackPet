@@ -36,7 +36,7 @@
 
                                         <th>{{ __('Nombre') }}</th>
                                         <th>{{ __('Localidad') }}</th>
-                                        <th>{{ __('Fecha de Creación') }}</th>
+                                        
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -47,7 +47,7 @@
 
                                             <td>{{ $barrio->nombre }}</td>
                                             <td>{{ $barrio->localidad }}</td>
-                                            <td>{{ $barrio->created_at->format('d/m/Y') }}</td>
+
                                             <td>
                                                 <form action="{{ route('barrios.destroy',$barrio->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-success" href="{{ route('barrios.edit',$barrio->id) }}">
