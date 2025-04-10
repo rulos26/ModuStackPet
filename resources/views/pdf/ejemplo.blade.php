@@ -25,7 +25,7 @@
             <h3 class="card-title">Información Detallada de la Mascota</h3>
         </div>
         <div class="card-body">
-            <img src="ruta/a/avatar.jpg" alt="Avatar" class="avatar">
+            <img src="{{ public_path('avatars/1110456003/mascotas/thanos.png') }}" alt="Avatar" class="avatar">
             <ul class="list-group">
                 <li class="list-group-item">
                     <span class="description-header">Nombre:</span>
