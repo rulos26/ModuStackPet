@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header bg-info">
+                    <div class="card-header bg-primary">
                         <h3 class="card-title">{{ __('Información Detallada de la Mascota') }}</h3>
                     </div>
                     <div class="card-body">
