@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barrios', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('mascotas', function (Blueprint $table) {
+            $table->foreign('barrio_id')
+                  ->references('id')
+                  ->on('barrios')
+                  ->onDelete('set null');
         });
     }
 
@@ -22,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barrios');
+        Schema::table('mascotas', function (Blueprint $table) {
+            $table->dropForeign(['barrio_id']);
+        });
     }
 };

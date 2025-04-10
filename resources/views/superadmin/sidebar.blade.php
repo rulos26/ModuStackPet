@@ -35,5 +35,26 @@
         </li>
         @endrole
 
+        <li class="nav-header">Gestión de Mascotas</li>
+
+        <li class="nav-item">
+            <a href="{{ route('barrios.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-map-marker-alt"></i>
+                <p>Barrios</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('razas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-paw"></i>
+                <p>Razas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('mascotas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-dog"></i>
+                <p>Mascotas</p>
+            </a>
+        </li>
+
     </ul>
 </nav>

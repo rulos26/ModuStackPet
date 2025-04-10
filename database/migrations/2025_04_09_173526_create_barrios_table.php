@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('generos', function (Blueprint $table) {
+        Schema::create('barrios', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre');
+            $table->string('localidad')->default('Engativá'); // Valor predeterminado: 'enegativa'
             $table->timestamps();
         });
     }
@@ -22,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('generos');
+        Schema::dropIfExists('barrios');
     }
 };

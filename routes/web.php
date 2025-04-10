@@ -3,17 +3,20 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\BarrioController;
 use App\Http\Controllers\CicloController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EstadosCicloController;
 use App\Http\Controllers\EstadosDeudaController;
 use App\Http\Controllers\EstadosPedidoController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\PaseadorController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
+use App\Http\Controllers\RazaController;
 use App\Http\Controllers\RoleAssignmentController;
 use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\TipoDocumentoController;
@@ -103,3 +106,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name('usuarios.roles.index');
     Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
 });
+Route::resource('mascotas', MascotaController::class);
+Route::resource('razas', RazaController::class);
+Route::resource('barrios', BarrioController::class);
