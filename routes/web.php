@@ -13,6 +13,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\PaseadorController;
+use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PruebaController;
@@ -109,3 +110,4 @@ Route::middleware(['auth'])->group(function () {
 Route::resource('mascotas', MascotaController::class);
 Route::resource('razas', RazaController::class);
 Route::resource('barrios', BarrioController::class);
+Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
