@@ -12,6 +12,6 @@ class PDFController extends Controller
     {
         $data = ['title' => 'Bienvenido a PDF'];
         $pdf = Pdf::loadView('pdf.ejemplo', $data);
-        return $pdf->download('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
+        return $pdf->stream('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
     }
 }
