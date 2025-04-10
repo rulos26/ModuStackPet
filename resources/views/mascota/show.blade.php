@@ -44,63 +44,74 @@
                     </div>
                 </div>
                 <div class="card">
+                    <div class="card-header bg-info">
+                        <h3 class="card-title">{{ __('Información Detallada de la Mascota') }}</h3>
+                    </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <strong>{{ __('Fecha de Nacimiento:') }}</strong>
-                                    {{ $mascota->fecha_nacimiento ? \Carbon\Carbon::parse($mascota->fecha_nacimiento)->format('d/m/Y') : 'No especificada' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Vacunas Completas:') }}</strong>
-                                    @if($mascota->vacunas_completas)
-                                        <span class="badge badge-success">{{ __('Sí') }}</span>
-                                    @else
-                                        <span class="badge badge-danger">{{ __('No') }}</span>
-                                    @endif
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Última Vacunación:') }}</strong>
-                                    {{ $mascota->ultima_vacunacion ? \Carbon\Carbon::parse($mascota->ultima_vacunacion)->format('d/m/Y') : 'No especificada' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Raza:') }}</strong>
-                                    {{ $mascota->raza->nombre ?? 'No especificada' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Interior/Apartamento:') }}</strong>
-                                    {{ $mascota->interior_apto ?? 'No especificado' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Recomendaciones:') }}</strong>
-                                    {{ $mascota->recomendaciones ?? 'No especificadas' }}
-                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Fecha de Nacimiento:') }}</strong>
+                                        <span class="float-right">{{ $mascota->fecha_nacimiento ? \Carbon\Carbon::parse($mascota->fecha_nacimiento)->format('d/m/Y') : 'No especificada' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Vacunas Completas:') }}</strong>
+                                        <span class="float-right">
+                                            @if($mascota->vacunas_completas)
+                                                <span class="badge badge-success">{{ __('Sí') }}</span>
+                                            @else
+                                                <span class="badge badge-danger">{{ __('No') }}</span>
+                                            @endif
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Última Vacunación:') }}</strong>
+                                        <span class="float-right">{{ $mascota->ultima_vacunacion ? \Carbon\Carbon::parse($mascota->ultima_vacunacion)->format('d/m/Y') : 'No especificada' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Raza:') }}</strong>
+                                        <span class="float-right">{{ $mascota->raza->nombre ?? 'No especificada' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Interior/Apartamento:') }}</strong>
+                                        <span class="float-right">{{ $mascota->interior_apto ?? 'No especificado' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Recomendaciones:') }}</strong>
+                                        <span class="float-right">{{ $mascota->recomendaciones ?? 'No especificadas' }}</span>
+                                    </li>
+                                </ul>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <strong>{{ __('Esterilizado:') }}</strong>
-                                    @if($mascota->esterilizado)
-                                        <span class="badge badge-success">{{ __('Sí') }}</span>
-                                    @else
-                                        <span class="badge badge-danger">{{ __('No') }}</span>
-                                    @endif
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Dirección:') }}</strong>
-                                    {{ $mascota->direccion ?? 'No especificada' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Comportamiento:') }}</strong>
-                                    {{ $mascota->comportamiento ?? 'No especificado' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Enfermedades:') }}</strong>
-                                    {{ $mascota->enfermedades ?? 'No especificadas' }}
-                                </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Último Examen Médico:') }}</strong>
-                                    {{ $mascota->ultimo_examen_medico ? \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') : 'No especificado' }}
-                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Esterilizado:') }}</strong>
+                                        <span class="float-right">
+                                            @if($mascota->esterilizado)
+                                                <span class="badge badge-success">{{ __('Sí') }}</span>
+                                            @else
+                                                <span class="badge badge-danger">{{ __('No') }}</span>
+                                            @endif
+                                        </span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Dirección:') }}</strong>
+                                        <span class="float-right">{{ $mascota->direccion ?? 'No especificada' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Comportamiento:') }}</strong>
+                                        <span class="float-right">{{ $mascota->comportamiento ?? 'No especificado' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Enfermedades:') }}</strong>
+                                        <span class="float-right">{{ $mascota->enfermedades ?? 'No especificadas' }}</span>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <strong>{{ __('Último Examen Médico:') }}</strong>
+                                        <span class="float-right">{{ $mascota->ultimo_examen_medico ? \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') : 'No especificado' }}</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
