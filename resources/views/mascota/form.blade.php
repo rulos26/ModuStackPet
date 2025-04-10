@@ -17,6 +17,22 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
+                <!-- Propietario -->
+                <div class="form-group mb-3">
+                    <label for="user_id" class="form-label">{{ __('Propietario') }}</label>
+                    <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" id="user_id" required>
+                        <option value="">-- {{ __('Seleccione un propietario') }} --</option>
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}" {{ old('user_id', $mascota->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                                {{ $user->name }} ({{ $user->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                    {!! $errors->first('user_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
                 <!-- Nombre -->
                 <div class="form-group mb-3">
                     <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
