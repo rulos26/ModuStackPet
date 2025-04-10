@@ -35,12 +35,8 @@
                                         <th>No</th>
                                         <th>{{ __('Avatar') }}</th>
                                         <th>{{ __('Nombre') }}</th>
-                                        <th>{{ __('Edad') }}</th>
-                                        <th>{{ __('Género') }}</th>
                                         <th>{{ __('Raza') }}</th>
                                         <th>{{ __('Barrio') }}</th>
-                                        <th>{{ __('Vacunas') }}</th>
-                                        <th>{{ __('Esterilizado') }}</th>
                                         <th>{{ __('Acciones') }}</th>
                                     </tr>
                                 </thead>
@@ -50,30 +46,14 @@
                                             <td>{{ ++$i }}</td>
                                             <td>
                                                 @if($mascota->avatar)
-                                                    <img src="{{ asset('storage/' . $mascota->avatar) }}" alt="Avatar de {{ $mascota->nombre }}" class="img-thumbnail" style="max-width: 50px;">
+                                                    <img src="{{ asset('public/' . $mascota->avatar) }}" alt="Avatar de {{ $mascota->nombre }}" class="img-thumbnail" style="max-width: 50px;">
                                                 @else
                                                     <i class="fa fa-paw"></i>
                                                 @endif
                                             </td>
                                             <td>{{ $mascota->nombre }}</td>
-                                            <td>{{ $mascota->edad }}</td>
-                                            <td>{{ $mascota->genero }}</td>
                                             <td>{{ $mascota->raza->nombre ?? 'No especificada' }}</td>
                                             <td>{{ $mascota->barrio->nombre ?? 'No especificado' }}</td>
-                                            <td>
-                                                @if($mascota->vacunas_completas)
-                                                    <span class="badge badge-success">{{ __('Sí') }}</span>
-                                                @else
-                                                    <span class="badge badge-danger">{{ __('No') }}</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($mascota->esterilizado)
-                                                    <span class="badge badge-success">{{ __('Sí') }}</span>
-                                                @else
-                                                    <span class="badge badge-danger">{{ __('No') }}</span>
-                                                @endif
-                                            </td>
                                             <td>
                                                 <form action="{{ route('mascotas.destroy', $mascota->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary" href="{{ route('mascotas.show', $mascota->id) }}">
