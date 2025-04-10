@@ -25,13 +25,13 @@ class MascotaRequest extends FormRequest
 			'user_id' => 'required',
 			'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
 			'nombre' => 'required|string',
-			'vacunas_completas' => 'required',
-			'comportamiento' => 'string',
-			'direccion' => 'string',
-			'interior_apto' => 'string',
-			'recomendaciones' => 'string',
-			'esterilizado' => 'required',
-			'enfermedades' => 'string',
+			'vacunas_completas' => 'required|boolean',
+			'comportamiento' => 'nullable|string',
+			'direccion' => 'nullable|string',
+			'interior_apto' => 'nullable|string',
+			'recomendaciones' => 'nullable|string',
+			'esterilizado' => 'required|boolean',
+			'enfermedades' => 'nullable|string',
         ];
     }
 }
