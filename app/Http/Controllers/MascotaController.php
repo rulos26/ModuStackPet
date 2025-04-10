@@ -11,6 +11,7 @@ use App\Http\Requests\MascotaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class MascotaController extends Controller
 {
@@ -38,8 +39,9 @@ class MascotaController extends Controller
         $mascota = new Mascota();
         $razas = Raza::all();
         $barrios = Barrio::all();
+        $users = User::role('Cliente')->get();
 
-        return view('mascota.create', compact('mascota', 'razas', 'barrios'));
+        return view('mascota.create', compact('mascota', 'razas', 'barrios', 'users'));
     }
 
     /**
@@ -94,8 +96,9 @@ class MascotaController extends Controller
         $mascota = Mascota::find($id);
         $razas = Raza::all();
         $barrios = Barrio::all();
+        $users = User::role('Cliente')->get();
 
-        return view('mascota.edit', compact('mascota', 'razas', 'barrios'));
+        return view('mascota.edit', compact('mascota', 'razas', 'barrios', 'users'));
     }
 
     /**
