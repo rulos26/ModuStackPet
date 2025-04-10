@@ -9,8 +9,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class PDFController extends Controller
 {
     public function generarPDF()
-{
-    $pdf = Pdf::loadView('pdf.ejemplo');
-    return $pdf->download('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
-}
+    {
+        $data = ['title' => 'Bienvenido a PDF'];
+        $pdf = Pdf::loadView('pdf.ejemplo', $data);
+        return $pdf->download('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
+    }
 }
