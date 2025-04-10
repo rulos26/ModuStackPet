@@ -55,10 +55,21 @@ class MascotaController extends Controller
         try {
             $validatedData = $request->validated();
 
+            // Obtener el usuario propietario
+            $user = User::findOrFail($validatedData['user_id']);
+
             // Manejar la subida de la imagen del avatar
             if ($request->hasFile('avatar')) {
-                $avatarPath = $request->file('avatar')->store('mascotas/avatars', 'public');
-                $validatedData['avatar'] = $avatarPath;
+                $avatarPath = 'avatars/' . $user->cedula . '/mascotas';
+                $avatarName = $validatedData['nombre'] . '.' . $request->file('avatar')->getClientOriginalExtension();
+
+                // Crear el directorio si no existe
+                if (!file_exists(public_path($avatarPath))) {
+                    mkdir(public_path($avatarPath), 0777, true);
+                }
+
+                $request->file('avatar')->move(public_path($avatarPath), $avatarName);
+                $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
             }
 
             Mascota::create($validatedData);
@@ -113,15 +124,26 @@ class MascotaController extends Controller
         try {
             $validatedData = $request->validated();
 
+            // Obtener el usuario propietario
+            $user = User::findOrFail($validatedData['user_id']);
+
             // Manejar la subida de la imagen del avatar
             if ($request->hasFile('avatar')) {
-                // Eliminar el avatar anterior si existe
-                if ($mascota->avatar) {
-                    Storage::disk('public')->delete($mascota->avatar);
+                $avatarPath = 'avatars/' . $user->cedula . '/mascotas';
+                $avatarName = $validatedData['nombre'] . '.' . $request->file('avatar')->getClientOriginalExtension();
+
+                // Eliminar la imagen anterior si existe
+                if ($mascota->avatar && file_exists(public_path($mascota->avatar))) {
+                    unlink(public_path($mascota->avatar));
                 }
 
-                $avatarPath = $request->file('avatar')->store('mascotas/avatars', 'public');
-                $validatedData['avatar'] = $avatarPath;
+                // Crear el directorio si no existe
+                if (!file_exists(public_path($avatarPath))) {
+                    mkdir(public_path($avatarPath), 0777, true);
+                }
+
+                $request->file('avatar')->move(public_path($avatarPath), $avatarName);
+                $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
             }
 
             $mascota->update($validatedData);
@@ -147,8 +169,8 @@ class MascotaController extends Controller
             $mascota = Mascota::find($id);
 
             // Eliminar el avatar si existe
-            if ($mascota->avatar) {
-                Storage::disk('public')->delete($mascota->avatar);
+            if ($mascota->avatar && file_exists(public_path($mascota->avatar))) {
+                unlink(public_path($mascota->avatar));
             }
 
             $mascota->delete();
