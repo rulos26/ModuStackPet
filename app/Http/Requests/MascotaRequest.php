@@ -32,6 +32,10 @@ class MascotaRequest extends FormRequest
 			'recomendaciones' => 'nullable|string',
 			'esterilizado' => 'required|boolean',
 			'enfermedades' => 'nullable|string',
+			'edad' => 'required|integer|min:0',
+			'genero' => 'required|string',
+			'raza_id' => 'required|exists:razas,id',
+			'barrio_id' => 'required|exists:barrios,id',
         ];
     }
 }
