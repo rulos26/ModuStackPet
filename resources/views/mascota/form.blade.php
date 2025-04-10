@@ -170,6 +170,82 @@
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <!-- Último Examen Médico -->
+                <div class="form-group mb-3">
+                    <label for="ultimo_examen_medico" class="form-label">{{ __('Último Examen Médico') }}</label>
+                    <input type="date" name="ultimo_examen_medico" class="form-control @error('ultimo_examen_medico') is-invalid @enderror"
+                        id="ultimo_examen_medico" value="{{ old('ultimo_examen_medico', $mascota->ultimo_examen_medico ?? '') }}">
+                    {!! $errors->first('ultimo_examen_medico', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección: Información Adicional -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">{{ __('Información Adicional') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Comportamiento -->
+                <div class="form-group mb-3">
+                    <label for="comportamiento" class="form-label">{{ __('Comportamiento') }}</label>
+                    <textarea name="comportamiento" class="form-control @error('comportamiento') is-invalid @enderror"
+                        id="comportamiento" rows="3" placeholder="{{ __('Describa el comportamiento de la mascota') }}">{{ old('comportamiento', $mascota->comportamiento ?? '') }}</textarea>
+                    {!! $errors->first('comportamiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <!-- Recomendaciones -->
+                <div class="form-group mb-3">
+                    <label for="recomendaciones" class="form-label">{{ __('Recomendaciones') }}</label>
+                    <textarea name="recomendaciones" class="form-control @error('recomendaciones') is-invalid @enderror"
+                        id="recomendaciones" rows="3" placeholder="{{ __('Recomendaciones para el cuidado de la mascota') }}">{{ old('recomendaciones', $mascota->recomendaciones ?? '') }}</textarea>
+                    {!! $errors->first('recomendaciones', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <!-- Enfermedades -->
+                <div class="form-group mb-3">
+                    <label for="enfermedades" class="form-label">{{ __('Enfermedades') }}</label>
+                    <textarea name="enfermedades" class="form-control @error('enfermedades') is-invalid @enderror"
+                        id="enfermedades" rows="3" placeholder="{{ __('Enfermedades o condiciones médicas') }}">{{ old('enfermedades', $mascota->enfermedades ?? '') }}</textarea>
+                    {!! $errors->first('enfermedades', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sección: Imagen -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">{{ __('Imagen de la Mascota') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Avatar -->
+                <div class="form-group mb-3">
+                    <label for="avatar" class="form-label">{{ __('Avatar') }}</label>
+                    <input type="file" name="avatar" class="form-control @error('avatar') is-invalid @enderror"
+                        id="avatar" accept="image/*">
+                    {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                    @if(isset($mascota) && $mascota->avatar)
+                        <div class="mt-2">
+                            <img src="{{ asset('storage/' . $mascota->avatar) }}" alt="Avatar de {{ $mascota->nombre }}"
+                                class="img-thumbnail" style="max-width: 150px;">
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 </div>
