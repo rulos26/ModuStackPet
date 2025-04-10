@@ -45,6 +45,38 @@
                     <span class="description-header">Barrio:</span>
                     <span class="description-text">Centro</span>
                 </li>
+                <li class="list-group-item">
+                    <span class="description-header">Fecha de Nacimiento:</span>
+                    <span class="description-text">01/01/2020</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Vacunas Completas:</span>
+                    <span class="description-text">Sí</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Última Vacunación:</span>
+                    <span class="description-text">01/01/2021</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Esterilizado:</span>
+                    <span class="description-text">No</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Dirección:</span>
+                    <span class="description-text">Calle Falsa 123</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Comportamiento:</span>
+                    <span class="description-text">Amigable</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Enfermedades:</span>
+                    <span class="description-text">Ninguna</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Último Examen Médico:</span>
+                    <span class="description-text">01/06/2021</span>
+                </li>
             </ul>
         </div>
     </div>
