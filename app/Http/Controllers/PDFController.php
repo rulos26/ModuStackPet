@@ -17,7 +17,7 @@ class PDFController extends Controller
 
     public function generarPDFMascota()
     {
-        $mascota = \App\Models\Mascota::with(['raza', 'barrio', 'user'])->find(5);
+        $mascota = \App\Models\Mascota::with(['raza', 'barrio', 'user'])->find(4);
 
         if (!$mascota) {
             return redirect()->back()->with('error', 'No se encontró la mascota especificada.');
