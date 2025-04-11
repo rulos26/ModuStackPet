@@ -75,7 +75,7 @@
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Fecha de Nacimiento:</span>
-                    <span class="description-text">{{ $mascota->fecha_nacimiento ? \Carbon\Carbon::parse($mascota->fecha_nacimiento)->format('d/m/Y') : 'No especificada' }}</span>
+                    <span class="description-text">{{ $mascota->fecha_nacimiento ? date('d/m/Y', strtotime($mascota->fecha_nacimiento)) : 'No especificada' }}</span>
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Vacunas Completas:</span>
@@ -83,7 +83,7 @@
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Última Vacunación:</span>
-                    <span class="description-text">{{ $mascota->ultima_vacunacion ? \Carbon\Carbon::parse($mascota->ultima_vacunacion)->format('d/m/Y') : 'No especificada' }}</span>
+                    <span class="description-text">{{ $mascota->ultima_vacunacion ? date('d/m/Y', strtotime($mascota->ultima_vacunacion)) : 'No especificada' }}</span>
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Esterilizado:</span>
@@ -111,7 +111,7 @@
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Último Examen Médico:</span>
-                    <span class="description-text">{{ $mascota->ultimo_examen_medico ? \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') : 'No especificado' }}</span>
+                    <span class="description-text">{{ $mascota->ultimo_examen_medico ? date('d/m/Y', strtotime($mascota->ultimo_examen_medico)) : 'No especificado' }}</span>
                 </li>
             </ul>
         </div>
