@@ -17,8 +17,24 @@ class PDFController extends Controller
 
     public function generarPDFMascota()
     {
-        $mascota = \App\Models\Mascota::with(['raza', 'barrio'])->find(1);
-        $pdf = Pdf::loadView('pdf.mascotas', compact('mascota'));
+        $mascota = \App\Models\Mascota::with(['raza', 'barrio', 'user'])->find(1);
+
+        if (!$mascota) {
+            return redirect()->back()->with('error', 'No se encontró la mascota especificada.');
+        }
+
+        // Ruta de la imagen por defecto
+        $imagenPorDefecto = public_path('storage/img/default-pet.png');
+
+        // Ruta de la imagen de la mascota
+        $rutaImagen = $mascota->avatar
+            ? public_path('storage/' . $mascota->avatar)
+            : $imagenPorDefecto;
+
+        // Verificar si la imagen existe
+        $rutaImagen = file_exists($rutaImagen) ? $rutaImagen : $imagenPorDefecto;
+
+        $pdf = Pdf::loadView('pdf.mascotas', compact('mascota', 'rutaImagen'));
         return $pdf->stream('mascota-informacion.pdf');
     }
 }

@@ -6,7 +6,7 @@
     <title>Información de la Mascota</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { color: #333; text-align: center; }
+        h1, h2 { color: #333; text-align: center; }
         .card { border: 1px solid #ddd; border-radius: 5px; margin-bottom: 20px; }
         .card-header { background-color: #007bff; color: white; padding: 10px; border-radius: 5px 5px 0 0; }
         .card-body { padding: 15px; }
@@ -15,17 +15,43 @@
         .list-group-item:last-child { border-bottom: none; }
         .description-header { font-weight: bold; }
         .description-text { float: right; }
-        .avatar { display: block; margin: 0 auto 20px; width: 100px; height: 100px; border-radius: 50%; }
+        .avatar { display: block; margin: 0 auto 20px; width: 100px; height: 100px; border-radius: 50%; object-fit: cover; }
+        .section-title { color: #007bff; margin-top: 20px; }
     </style>
 </head>
 <body>
     <h1>Información Detallada de la Mascota</h1>
+
+    <!-- Información del Propietario -->
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Información Detallada de la Mascota</h3>
+            <h3 class="card-title">Información del Propietario</h3>
         </div>
         <div class="card-body">
-            <img src="{{ public_path('avatars/1110456003/mascotas/thanos.png') }}" alt="Avatar" class="avatar">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <span class="description-header">Nombre:</span>
+                    <span class="description-text">{{ $mascota->user->name ?? 'No especificado' }}</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Correo Electrónico:</span>
+                    <span class="description-text">{{ $mascota->user->email ?? 'No especificado' }}</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Teléfono:</span>
+                    <span class="description-text">{{ $mascota->user->telefono ?? 'No especificado' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Información de la Mascota -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Información de la Mascota</h3>
+        </div>
+        <div class="card-body">
+            <img src="{{ $rutaImagen }}" alt="Avatar de la mascota" class="avatar">
             <ul class="list-group">
                 <li class="list-group-item">
                     <span class="description-header">Nombre:</span>
@@ -68,8 +94,16 @@
                     <span class="description-text">{{ $mascota->direccion ?? 'No especificada' }}</span>
                 </li>
                 <li class="list-group-item">
+                    <span class="description-header">Interior/Apartamento:</span>
+                    <span class="description-text">{{ $mascota->interior_apto ?? 'No especificado' }}</span>
+                </li>
+                <li class="list-group-item">
                     <span class="description-header">Comportamiento:</span>
                     <span class="description-text">{{ $mascota->comportamiento ?? 'No especificado' }}</span>
+                </li>
+                <li class="list-group-item">
+                    <span class="description-header">Recomendaciones:</span>
+                    <span class="description-text">{{ $mascota->recomendaciones ?? 'No especificadas' }}</span>
                 </li>
                 <li class="list-group-item">
                     <span class="description-header">Enfermedades:</span>

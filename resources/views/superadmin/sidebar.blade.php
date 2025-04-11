@@ -58,7 +58,7 @@
         <li class="nav-item">
             <a href="{{ route('pdf.generar') }}" class="nav-link">
                 <i class="nav-icon fas fa-file-pdf"></i>
-                <p>PDF</p>
+                <p>PDF Ejemplo</p>
             </a>
         </li>
         <li class="nav-item">
