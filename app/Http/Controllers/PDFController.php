@@ -14,4 +14,11 @@ class PDFController extends Controller
         $pdf = Pdf::loadView('pdf.ejemplo', $data);
         return $pdf->stream('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
     }
+
+    public function generarPDFMascota()
+    {
+        $mascota = \App\Models\Mascota::with(['raza', 'barrio'])->find(1);
+        $pdf = Pdf::loadView('pdf.mascotas', compact('mascota'));
+        return $pdf->stream('mascota-informacion.pdf');
+    }
 }

@@ -61,6 +61,12 @@
                 <p>PDF</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('pdf.mascota') }}" class="nav-link">
+                <i class="nav-icon fas fa-file-pdf"></i>
+                <p>PDF Mascota</p>
+            </a>
+        </li>
 
     </ul>
 </nav>

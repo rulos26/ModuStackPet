@@ -111,3 +111,4 @@ Route::resource('mascotas', MascotaController::class);
 Route::resource('razas', RazaController::class);
 Route::resource('barrios', BarrioController::class);
 Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
+Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
