@@ -54,7 +54,7 @@
             <img src="{{ $rutaImagen }}" alt="Avatar de la mascota" class="avatar">
             <ul class="list-group">
                 <li class="list-group-item">
-                    <span class="description-header">Nombre: <br> {{ $rutaImagen }} <br> </span>
+                    <span class="description-header">Nombre: </span>
                     <span class="description-text">{{ $mascota->nombre }}</span>
                 </li>
                 <li class="list-group-item">
