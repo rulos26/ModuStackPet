@@ -35,6 +35,6 @@ class PDFController extends Controller
         $rutaImagen = file_exists($rutaImagen) ? $rutaImagen : $imagenPorDefecto;
 
         $pdf = Pdf::loadView('pdf.mascotas', compact('mascota', 'rutaImagen'));
-        return $pdf->stream('mascota-informacion.pdf');
+        return $pdf->stream('informacion-mascota-' . strtolower(str_replace(' ', '-', $mascota->nombre)) . '.pdf');
     }
 }
