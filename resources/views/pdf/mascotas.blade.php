@@ -51,7 +51,7 @@
             <h3 class="card-title">Información de la Mascota</h3>
         </div>
         <div class="card-body">
-            <img src="{{ $rutaImagen }}" alt="Avatar de la mascota" class="avatar">
+            <img src="{{'public/' .$rutaImagen }}" alt="Avatar de la mascota" class="avatar">
             <ul class="list-group">
                 <li class="list-group-item">
                     <span class="description-header">Nombre:</span>
