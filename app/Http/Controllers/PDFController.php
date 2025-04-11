@@ -24,11 +24,11 @@ class PDFController extends Controller
         }
 
         // Ruta de la imagen por defecto
-        $imagenPorDefecto = public_path('storage/img/default-pet.png');
+        $imagenPorDefecto = public_path('avatars/1110456003/mascotas/thanos.png');
 
         // Ruta de la imagen de la mascota
         $rutaImagen = $mascota->avatar
-            ? public_path('storage/' . $mascota->avatar)
+            ? public_path($mascota->avatar)
             : $imagenPorDefecto;
 
         // Verificar si la imagen existe

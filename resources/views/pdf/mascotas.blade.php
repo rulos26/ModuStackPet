@@ -51,10 +51,10 @@
             <h3 class="card-title">Información de la Mascota</h3>
         </div>
         <div class="card-body">
-            <img src="{{'public/' .$rutaImagen }}" alt="Avatar de la mascota" class="avatar">
+            <img src="{{ $rutaImagen }}" alt="Avatar de la mascota" class="avatar">
             <ul class="list-group">
                 <li class="list-group-item">
-                    <span class="description-header">Nombre:</span>
+                    <span class="description-header">Nombre: {{ $rutaImagen }}</span>
                     <span class="description-text">{{ $mascota->nombre }}</span>
                 </li>
                 <li class="list-group-item">
