@@ -20,6 +20,10 @@ class ExecuteSqlSeeder extends Seeder
         $this->executeSqlFile(database_path('sql/data_tipo_documentos.sql'));
         $this->executeSqlFile(database_path('sql/data_barrios.sql'));
         $this->executeSqlFile(database_path('sql/data_razas.sql'));
+        $this->executeSqlFile(database_path('sql/data_departamentos.sql'));
+        $this->executeSqlFile(database_path('sql/data_ciudades.sql'));
+        $this->executeSqlFile(database_path('sql/data_sectores.sql'));
+        $this->executeSqlFile(database_path('sql/data_tipos_empresas.sql'));
         /*  $this->executeSqlFile(database_path('sql/municipios.sql'));
          $this->executeSqlFile(database_path('sql/paises.sql'));
          $this->executeSqlFile(database_path('sql/departamentos.sql'));

@@ -1,0 +1,16 @@
+INSERT INTO `sectores` (`id`, `nombre`) VALUES
+(1, 'Agropecuario'),
+(2, 'Industrial'),
+(3, 'Comercio'),
+(4, 'Servicios'),
+(5, 'Construcción'),
+(6, 'Transporte y Logística'),
+(7, 'Tecnología e Información'),
+(8, 'Turismo y Hotelería'),
+(9, 'Educación'),
+(10, 'Salud'),
+(11, 'Financiero'),
+(12, 'Energía y Minería'),
+(13, 'Textil y Moda'),
+(14, 'Gastronomía'),
+(15, 'Publicidad y Medios');

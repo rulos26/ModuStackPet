@@ -15,6 +15,36 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ route('departamentos.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-map-marker-alt"></i>
+                <p>Departamentos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('ciudades.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-city"></i>
+                <p>Ciudades</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('sectores.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-industry"></i>
+                <p>Sectores</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('tipos-empresas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Tipos de Empresas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('empresas.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-building"></i>
+                <p>Empresas</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('users.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Usuarios</p>
@@ -53,6 +83,12 @@
             <a href="{{ route('mascotas.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-dog"></i>
                 <p>Mascotas</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('vacunas_certificaciones.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-syringe"></i>
+                <p>Vacunas y Certificaciones</p>
             </a>
         </li>
         <li class="nav-item">
