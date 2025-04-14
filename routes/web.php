@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\VacunaCertificacionController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -112,3 +113,4 @@ Route::resource('razas', RazaController::class);
 Route::resource('barrios', BarrioController::class);
 Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
 Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
+Route::resource('vacunas-certificaciones', VacunaCertificacionController::class);

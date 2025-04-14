@@ -1,0 +1,39 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Tarjeta principal -->
+            <div class="card">
+                <!-- Encabezado de la tarjeta -->
+                <div class="card-header">
+                    <h3 class="mb-0">{{ __('Editar Vacunas y Certificaciones') }}</h3>
+                </div>
+
+                <!-- Cuerpo de la tarjeta -->
+                <div class="card-body">
+                    <!-- Formulario de edición -->
+                    <form action="{{ route('vacunas-certificaciones.update', $vacunaCertificacion->id) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        @include('vacunas-certificaciones.form')
+
+                        <!-- Botones de acción -->
+                        <div class="form-group row mb-0">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> {{ __('Actualizar') }}
+                                </button>
+                                <a href="{{ route('vacunas-certificaciones.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> {{ __('Cancelar') }}
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
