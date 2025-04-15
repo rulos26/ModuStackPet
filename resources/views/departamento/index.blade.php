@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Gestión de Razas
+    Gestión de Departamentos
 @endsection
 
 @push('styles')
@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 @endpush
 
 @section('content')
@@ -19,12 +21,12 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-dog"></i> Razas
+                                <i class="fas fa-building"></i> Departamentos
                             </span>
-                            @hasanyrole('Superadmin|Admin')
+                            @hasanyrole('Superadmin')
                             <div class="float-right">
-                                <a href="{{ route('razas.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Nueva Raza
+                                <a href="{{ route('departamentos.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Nuevo Departamento
                                 </a>
                             </div>
                             @endhasanyrole
@@ -47,46 +49,46 @@
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="razasTable">
+                            <table class="table table-striped table-hover" id="departamentosTable">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>No.</th>
                                         <th>Nombre</th>
-                                        <th>Especie</th>
-                                        <th>Descripción</th>
                                         <th>Estado</th>
-                                      
+                                       
                                         <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($razas as $raza)
+                                    @foreach ($departamentos as $departamento)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $raza->nombre }}</td>
-                                            <td>{{ $raza->especie }}</td>
-                                            <td>{{ Str::limit($raza->descripcion, 50) ?? 'N/A' }}</td>
+                                            <td>{{ $departamento->nombre }}</td>
                                             <td>
-                                                @if($raza->activo)
-                                                    <span class="badge bg-success">Activo</span>
-                                                @else
-                                                    <span class="badge bg-danger">Inactivo</span>
-                                                @endif
+                                                <span class="badge {{ $departamento->estado == 1 ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ $departamento->estado == 1 ? 'Activo' : 'Inactivo' }}
+                                                </span>
                                             </td>
 
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
                                                     @hasanyrole('Superadmin|Admin')
-                                                    <a class="btn btn-info btn-sm" href="{{ route('razas.show', $raza->id) }}" title="Ver">
+                                                    <a class="btn btn-info btn-sm" href="{{ route('departamentos.show', $departamento->id_departamento) }}" title="Ver">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a class="btn btn-success btn-sm" href="{{ route('razas.edit', $raza->id) }}" title="Editar">
+                                                    <a class="btn btn-success btn-sm" href="{{ route('departamentos.edit', $departamento->id_departamento) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                   {{--   <form action="{{ route('departamentos.toggle-status', $departamento->id_departamento) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm {{ $departamento->estado == 1 ? 'btn-warning' : 'btn-success' }}" title="{{ $departamento->estado == 1 ? 'Desactivar' : 'Activar' }}">
+                                                            <i class="fas {{ $departamento->estado == 1 ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i>
+                                                        </button>
+                                                    </form>  --}}
                                                     @endhasanyrole
 
                                                     @hasrole('Superadmin')
-                                                    <form action="{{ route('razas.destroy', $raza->id) }}" method="POST" class="d-inline delete-form">
+                                                    <form action="{{ route('departamentos.destroy', $departamento->id_departamento) }}" method="POST" class="d-inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
@@ -122,10 +124,12 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
-            $('#razasTable').DataTable({
+            $('#departamentosTable').DataTable({
                 responsive: true,
                 dom: 'Bfrtip',
                 buttons: [
@@ -137,21 +141,21 @@
                                 extend: 'excel',
                                 text: '<i class="fas fa-file-excel"></i> Excel',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,4]
                                 }
                             },
                             {
                                 extend: 'pdf',
                                 text: '<i class="fas fa-file-pdf"></i> PDF',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,4]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '<i class="fas fa-print"></i> Imprimir',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,4]
                                 }
                             }
                         ]

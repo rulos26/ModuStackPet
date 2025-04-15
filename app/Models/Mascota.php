@@ -36,7 +36,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Mascota extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -54,7 +54,7 @@ class Mascota extends Model
     {
         return $this->belongsTo(\App\Models\Barrio::class, 'barrio_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -62,7 +62,7 @@ class Mascota extends Model
     {
         return $this->belongsTo(\App\Models\Raza::class, 'raza_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -70,5 +70,9 @@ class Mascota extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
     }
-    
+
+    public function vacunasCertificaciones()
+    {
+        return $this->hasMany(VacunaCertificacion::class, 'id_mascota');
+    }
 }

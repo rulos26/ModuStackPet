@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Gestión de Razas
+    Gestión de Vacunas y Certificaciones
 @endsection
 
 @push('styles')
@@ -19,12 +19,12 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-dog"></i> Razas
+                                <i class="fas fa-syringe"></i> Vacunas y Certificaciones
                             </span>
                             @hasanyrole('Superadmin|Admin')
                             <div class="float-right">
-                                <a href="{{ route('razas.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Nueva Raza
+                                <a href="{{ route('vacunas_certificaciones.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Nuevo Registro
                                 </a>
                             </div>
                             @endhasanyrole
@@ -47,46 +47,50 @@
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="razasTable">
+                            <table class="table table-striped table-hover" id="vacunasTable">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>No.</th>
-                                        <th>Nombre</th>
-                                        <th>Especie</th>
-                                        <th>Descripción</th>
-                                        <th>Estado</th>
-                                      
+                                        <th>Mascota</th>
+                                        <th>Última Vacuna</th>
+                                        <th>Operaciones</th>
+                                        <th>Certificado</th>
+                                        <th>Cédula Propietario</th>
+                                        <th>Fecha Creación</th>
                                         <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($razas as $raza)
+                                    @foreach ($vacunasCertificaciones as $vacuna)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $raza->nombre }}</td>
-                                            <td>{{ $raza->especie }}</td>
-                                            <td>{{ Str::limit($raza->descripcion, 50) ?? 'N/A' }}</td>
+                                            <td>{{ $vacuna->mascota->nombre }}</td>
+                                            <td>{{ $vacuna->fecha_ultima_vacuna->format('d/m/Y') }}</td>
+                                            <td>{{ $vacuna->operaciones ?? 'N/A' }}</td>
                                             <td>
-                                                @if($raza->activo)
-                                                    <span class="badge bg-success">Activo</span>
+                                                @if($vacuna->certificado_veterinario)
+                                                    <a href="{{ asset('storage/' . $vacuna->certificado_veterinario) }}" target="_blank" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-file-pdf"></i> Ver
+                                                    </a>
                                                 @else
-                                                    <span class="badge bg-danger">Inactivo</span>
+                                                    N/A
                                                 @endif
                                             </td>
-
+                                            <td>{{ $vacuna->cedula_propietario ?? 'N/A' }}</td>
+                                            <td>{{ $vacuna->created_at->format('d/m/Y H:i:s') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
                                                     @hasanyrole('Superadmin|Admin')
-                                                    <a class="btn btn-info btn-sm" href="{{ route('razas.show', $raza->id) }}" title="Ver">
+                                                    <a class="btn btn-info btn-sm" href="{{ route('vacunas_certificaciones.show', $vacuna->id) }}" title="Ver">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a class="btn btn-success btn-sm" href="{{ route('razas.edit', $raza->id) }}" title="Editar">
+                                                    <a class="btn btn-success btn-sm" href="{{ route('vacunas_certificaciones.edit', $vacuna->id) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     @endhasanyrole
 
                                                     @hasrole('Superadmin')
-                                                    <form action="{{ route('razas.destroy', $raza->id) }}" method="POST" class="d-inline delete-form">
+                                                    <form action="{{ route('vacunas_certificaciones.destroy', $vacuna->id) }}" method="POST" class="d-inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
@@ -125,7 +129,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#razasTable').DataTable({
+            $('#vacunasTable').DataTable({
                 responsive: true,
                 dom: 'Bfrtip',
                 buttons: [
@@ -137,21 +141,21 @@
                                 extend: 'excel',
                                 text: '<i class="fas fa-file-excel"></i> Excel',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,5,6]
                                 }
                             },
                             {
                                 extend: 'pdf',
                                 text: '<i class="fas fa-file-pdf"></i> PDF',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,5,6]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '<i class="fas fa-print"></i> Imprimir',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5]
+                                    columns: [0,1,2,3,5,6]
                                 }
                             }
                         ]
