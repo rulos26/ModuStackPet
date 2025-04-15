@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre'); // S.A., S.A.S., LTDA, etc.
             $table->timestamps();
+            $table->softDeletes(); // Agrega la columna deleted_at
         });
     }
 

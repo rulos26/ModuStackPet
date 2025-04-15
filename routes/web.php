@@ -125,4 +125,5 @@ Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggle
 Route::resource('sectores', SectoreController::class);
 Route::resource('tipos-empresas', TiposEmpresaController::class);
 Route::resource('empresas', EmpresaController::class);
+Route::get('api/ciudades/{departamentoId}', [EmpresaController::class, 'getCiudades'])->name('empresas.ciudades');
 

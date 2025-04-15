@@ -35,7 +35,7 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
+
 									<th >Nombre Legal</th>
 									<th >Nombre Comercial</th>
 									<th >Nit</th>
@@ -58,7 +58,7 @@
                                     @foreach ($empresas as $empresa)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
+
 										<td >{{ $empresa->nombre_legal }}</td>
 										<td >{{ $empresa->nombre_comercial }}</td>
 										<td >{{ $empresa->nit }}</td>

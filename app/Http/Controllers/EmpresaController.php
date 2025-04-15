@@ -3,82 +3,209 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use App\Models\Ciudad;
+use App\Models\Departamento;
+use App\Models\Sector;
+use App\Models\TipoEmpresa;
 use App\Http\Requests\EmpresaRequest;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class EmpresaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Constructor del controlador
+     * Aplica el middleware de autenticación
      */
-    public function index(Request $request): View
+    public function __construct()
     {
-        $empresas = Empresa::paginate();
-
-        return view('empresa.index', compact('empresas'))
-            ->with('i', ($request->input('page', 1) - 1) * $empresas->perPage());
+        $this->middleware('auth');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Muestra la información de la empresa o el formulario de creación
      */
-    public function create(): View
+    public function index()
     {
-        $empresa = new Empresa();
+        // Verificar si ya existe una empresa
+        $empresa = Empresa::first();
 
-        return view('empresa.create', compact('empresa'));
+        if ($empresa) {
+            // Si existe, mostrar la información de la empresa
+            return view('empresa.show', compact('empresa'));
+        }
+
+        // Si no existe, mostrar el formulario de creación
+        return $this->create();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Muestra el formulario para crear una nueva empresa
      */
-    public function store(EmpresaRequest $request): RedirectResponse
+    public function create()
     {
-        Empresa::create($request->validated());
+        $departamentos = DB::table('departamentos')
+            ->where('estado', 1)
+            ->select('id_departamento', 'nombre as departamento')
+            ->orderBy('nombre')
+            ->get();
 
-        return Redirect::route('empresas.index')
-            ->with('success', 'Empresa created successfully.');
+        Log::info('Departamentos encontrados: ' . $departamentos->count());
+
+        $tiposEmpresas = TipoEmpresa::orderBy('nombre')->get();
+        $sectores = Sector::orderBy('nombre')->get();
+
+        return view('empresa.create', compact('departamentos', 'tiposEmpresas', 'sectores'));
     }
 
     /**
-     * Display the specified resource.
+     * Almacena una nueva empresa en la base de datos
      */
-    public function show($id): View
+    public function store(EmpresaRequest $request)
     {
-        $empresa = Empresa::find($id);
+        // Verificar si ya existe una empresa
+        if (Empresa::exists()) {
+            return redirect()->route('empresas.index')
+                ->with('error', 'Ya existe una empresa registrada.');
+        }
+
+        try {
+            $data = $request->validated();
+
+            // Procesar el logo si se subió
+            if ($request->hasFile('logo')) {
+                $logo = $request->file('logo');
+                $nombreLogo = Str::slug($data['nombre_legal']) . '-' . time() . '.' . $logo->getClientOriginalExtension();
+                $rutaLogo = $logo->storeAs('logos', $nombreLogo, 'public');
+                $data['logo'] = $rutaLogo;
+            }
+
+            // Crear la empresa
+            $empresa = Empresa::create($data);
+
+            return redirect()->route('empresas.index')
+                ->with('success', 'Empresa creada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al crear la empresa: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Muestra los detalles de una empresa específica
+     */
+    public function show($id)
+    {
+        // Buscar la empresa con sus relaciones
+        $empresa = Empresa::with(['tipoEmpresa', 'ciudad', 'departamento', 'sector'])
+            ->findOrFail($id);
 
         return view('empresa.show', compact('empresa'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Muestra el formulario para editar una empresa
      */
-    public function edit($id): View
+    public function edit($id)
     {
-        $empresa = Empresa::find($id);
+        $empresa = Empresa::findOrFail($id);
 
-        return view('empresa.edit', compact('empresa'));
+        $tiposEmpresas = TipoEmpresa::orderBy('nombre')->get();
+        $departamentos = DB::table('departamentos')
+            ->where('estado', 1)
+            ->select('id_departamento', 'nombre as departamento')
+            ->orderBy('nombre')
+            ->get();
+        $ciudades = Ciudad::where('estado', 1)->orderBy('municipio')->get();
+        $sectores = Sector::orderBy('nombre')->get();
+
+        return view('empresa.edit', compact('empresa', 'tiposEmpresas', 'departamentos', 'ciudades', 'sectores'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una empresa en la base de datos
      */
-    public function update(EmpresaRequest $request, Empresa $empresa): RedirectResponse
+    public function update(EmpresaRequest $request, $id)
     {
-        $empresa->update($request->validated());
+        try {
+            // Buscar la empresa
+            $empresa = Empresa::findOrFail($id);
+            $data = $request->validated();
 
-        return Redirect::route('empresas.index')
-            ->with('success', 'Empresa updated successfully');
+            // Procesar el logo si se subió uno nuevo
+            if ($request->hasFile('logo')) {
+                // Eliminar el logo anterior si existe
+                if ($empresa->logo && Storage::disk('public')->exists($empresa->logo)) {
+                    Storage::disk('public')->delete($empresa->logo);
+                }
+
+                $logo = $request->file('logo');
+                $nombreLogo = Str::slug($data['nombre_legal']) . '-' . time() . '.' . $logo->getClientOriginalExtension();
+                $rutaLogo = $logo->storeAs('logos', $nombreLogo, 'public');
+                $data['logo'] = $rutaLogo;
+            }
+
+            // Actualizar la empresa
+            $empresa->update($data);
+
+            return redirect()->route('empresas.index')
+                ->with('success', 'Empresa actualizada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al actualizar la empresa: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
-    public function destroy($id): RedirectResponse
+    /**
+     * Elimina una empresa de la base de datos
+     */
+    public function destroy($id)
     {
-        Empresa::find($id)->delete();
+        try {
+            // Buscar la empresa
+            $empresa = Empresa::findOrFail($id);
 
-        return Redirect::route('empresas.index')
-            ->with('success', 'Empresa deleted successfully');
+            // Eliminar el logo si existe
+            if ($empresa->logo && Storage::disk('public')->exists($empresa->logo)) {
+                Storage::disk('public')->delete($empresa->logo);
+            }
+
+            $empresa->delete();
+
+            return redirect()->route('empresas.index')
+                ->with('success', 'Empresa eliminada exitosamente.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Error al eliminar la empresa: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Obtiene las ciudades de un departamento específico
+     */
+    public function getCiudades($departamentoId)
+    {
+        try {
+            Log::info('Obteniendo ciudades para departamento: ' . $departamentoId);
+
+            $ciudades = DB::table('ciudades')
+                ->where('departamento_id', $departamentoId)
+                ->where('estado', 1)
+                ->select('id_municipio', 'municipio')
+                ->orderBy('municipio')
+                ->get();
+
+            Log::info('Ciudades encontradas: ' . $ciudades->count());
+
+            return response()->json($ciudades);
+        } catch (\Exception $e) {
+            Log::error('Error al cargar ciudades: ' . $e->getMessage());
+            return response()->json(['error' => 'Error al cargar las ciudades: ' . $e->getMessage()], 500);
+        }
     }
 }

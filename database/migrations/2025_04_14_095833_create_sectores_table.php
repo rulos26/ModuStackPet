@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre'); // Ej. Tecnología, Salud, Construcción
             $table->timestamps();
+            $table->softDeletes(); // Agrega la columna deleted_at
         });
     }
 

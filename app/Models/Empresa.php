@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -36,48 +37,150 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Empresa extends Model
 {
-    use SoftDeletes;
-
-    protected $perPage = 20;
+    use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Nombre de la tabla asociada al modelo
      */
-    protected $fillable = ['nombre_legal', 'nombre_comercial', 'nit', 'dv', 'representante_legal', 'tipo_empresa_id', 'telefono', 'email', 'direccion', 'ciudad_id', 'departamento_id', 'sector_id', 'logo', 'estado'];
-
+    protected $table = 'empresas';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Atributos que pueden ser asignados masivamente
      */
-    public function ciudade()
+    protected $fillable = [
+        'nombre_legal',
+        'nombre_comercial',
+        'nit',
+        'dv',
+        'representante_legal',
+        'tipo_empresa_id',
+        'telefono',
+        'email',
+        'direccion',
+        'ciudad_id',
+        'departamento_id',
+        'sector_id',
+        'logo',
+        'estado'
+    ];
+
+    /**
+     * Atributos que deben ser convertidos a tipos nativos
+     */
+    protected $casts = [
+        'estado' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime'
+    ];
+
+    /**
+     * Atributos que deben ser ocultos en las respuestas JSON
+     */
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
+
+    /**
+     * Relación con el tipo de empresa
+     */
+    public function tipoEmpresa()
     {
-        return $this->belongsTo(\App\Models\Ciudade::class, 'ciudad_id', 'id_municipio');
+        return $this->belongsTo(TipoEmpresa::class, 'tipo_empresa_id');
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Relación con la ciudad
+     */
+    public function ciudad()
+    {
+        return $this->belongsTo(Ciudad::class, 'ciudad_id', 'id_municipio');
+    }
+
+    /**
+     * Relación con el departamento
      */
     public function departamento()
     {
-        return $this->belongsTo(\App\Models\Departamento::class, 'departamento_id', 'id_departamento');
+        return $this->belongsTo(Departamento::class, 'departamento_id', 'id_departamento');
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Relación con el sector
      */
-    public function sectore()
+    public function sector()
     {
-        return $this->belongsTo(\App\Models\Sectore::class, 'sector_id', 'id');
+        return $this->belongsTo(Sector::class, 'sector_id');
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Accesor para obtener la URL completa del logo
      */
-    public function tiposEmpresa()
+    public function getLogoUrlAttribute()
     {
-        return $this->belongsTo(\App\Models\TiposEmpresa::class, 'tipo_empresa_id', 'id');
+        if ($this->logo) {
+            return asset('storage/' . $this->logo);
+        }
+        return asset('images/default-logo.png');
     }
-    
+
+    /**
+     * Accesor para obtener el nombre completo de la empresa
+     */
+    public function getNombreCompletoAttribute()
+    {
+        if ($this->nombre_comercial) {
+            return "{$this->nombre_legal} ({$this->nombre_comercial})";
+        }
+        return $this->nombre_legal;
+    }
+
+    /**
+     * Accesor para obtener el NIT completo con dígito de verificación
+     */
+    public function getNitCompletoAttribute()
+    {
+        if ($this->dv) {
+            return "{$this->nit}-{$this->dv}";
+        }
+        return $this->nit;
+    }
+
+    /**
+     * Scope para filtrar empresas activas
+     */
+    public function scopeActivas($query)
+    {
+        return $query->where('estado', true);
+    }
+
+    /**
+     * Scope para filtrar empresas por departamento
+     */
+    public function scopePorDepartamento($query, $departamentoId)
+    {
+        return $query->where('departamento_id', $departamentoId);
+    }
+
+    /**
+     * Scope para filtrar empresas por sector
+     */
+    public function scopePorSector($query, $sectorId)
+    {
+        return $query->where('sector_id', $sectorId);
+    }
+
+    /**
+     * Scope para buscar empresas por nombre o NIT
+     */
+    public function scopeBuscar($query, $termino)
+    {
+        return $query->where(function($q) use ($termino) {
+            $q->where('nombre_legal', 'like', "%{$termino}%")
+              ->orWhere('nombre_comercial', 'like', "%{$termino}%")
+              ->orWhere('nit', 'like', "%{$termino}%");
+        });
+    }
 }

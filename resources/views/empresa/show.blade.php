@@ -1,85 +1,142 @@
 @extends('layouts.app')
 
 @section('template_title')
-    {{ $empresa->name ?? __('Show') . " " . __('Empresa') }}
+    {{ __('Información de la Empresa') }}
 @endsection
 
 @section('content')
-    <section class="content container-fluid">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Empresa</span>
-                        </div>
-                        <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('empresas.index') }}"> {{ __('Back') }}</a>
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h3 class="card-title mb-0">{{ __('Información de la Empresa') }}</h3>
+                            <div class="card-tools">
+                                <a href="{{ route('empresas.edit', $empresa->id) }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-edit"></i> {{ __('Editar') }}
+                                </a>
+                            </div>
                         </div>
                     </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Logo y Datos Básicos -->
+                            <div class="col-md-4">
+                                <div class="text-center mb-4">
+                                    @if($empresa->logo)
+                                        <img src="{{ asset('public/' . $empresa->logo) }}" alt="Logo" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
+                                    @else
+                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
+                                            <i class="fas fa-building fa-4x text-muted"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="text-center mb-4">
+                                    <h4 class="mb-1">{{ $empresa->nombre_legal }}</h4>
+                                    <p class="text-muted mb-0">{{ $empresa->tipoEmpresa->nombre }}</p>
+                                </div>
+                            </div>
 
-                    <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nombre Legal:</strong>
-                                    {{ $empresa->nombre_legal }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nombre Comercial:</strong>
-                                    {{ $empresa->nombre_comercial }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Nit:</strong>
-                                    {{ $empresa->nit }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Dv:</strong>
-                                    {{ $empresa->dv }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Representante Legal:</strong>
-                                    {{ $empresa->representante_legal }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Tipo Empresa Id:</strong>
-                                    {{ $empresa->tipo_empresa_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Telefono:</strong>
-                                    {{ $empresa->telefono }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Email:</strong>
-                                    {{ $empresa->email }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Direccion:</strong>
-                                    {{ $empresa->direccion }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Ciudad Id:</strong>
-                                    {{ $empresa->ciudad_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Departamento Id:</strong>
-                                    {{ $empresa->departamento_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Sector Id:</strong>
-                                    {{ $empresa->sector_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Logo:</strong>
-                                    {{ $empresa->logo }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Estado:</strong>
-                                    {{ $empresa->estado }}
-                                </div>
+                            <!-- Información Detallada -->
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <!-- Datos de Identificación -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-light">
+                                                <h5 class="card-title mb-0">{{ __('Datos de Identificación') }}</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <dl class="row mb-0">
+                                                    <dt class="col-sm-4">{{ __('NIT') }}</dt>
+                                                    <dd class="col-sm-8">{{ $empresa->nit }}</dd>
 
+                                                    <dt class="col-sm-4">{{ __('Representante Legal') }}</dt>
+                                                    <dd class="col-sm-8">{{ $empresa->representante_legal }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Sector') }}</dt>
+                                                    <dd class="col-sm-8">{{ $empresa->sector->nombre }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Estado') }}</dt>
+                                                    <dd class="col-sm-8">
+                                                        <span class="badge {{ $empresa->estado ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $empresa->estado ? __('Activa') : __('Inactiva') }}
+                                                        </span>
+                                                    </dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Datos de Contacto -->
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-light">
+                                                <h5 class="card-title mb-0">{{ __('Datos de Contacto') }}</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <dl class="row mb-0">
+                                                    <dt class="col-sm-4">{{ __('Teléfono') }}</dt>
+                                                    <dd class="col-sm-8">{{ $empresa->telefono ?? __('No especificado') }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Email') }}</dt>
+                                                    <dd class="col-sm-8">{{ $empresa->email ?? __('No especificado') }}</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ubicación -->
+                                    <div class="col-12">
+                                        <div class="card mb-4">
+                                            <div class="card-header bg-light">
+                                                <h5 class="card-title mb-0">{{ __('Ubicación') }}</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <dl class="row mb-0">
+                                                    <dt class="col-sm-2">{{ __('Departamento') }}</dt>
+                                                    <dd class="col-sm-4">{{ $empresa->departamento->nombre }}</dd>
+
+                                                    <dt class="col-sm-2">{{ __('Ciudad') }}</dt>
+                                                    <dd class="col-sm-4">{{ $empresa->ciudad->municipio }}</dd>
+
+                                                    <dt class="col-sm-2">{{ __('Dirección') }}</dt>
+                                                    <dd class="col-sm-10">{{ $empresa->direccion ?? __('No especificada') }}</dd>
+                                                </dl>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+
+    <style>
+        .card {
+            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 0 2px rgba(0,0,0,.075);
+            border: none;
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+        .card-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        dt {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.35em 0.65em;
+        }
+    </style>
 @endsection
