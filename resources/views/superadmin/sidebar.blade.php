@@ -1,5 +1,5 @@
 <nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
         {{-- DASHBOARD GENERAL --}}
         <li class="nav-header text-primary">
@@ -72,6 +72,12 @@
             <a href="{{ route('tipo-documentos.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-user-tag"></i>
                 <p>Tipo Documentos</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('paths-documentos.index') }}" class="nav-link {{ request()->routeIs('paths-documentos.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-folder-open"></i>
+                <p>{{ __('Rutas de Documentos') }}</p>
             </a>
         </li>
         @endrole

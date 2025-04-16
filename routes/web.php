@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -16,6 +15,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\PaseadorController;
+use App\Http\Controllers\PathDocumentoController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\ProductoController;
@@ -126,4 +126,7 @@ Route::resource('sectores', SectoreController::class);
 Route::resource('tipos-empresas', TiposEmpresaController::class);
 Route::resource('empresas', EmpresaController::class);
 Route::get('api/ciudades/{departamentoId}', [EmpresaController::class, 'getCiudades'])->name('empresas.ciudades');
-
+Route::resource('paths-documentos', PathDocumentoController::class);
+Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
+Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
+Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');

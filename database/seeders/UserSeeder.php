@@ -29,12 +29,17 @@ class UserSeeder extends Seeder
             'email' => 'rulos24@gmail.com',
             'password' => bcrypt('12345678'),
         ])->assignRole('Cliente');
-        
+
         User::Create([
             'name' => 'Jose Antonio Aguilar',
             'email' => 'rulos23@gmail.com',
             'password' => bcrypt('12345678'),
         ])->assignRole('Paseador');
         // User::factory(10)->create();
+        $roles = ['Superadmin', 'Admin', 'Cliente', 'Paseador'];
+
+        User::factory(10)->create()->each(function ($user) use ($roles) {
+            $user->assignRole($roles[array_rand($roles)]);
+        });
     }
 }

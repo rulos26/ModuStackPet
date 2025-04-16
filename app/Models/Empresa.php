@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Empresa extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * Nombre de la tabla asociada al modelo
@@ -149,11 +149,11 @@ class Empresa extends Model
     }
 
     /**
-     * Scope para filtrar empresas activas
+     * Scope para obtener solo las empresas activas.
      */
     public function scopeActivas($query)
     {
-        return $query->where('estado', true);
+        return $query->where('estado', 1);
     }
 
     /**
