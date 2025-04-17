@@ -8,7 +8,7 @@ use App\Models\MensajeDeBienvenida;
 
 class PaseadorController extends Controller
 {
-    public function index()
+    public function login_Paseador()
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {

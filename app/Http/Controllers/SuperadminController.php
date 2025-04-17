@@ -7,7 +7,7 @@ use App\Models\MensajeDeBienvenida;
 
 class SuperadminController extends Controller
 {
-    public function index()
+    public function login_Superadmin()
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {

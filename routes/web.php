@@ -58,15 +58,15 @@ Route::get('/dashboard', function () {
 Route::get('login', [LoginController::class, 'login'])->name('login');
 
 // Rutas para Superadmin
-Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
+Route::get('/superadmin/dashboard', [SuperadminController::class, 'login_Superadmin'])->name('superadmin.dashboard');
 
 // Rutas para Admin
-Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'login_Admin'])->name('admin.dashboard');
 
-Route::get('/clientes/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
+Route::get('/clientes/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
 
 
-route::get('/paseador/dashboard', [PaseadorController::class, 'index'])->name('paseador.dashboard');
+route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
 /* // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home'); */
 

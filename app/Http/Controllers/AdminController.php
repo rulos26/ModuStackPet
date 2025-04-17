@@ -7,7 +7,7 @@ use App\Models\MensajeDeBienvenida;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function login_Admin()
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {

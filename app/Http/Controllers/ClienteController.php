@@ -9,7 +9,7 @@ use App\Models\MensajeDeBienvenida;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function login_Cliente()
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {
