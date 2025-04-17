@@ -1,38 +1,31 @@
 <?php
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\BarrioController;
-use App\Http\Controllers\CicloController;
-use App\Http\Controllers\CiudadController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\DepartamentoController;
-use App\Http\Controllers\EmpresaController;
-use App\Http\Controllers\EstadosCicloController;
-use App\Http\Controllers\EstadosDeudaController;
-use App\Http\Controllers\EstadosPedidoController;
-use App\Http\Controllers\LoginController;
-use App\Http\Controllers\MascotaController;
-use App\Http\Controllers\MensajeDeBienvenidaController;
-use App\Http\Controllers\PaseadorController;
-use App\Http\Controllers\PathDocumentoController;
-use App\Http\Controllers\PDFController;
-use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\PruebaController;
-use App\Http\Controllers\RazaController;
-use App\Http\Controllers\RoleAssignmentController;
-use App\Http\Controllers\SectoreController;
-use App\Http\Controllers\SuperadminController;
-use App\Http\Controllers\TipoDocumentoController;
-use App\Http\Controllers\TiposEmpresaController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Http\Controllers\RegisteredUserController;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\VacunasCertificacionesController;
+use App\Http\Controllers\SuperadminController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\PaseadorController;
+use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\ResetPasswordController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MensajeDeBienvenidaController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TipoDocumentoController;
+use App\Http\Controllers\RoleAssignmentController;
+use App\Http\Controllers\MascotaController;
+use App\Http\Controllers\RazaController;
+use App\Http\Controllers\BarrioController;
+use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\CiudadController;
+use App\Http\Controllers\SectoreController;
+use App\Http\Controllers\TiposEmpresaController;
+use App\Http\Controllers\EmpresaController;
+use App\Http\Controllers\PathDocumentoController;
+use App\Http\Controllers\PDFController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
 
 // RUTAS DE AUTENTICACIÓN Y REGISTRO
 // Ruta principal - Muestra el login (No requiere autenticación)
@@ -56,23 +49,10 @@ Route::get('/dashboard', function () {
 })->name('temp.index');
 
 // Dashboards por rol (Requieren autenticación y middleware de rol)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])
-        ->middleware('role:Superadmin')
-        ->name('superadmin.dashboard');
-
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])
-        ->middleware('role:Admin')
-        ->name('admin.dashboard');
-
-    Route::get('/clientes/dashboard', [ClienteController::class, 'index'])
-        ->middleware('role:Cliente')
-        ->name('cliente.dashboard');
-
-    Route::get('/paseador/dashboard', [PaseadorController::class, 'index'])
-        ->middleware('role:Paseador')
-        ->name('paseador.dashboard');
-});
+Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/clientes/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
+Route::get('/paseador/dashboard', [PaseadorController::class, 'index'])->name('paseador.dashboard');
 
 // RUTAS DE CONFIGURACIÓN
 // Mensaje de bienvenida (Usado en sidebar, requiere autenticación)
