@@ -24,12 +24,21 @@ use App\Http\Controllers\TiposEmpresaController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\PathDocumentoController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Auth;
 
 
-// RUTAS DE AUTENTICACIÓN Y REGISTRO
-// Ruta principal - Muestra el login (No requiere autenticación)
-Route::get('/', function () { return view('auth.login'); });
+// RUTAS PÚBLICAS
+// Ruta principal - Muestra el login
+Route::get('/', function () {
+    return view('auth.login');
+});
+
+// Rutas de autenticación
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Rutas de registro (No requieren autenticación pero deberían estar protegidas por guest middleware)
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
