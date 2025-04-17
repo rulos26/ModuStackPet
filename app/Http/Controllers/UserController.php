@@ -9,38 +9,25 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\Controller; // Asegúrate de que este namespace esté presente
 
 class UserController extends Controller
 {
-    public function __construct()
+    /* public function __construct()
     {
-        $this->middleware('auth');
-    }
+        $this->middleware('auth'); // Asegura que solo usuarios autenticados puedan acceder
+    } */
 
     /**
      * Mostrar una lista de los recursos.
      */
     public function index(Request $request): View
     {
-        $role = auth()->user()->roles->first();
+        $users = User::paginate();
 
-        switch($role->name) {
-            case 'Superadmin':
-                return $this->superadminIndex();
-            case 'Admin':
-                return $this->adminIndex();
-            case 'Cliente':
-                return $this->clienteIndex();
-            case 'Paseador':
-                return $this->paseadorIndex();
-            default:
-                abort(403);
-        }
+        return view('user.index', compact('users'))
+            ->with('i', ($request->input('page', 1) - 1) * $users->perPage());
     }
 
     /**
@@ -48,20 +35,10 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        $role = auth()->user()->roles->first();
+        $user = new User();
+        $tiposDocumento = TipoDocumento::all(); // Obtener todos los tipos de documento
 
-        switch($role->name) {
-            case 'Superadmin':
-                return $this->superadminCreate();
-            case 'Admin':
-                return $this->adminCreate();
-            case 'Cliente':
-                return $this->clienteCreate();
-            case 'Paseador':
-                return $this->paseadorCreate();
-            default:
-                abort(403);
-        }
+        return view('user.create', compact('user', 'tiposDocumento')); // Pasar los datos a la vista
     }
 
     /**
@@ -69,20 +46,44 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $role = auth()->user()->roles->first();
+        // Validar los datos del formulario
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'tipo_documento' => 'required|exists:tipo_documentos,id',
+            'cedula' => 'required|numeric|digits_between:6,12|unique:users,cedula', // Validación de cédula
+            'fecha_nacimiento' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $age = \Carbon\Carbon::parse($value)->age;
+                    if ($age < 18) {
+                        $fail('Debe tener al menos 18 años.');
+                    }
+                },
+            ],
+            'telefono' => 'nullable|string|max:15',
+            'whatsapp' => 'nullable|string|max:15',
+            'password' => 'nullable|string|min:8|confirmed',
+            'activo' => 'boolean',
+            'avatar' => 'nullable|image|max:2048', // Validar que sea una imagen
+        ]);
 
-        switch($role->name) {
-            case 'Superadmin':
-                return $this->superadminStore($request);
-            case 'Admin':
-                return $this->adminStore($request);
-            case 'Cliente':
-                return $this->clienteStore($request);
-            case 'Paseador':
-                return $this->paseadorStore($request);
-            default:
-                abort(403);
+        // Manejar la subida de la imagen
+        if ($request->hasFile('avatar')) {
+            $cedula = $validatedData['cedula'];
+            $avatarPath = 'avatars/' . $cedula;
+            $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
+            $request->file('avatar')->move(public_path($avatarPath), $avatarName);
+            $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
         }
+
+        // Crear el usuario con los datos validados
+        $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
+        User::create($validatedData);
+
+        return Redirect::route('users.index')
+            ->with('success', 'Usuario creado exitosamente.');
     }
 
     /**
@@ -172,121 +173,5 @@ class UserController extends Controller
 
         return Redirect::route('users.index')
             ->with('success', 'Usuario eliminado exitosamente.');
-    }
-
-    // Métodos específicos para Superadmin
-    protected function superadminIndex()
-    {
-        $users = User::with('roles')->get();
-        return view('user.superadmin.index', compact('users'));
-    }
-
-    protected function superadminCreate()
-    {
-        $roles = Role::all();
-        return view('user.superadmin.create', compact('roles'));
-    }
-
-    protected function superadminStore(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'role' => 'required|exists:roles,name',
-            'avatar' => 'nullable|image|max:2048'
-        ]);
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars/' . $request->cedula . '/users', 'public');
-            $user->avatar = $path;
-        }
-
-        $user->save();
-        $user->assignRole($request->role);
-
-        return redirect()->route('users.index')
-            ->with('success', 'Usuario creado exitosamente');
-    }
-
-    // Métodos específicos para Admin
-    protected function adminIndex()
-    {
-        $users = User::role(['Cliente', 'Paseador'])->get();
-        return view('user.admin.index', compact('users'));
-    }
-
-    protected function adminCreate()
-    {
-        $roles = Role::whereIn('name', ['Cliente', 'Paseador'])->get();
-        return view('user.admin.create', compact('roles'));
-    }
-
-    protected function adminStore(Request $request)
-    {
-        // Similar a superadminStore pero con restricciones
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'role' => 'required|in:Cliente,Paseador',
-            'avatar' => 'nullable|image|max:2048'
-        ]);
-
-        // ... resto del código similar a superadminStore
-    }
-
-    // Métodos específicos para Cliente
-    protected function clienteIndex()
-    {
-        $users = User::where('id', auth()->id())->get();
-        return view('user.cliente.index', compact('users'));
-    }
-
-    protected function clienteCreate()
-    {
-        return view('user.cliente.create');
-    }
-
-    protected function clienteStore(Request $request)
-    {
-        // Lógica específica para crear usuarios cliente
-    }
-
-    // Métodos específicos para Paseador
-    protected function paseadorIndex()
-    {
-        $users = User::where('id', auth()->id())->get();
-        return view('user.paseador.index', compact('users'));
-    }
-
-    protected function paseadorCreate()
-    {
-        return view('user.paseador.create');
-    }
-
-    protected function paseadorStore(Request $request)
-    {
-        // Lógica específica para crear usuarios paseador
-    }
-
-    // Métodos compartidos
-    protected function handleAvatarUpload($request, $user)
-    {
-        if ($request->hasFile('avatar')) {
-            // Eliminar avatar anterior si existe
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $path = $request->file('avatar')->store('avatars/' . $user->cedula . '/users', 'public');
-            return $path;
-        }
-        return null;
     }
 }
