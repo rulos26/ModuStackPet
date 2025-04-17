@@ -58,19 +58,19 @@ Route::get('/dashboard', function () {
 // Dashboards por rol (Requieren autenticación y middleware de rol)
 Route::middleware(['auth'])->group(function () {
     Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])
-        ->middleware('role:Superadmin')
+        ->middleware(['role:Superadmin'])
         ->name('superadmin.dashboard');
 
     Route::get('/admin/dashboard', [AdminController::class, 'index'])
-        ->middleware('role:Admin')
+        ->middleware(['role:Admin'])
         ->name('admin.dashboard');
 
     Route::get('/clientes/dashboard', [ClienteController::class, 'index'])
-        ->middleware('role:Cliente')
+        ->middleware(['role:Cliente'])
         ->name('cliente.dashboard');
 
     Route::get('/paseador/dashboard', [PaseadorController::class, 'index'])
-        ->middleware('role:Paseador')
+        ->middleware(['role:Paseador'])
         ->name('paseador.dashboard');
 });
 
