@@ -34,88 +34,92 @@ use Laravel\Fortify\Http\Controllers\RegisteredUserController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\VacunasCertificacionesController;
 
-// RUTAS DE AUTENTICACIÓN Y REGISTRO
-// Ruta principal - Muestra el login (No requiere autenticación)
-Route::get('/', function () { return view('auth.login'); });
+// RUTAS PÚBLICAS
+// Estas rutas son accesibles sin necesidad de autenticación
+Route::get('/', function () {
+    return view('auth.login');
+});
 
-// Rutas de registro (No requieren autenticación pero deberían estar protegidas por guest middleware)
+// Rutas de registro de usuarios
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::get('register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
-// Rutas de recuperación de contraseña (No requieren autenticación)
+// Rutas de recuperación de contraseña
 Route::get('password/reset', [ResetPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-// RUTAS DE DASHBOARD
-// Dashboard temporal (Requiere autenticación)
+// Ruta de inicio de sesión
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+
+// RUTAS PROTEGIDAS
+// Cada ruta tiene su middleware de autenticación
+// La validación de roles se maneja en cada controlador
+
+// Dashboard temporal
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->name('temp.index');
+})->middleware(['auth'])->name('temp.index');
 
-// Dashboards por rol (Requieren autenticación)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/clientes/dashboard', [ClienteController::class, 'index'])->name('cliente.dashboard');
-    Route::get('/paseador/dashboard', [PaseadorController::class, 'index'])->name('paseador.dashboard');
-});
+// Dashboards específicos
+Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->middleware(['auth'])->name('superadmin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->middleware(['auth'])->name('admin.dashboard');
+Route::get('/clientes/dashboard', [ClienteController::class, 'index'])->middleware(['auth'])->name('cliente.dashboard');
+Route::get('/paseador/dashboard', [PaseadorController::class, 'index'])->middleware(['auth'])->name('paseador.dashboard');
 
-// RUTAS DE CONFIGURACIÓN
-// Mensaje de bienvenida (Usado en sidebar, requiere autenticación)
-Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
+// Configuración del sistema
+Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class)->middleware(['auth']);
+Route::resource('users', UserController::class)->middleware(['auth']);
+Route::resource('tipo-documentos', TipoDocumentoController::class)->middleware(['auth']);
+Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->middleware(['auth'])->name('usuarios.roles.index');
+Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->middleware(['auth'])->name('usuarios.roles.asignar');
 
-// Gestión de usuarios y roles (Usados en sidebar, requieren autenticación y rol superadmin/admin)
-Route::resource('users', UserController::class);
-Route::resource('tipo-documentos', TipoDocumentoController::class);
-Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name('usuarios.roles.index');
-Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
+// Gestión de mascotas y servicios relacionados
+Route::resource('mascotas', MascotaController::class)->middleware(['auth']);
+Route::resource('razas', RazaController::class)->middleware(['auth']);
+Route::resource('barrios', BarrioController::class)->middleware(['auth']);
+Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class)->middleware(['auth']);
 
-// RUTAS DE MASCOTAS Y RELACIONADOS (Usadas en sidebar según rol)
-Route::resource('mascotas', MascotaController::class);
-Route::resource('razas', RazaController::class);
-Route::resource('barrios', BarrioController::class);
-Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
+// Gestión de ubicaciones geográficas
+Route::resource('departamentos', DepartamentoController::class)->middleware(['auth']);
+Route::resource('ciudades', CiudadController::class)->middleware(['auth']);
+Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->middleware(['auth'])->name('ciudades.toggle-status');
+Route::resource('sectores', SectoreController::class)->middleware(['auth']);
 
-// RUTAS DE UBICACIÓN (Usadas en sidebar, requieren autenticación y rol superadmin/admin)
-Route::resource('departamentos', DepartamentoController::class);
-Route::resource('ciudades', CiudadController::class);
-Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
-Route::resource('sectores', SectoreController::class);
+// Gestión de empresas
+Route::resource('tipos-empresas', TiposEmpresaController::class)->middleware(['auth']);
+Route::resource('empresas', EmpresaController::class)->middleware(['auth']);
+Route::get('api/ciudades/{departamentoId}', [EmpresaController::class, 'getCiudades'])->middleware(['auth'])->name('empresas.ciudades');
 
-// RUTAS DE EMPRESAS (Usadas en sidebar, requieren autenticación y rol superadmin/admin)
-Route::resource('tipos-empresas', TiposEmpresaController::class);
-Route::resource('empresas', EmpresaController::class);
-Route::get('api/ciudades/{departamentoId}', [EmpresaController::class, 'getCiudades'])->name('empresas.ciudades');
+// Gestión de documentos
+Route::resource('paths-documentos', PathDocumentoController::class)->middleware(['auth']);
+Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->middleware(['auth'])->name('paths-documentos.toggle-status');
 
-// RUTAS DE DOCUMENTOS (Usadas en sidebar, requieren autenticación y rol superadmin/admin)
-Route::resource('paths-documentos', PathDocumentoController::class);
-Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
-Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
-Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');
-Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
+// Generación de PDFs
+Route::get('/pdf', [PDFController::class, 'generarPDF'])->middleware(['auth'])->name('pdf.generar');
+Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->middleware(['auth'])->name('pdf.mascota');
 
-// RUTAS DE PDF (Usadas en sidebar, visibles para todos los roles autenticados)
-Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
-Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
-
-// RUTAS DE NOTIFICACIONES (Requieren autenticación)
+// Sistema de notificaciones
 Route::post('/notificaciones/leidas', function () {
-    auth()->user()->unreadNotifications->markAsRead();
+    Auth::user()->unreadNotifications->markAsRead();
     return back();
-})->name('notificaciones.marcar.leidas');
+})->middleware(['auth'])->name('notificaciones.marcar.leidas');
 
-// RUTAS DE VERIFICACIÓN DE EMAIL (No requieren autenticación)
+// RUTAS DE VERIFICACIÓN DE EMAIL
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/superadmin/dashboard');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+})->middleware(['auth'])->name('verification.notice');
+
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', '¡Se ha enviado un nuevo enlace de verificación!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/superadmin/dashboard');
+})->middleware(['auth', 'signed'])->name('verification.verify');
