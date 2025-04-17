@@ -13,6 +13,6 @@
     </div>
     <div class="col-md-12 mt20 mt-2">
         <button type="submit" class="btn btn-primary">{{ __('Guardar') }}</button>
-        <a href="{{ route('sectore.index') }}" class="btn btn-secondary">{{ __('Cancelar') }}</a>
+        <a href="{{ route('sectores.index') }}" class="btn btn-secondary">{{ __('Cancelar') }}</a>
     </div>
 </div>
