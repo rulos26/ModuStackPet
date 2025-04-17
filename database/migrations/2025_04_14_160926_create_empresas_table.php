@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre_comercial', 100)->nullable();
             $table->string('nit', 20)->unique();
             $table->string('dv', 1)->nullable(); // Dígito de verificación
-            $table->string('representante_legal', 100);
+            $table->string('representante_legal', 255);
             $table->foreignId('tipo_empresa_id')->constrained('tipos_empresas')->onDelete('restrict');
             $table->string('telefono', 20)->nullable();
             $table->string('email', 100)->nullable();
