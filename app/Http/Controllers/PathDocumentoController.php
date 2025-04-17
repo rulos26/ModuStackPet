@@ -70,12 +70,15 @@ class PathDocumentoController extends Controller
                         // Sanitizar nombres para la ruta y convertir a minúsculas
                         $nombreEmpresa = str_replace(' ', '_', trim($empresa->nombre_legal)); // Primero reemplazamos espacios
                         $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
+                        $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
 
                         $nombreRol = str_replace(' ', '_', trim($rol->name));
                         $nombreRol = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreRol));
+                        $nombreRol = preg_replace('/_+/', '_', $nombreRol); // Eliminar guiones bajos múltiples
 
                         $cedula = str_replace(' ', '_', trim($cedula));
                         $cedula = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $cedula));
+                        $cedula = preg_replace('/_+/', '_', $cedula); // Eliminar guiones bajos múltiples
 
                         // Crear paths para documentos e imágenes
                         $paths = [
