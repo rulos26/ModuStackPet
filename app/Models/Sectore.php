@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class Sectore
  *
  * @property $id
+ * @property $nombre
  * @property $created_at
  * @property $updated_at
  *
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Sectore extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -24,7 +25,7 @@ class Sectore extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [];
+    protected $fillable = ['nombre'];
 
 
 }
