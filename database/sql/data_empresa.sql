@@ -1,0 +1,2 @@
+INSERT INTO `empresas` (`id`, `nombre_legal`, `nombre_comercial`, `nit`, `dv`, `representante_legal`, `tipo_empresa_id`, `telefono`, `email`, `direccion`, `ciudad_id`, `departamento_id`, `sector_id`, `logo`, `estado`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Fortaleza Animal C.R', NULL, '700329312', NULL, 'Cesar José rojas Vasquez', 9, '+57 302 6491129', 'fortalezaanimaladmon@gmail.com', 'Calle 75 #112b-04, Villas de Granada', 107, 11, 16, NULL, 1, '2025-04-17 07:47:40', '2025-04-17 08:33:46', NULL);
