@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css">
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        .status-switch {
+            cursor: pointer;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -63,11 +68,12 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $path->nombre_path }}</td>
                                             <td>
-                                                @if($path->estado)
-                                                    <span class="badge bg-success">Activo</span>
-                                                @else
-                                                    <span class="badge bg-danger">Inactivo</span>
-                                                @endif
+                                                <span class="badge status-switch"
+                                                      data-id="{{ $path->id }}"
+                                                      data-status="{{ $path->estado }}"
+                                                      style="background-color: {{ $path->estado ? '#198754' : '#dc3545' }}">
+                                                    {{ $path->estado ? 'Activo' : 'Inactivo' }}
+                                                </span>
                                             </td>
                                             <td>{{ $path->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
@@ -118,6 +124,7 @@
 
     <script>
         $(document).ready(function() {
+            // DataTable initialization
             $('#pathsTable').DataTable({
                 responsive: true,
                 dom: 'Bfrtip',
@@ -163,7 +170,7 @@
                         orderable: false
                     }
                 ],
-                order: [[3, 'desc']] // Ordenar por fecha de creación descendente
+                order: [[3, 'desc']]
             });
 
             // Confirmación de eliminación con SweetAlert2
@@ -181,6 +188,45 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         this.submit();
+                    }
+                });
+            });
+
+            // Cambio de estado
+            $('.status-switch').click(function() {
+                const pathId = $(this).data('id');
+                const currentStatus = $(this).data('status');
+                const badge = $(this);
+
+                $.ajax({
+                    url: `/paths-documentos/${pathId}/toggle-status`,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Actualizar el estado visual
+                            badge.data('status', response.newStatus);
+                            badge.text(response.newStatus ? 'Activo' : 'Inactivo');
+                            badge.css('background-color', response.newStatus ? '#198754' : '#dc3545');
+
+                            // Mostrar mensaje de éxito
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: response.message,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: xhr.responseJSON?.message || 'Error al cambiar el estado',
+                            icon: 'error'
+                        });
                     }
                 });
             });

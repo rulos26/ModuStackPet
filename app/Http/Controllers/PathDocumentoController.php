@@ -162,4 +162,26 @@ class PathDocumentoController extends Controller
         return redirect()->route('paths-documentos.index')
             ->with('success', 'Ruta de documento eliminada exitosamente.');
     }
+
+    /**
+     * Cambia el estado de un path de documento.
+     */
+    public function toggleStatus(PathDocumento $pathDocumento)
+    {
+        try {
+            $pathDocumento->estado = !$pathDocumento->estado;
+            $pathDocumento->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado actualizado correctamente',
+                'newStatus' => $pathDocumento->estado
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

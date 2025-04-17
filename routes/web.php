@@ -130,3 +130,4 @@ Route::resource('paths-documentos', PathDocumentoController::class);
 Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
 Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
 Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');
+Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
