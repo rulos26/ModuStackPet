@@ -18,21 +18,32 @@
             </a>
         </li>
 
+        {{-- GESTIÓN DE USUARIOS --}}
+        <li class="nav-header text-success mt-2">
+            <i class="fas fa-users"></i> Gestión de Usuarios
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('users.index') }}" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>Lista de Usuarios</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('users.create') }}" class="nav-link">
+                <i class="nav-icon fas fa-user-plus"></i>
+                <p>Crear Usuario</p>
+            </a>
+        </li>
+
         {{-- SECCIÓN SUPERADMIN Y ADMIN --}}
         @role('Superadmin|Admin')
-        <li class="nav-header text-success mt-2">
+        <li class="nav-header text-warning mt-2">
             <i class="fas fa-cogs"></i> Configuración del Sistema
         </li>
         <li class="nav-item">
             <a href="{{ route('empresas.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-building"></i>
                 <p>Empresas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('users.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-users"></i>
-                <p>Usuarios</p>
             </a>
         </li>
         <li class="nav-item">
@@ -75,9 +86,9 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('paths-documentos.index') }}" class="nav-link {{ request()->routeIs('paths-documentos.*') ? 'active' : '' }}">
+            <a href="{{ route('paths-documentos.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-folder-open"></i>
-                <p>{{ __('Rutas de Documentos') }}</p>
+                <p>Rutas de Documentos</p>
             </a>
         </li>
         @endrole
