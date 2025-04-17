@@ -59,7 +59,6 @@
                                         <th>Nombre de la Ruta</th>
                                         <th>Estado</th>
                                         <th>Fecha de Creación</th>
-                                        <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -76,23 +75,6 @@
                                                 </span>
                                             </td>
                                             <td>{{ $path->created_at->format('d/m/Y H:i') }}</td>
-                                            <td class="text-center">
-                                                <div class="btn-group" role="group" aria-label="Acciones">
-                                                    <a class="btn btn-info btn-sm" href="{{ route('paths-documentos.show', $path->id) }}" title="Ver">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a class="btn btn-success btn-sm" href="{{ route('paths-documentos.edit', $path->id) }}" title="Editar">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <form action="{{ route('paths-documentos.destroy', $path->id) }}" method="POST" class="d-inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -171,25 +153,6 @@
                     }
                 ],
                 order: [[3, 'desc']]
-            });
-
-            // Confirmación de eliminación con SweetAlert2
-            $(document).on('submit', '.delete-form', function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: '¿Está seguro?',
-                    text: "¡No podrá revertir esta acción!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.submit();
-                    }
-                });
             });
 
             // Cambio de estado
