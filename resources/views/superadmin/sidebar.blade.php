@@ -72,7 +72,7 @@
 
     <!-- Nav Item - Vacunas y Certificaciones -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('vacunas-certificaciones.index') }}">
+        <a class="nav-link" href="{{ route('vacunas_certificaciones.index') }}">
             <i class="fas fa-fw fa-syringe"></i>
             <span>Vacunas y Certificaciones</span>
         </a>
