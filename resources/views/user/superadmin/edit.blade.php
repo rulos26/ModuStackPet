@@ -12,18 +12,17 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-user-edit"></i> {{ __('Editar Usuario') }}
+                                <i class="fas fa-user-edit"></i> Editar Usuario
                             </span>
                             <div class="float-right">
-                                <a href="{{ route('users.index') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-arrow-left"></i> {{ __('Volver') }}
+                                <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Volver
                                 </a>
                             </div>
                         </div>
                     </div>
-
                     <div class="card-body">
-                        <form method="POST" action="{{ route('users.update', $user->id) }}" role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('superadmin.usuarios.update', $user->id) }}" role="form" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -38,8 +37,9 @@
                                             </span>
                                         @enderror
                                     </div>
-
-                                    <div class="form-group mt-3">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="email">{{ __('Email') }}</label>
                                         <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" required>
                                         @error('email')
@@ -48,9 +48,13 @@
                                             </span>
                                         @enderror
                                     </div>
+                                </div>
+                            </div>
 
-                                    <div class="form-group mt-3">
-                                        <label for="password">{{ __('Nueva Contraseña') }}</label>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="password">{{ __('Contraseña') }}</label>
                                         <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror">
                                         <small class="form-text text-muted">Dejar en blanco si no desea cambiar la contraseña</small>
                                         @error('password')
@@ -59,59 +63,79 @@
                                             </span>
                                         @enderror
                                     </div>
-
-                                    <div class="form-group mt-3">
-                                        <label for="password_confirmation">{{ __('Confirmar Nueva Contraseña') }}</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="password_confirmation">{{ __('Confirmar Contraseña') }}</label>
                                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="row mt-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="role">{{ __('Rol') }}</label>
-                                        <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
-                                            <option value="">Seleccione un rol</option>
+                                        <label for="roles">{{ __('Roles') }}</label>
+                                        <select name="roles[]" id="roles" class="form-control @error('roles') is-invalid @enderror" multiple required>
                                             @foreach($roles as $role)
-                                                <option value="{{ $role->name }}" {{ old('role', $user->roles->first()->name) == $role->name ? 'selected' : '' }}>
+                                                <option value="{{ $role->id }}" {{ in_array($role->id, $user->roles->pluck('id')->toArray()) ? 'selected' : '' }}>
                                                     {{ $role->name }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('role')
+                                        @error('roles')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="active">{{ __('Estado') }}</label>
+                                        <select name="active" id="active" class="form-control @error('active') is-invalid @enderror" required>
+                                            <option value="1" {{ $user->active ? 'selected' : '' }}>Activo</option>
+                                            <option value="0" {{ !$user->active ? 'selected' : '' }}>Inactivo</option>
+                                        </select>
+                                        @error('active')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
 
-                                    <div class="form-group mt-3">
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="avatar">{{ __('Avatar') }}</label>
-                                        @if($user->avatar)
-                                            <div class="mb-2">
-                                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar actual" class="img-thumbnail" style="max-width: 100px;">
-                                            </div>
-                                        @endif
-                                        <input type="file" name="avatar" id="avatar" class="form-control @error('avatar') is-invalid @enderror" accept="image/*">
+                                        <input type="file" name="avatar" id="avatar" class="form-control @error('avatar') is-invalid @enderror">
+                                        <small class="form-text text-muted">Formatos permitidos: jpg, jpeg, png. Tamaño máximo: 2MB</small>
                                         @error('avatar')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
                                     </div>
-
-                                    <div class="form-group mt-3">
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" class="custom-control-input" id="activo" name="activo" value="1" {{ old('activo', $user->activo) ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="activo">{{ __('Usuario Activo') }}</label>
+                                </div>
+                                <div class="col-md-6">
+                                    @if($user->avatar)
+                                        <div class="form-group">
+                                            <label>{{ __('Avatar Actual') }}</label>
+                                            <div>
+                                                <img src="{{ asset($user->avatar) }}" alt="Avatar actual" class="img-thumbnail" style="max-width: 100px;">
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 </div>
                             </div>
 
-                            <div class="form-group mt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> {{ __('Actualizar Usuario') }}
-                                </button>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">{{ __('Actualizar Usuario') }}</button>
+                                    <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-secondary">{{ __('Cancelar') }}</a>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -120,3 +144,15 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#roles').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione los roles',
+                allowClear: true
+            });
+        });
+    </script>
+@endpush

@@ -138,3 +138,54 @@ Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name
 Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
 Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');
 Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
+
+// Rutas para administradores
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // Rutas de gestión de usuarios para admin
+    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users.index');
+    Route::get('/admin/users/create', [AdminController::class, 'create'])->name('admin.users.create');
+    Route::post('/admin/users', [AdminController::class, 'store'])->name('admin.users.store');
+    Route::get('/admin/users/{user}', [AdminController::class, 'show'])->name('admin.users.show');
+    Route::get('/admin/users/{user}/edit', [AdminController::class, 'edit'])->name('admin.users.edit');
+    Route::put('/admin/users/{user}', [AdminController::class, 'update'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'destroy'])->name('admin.users.destroy');
+});
+
+// Rutas para clientes
+Route::middleware(['auth', 'role:cliente'])->group(function () {
+    Route::get('/cliente/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
+
+    // Rutas de perfil para cliente
+    Route::get('/cliente/perfil', [ClienteController::class, 'index'])->name('cliente.perfil.index');
+    Route::get('/cliente/perfil/{user}', [ClienteController::class, 'show'])->name('cliente.perfil.show');
+    Route::get('/cliente/perfil/{user}/edit', [ClienteController::class, 'edit'])->name('cliente.perfil.edit');
+    Route::put('/cliente/perfil/{user}', [ClienteController::class, 'update'])->name('cliente.perfil.update');
+});
+
+// Rutas para paseadores
+Route::middleware(['auth', 'role:paseador'])->group(function () {
+    Route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
+
+    // Rutas de perfil para paseador
+    Route::get('/paseador/perfil', [PaseadorController::class, 'index'])->name('paseador.perfil.index');
+    Route::get('/paseador/perfil/{user}', [PaseadorController::class, 'show'])->name('paseador.perfil.show');
+    Route::get('/paseador/perfil/{user}/edit', [PaseadorController::class, 'edit'])->name('paseador.perfil.edit');
+    Route::put('/paseador/perfil/{user}', [PaseadorController::class, 'update'])->name('paseador.perfil.update');
+});
+
+// Rutas para superadmin
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
+
+    // Rutas de gestión de usuarios para superadmin
+    Route::get('/superadmin/users', [SuperadminController::class, 'index'])->name('superadmin.users.index');
+    Route::get('/superadmin/users/create', [SuperadminController::class, 'create'])->name('superadmin.users.create');
+    Route::post('/superadmin/users', [SuperadminController::class, 'store'])->name('superadmin.users.store');
+    Route::get('/superadmin/users/{user}', [SuperadminController::class, 'show'])->name('superadmin.users.show');
+    Route::get('/superadmin/users/{user}/edit', [SuperadminController::class, 'edit'])->name('superadmin.users.edit');
+    Route::put('/superadmin/users/{user}', [SuperadminController::class, 'update'])->name('superadmin.users.update');
+    Route::delete('/superadmin/users/{user}', [SuperadminController::class, 'destroy'])->name('superadmin.users.destroy');
+    Route::post('/superadmin/users/{user}/toggle-status', [SuperadminController::class, 'toggleStatus'])->name('superadmin.users.toggle-status');
+});

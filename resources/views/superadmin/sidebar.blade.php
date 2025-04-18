@@ -1,163 +1,152 @@
-<nav class="mt-2">
-    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-        {{-- DASHBOARD GENERAL --}}
-        <li class="nav-header text-primary">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('superadmin.dashboard') }}" class="nav-link">
-                <i class="nav-icon fas fa-home"></i>
-                <p>Inicio</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('mensaje-de-bienvenidas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-comments"></i>
-                <p>Bienvenida</p>
-            </a>
-        </li>
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('superadmin.dashboard') }}">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-paw"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">ModuStackPet</div>
+    </a>
 
-        {{-- GESTIÓN DE USUARIOS --}}
-        <li class="nav-header text-success mt-2">
-            <i class="fas fa-users"></i> Gestión de Usuarios
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('users.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-user"></i>
-                <p>Lista de Usuarios</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('users.create') }}" class="nav-link">
-                <i class="nav-icon fas fa-user-plus"></i>
-                <p>Crear Usuario</p>
-            </a>
-        </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
 
-        {{-- SECCIÓN SUPERADMIN Y ADMIN --}}
-        @role('Superadmin|Admin')
-        <li class="nav-header text-warning mt-2">
-            <i class="fas fa-cogs"></i> Configuración del Sistema
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('empresas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-building"></i>
-                <p>Empresas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('usuarios.roles.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-user-shield"></i>
-                <p>Asignar Roles</p>
-            </a>
-        </li>
-        <li class="nav-header text-warning mt-2">
-            <i class="fas fa-sliders-h"></i> Configuraciones Funcionales
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('departamentos.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-map-marker-alt"></i>
-                <p>Departamentos</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('ciudades.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-city"></i>
-                <p>Ciudades</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('sectores.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-industry"></i>
-                <p>Sectores</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('tipos-empresas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-building"></i>
-                <p>Tipos de Empresas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('tipo-documentos.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-user-tag"></i>
-                <p>Tipo Documentos</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('paths-documentos.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-folder-open"></i>
-                <p>Rutas de Documentos</p>
-            </a>
-        </li>
-        @endrole
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.dashboard') }}">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
 
-        {{-- DASHBOARD PASEADOR --}}
-        @role('Paseador')
-        <li class="nav-header text-info mt-2">
-            <i class="fas fa-walking"></i> Dashboard Paseador
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('mascotas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-dog"></i>
-                <p>Mascotas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('razas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-paw"></i>
-                <p>Razas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('barrios.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-map-marker-alt"></i>
-                <p>Barrios</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('vacunas_certificaciones.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-syringe"></i>
-                <p>Vacunas y Certificaciones</p>
-            </a>
-        </li>
-        @endrole
+    <!-- Divider -->
+    <hr class="sidebar-divider">
 
-        {{-- DASHBOARD CLIENTE --}}
-        @role('Cliente')
-        <li class="nav-header text-info mt-2">
-            <i class="fas fa-user"></i> Dashboard Cliente
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('mascotas.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-dog"></i>
-                <p>Mis Mascotas</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('vacunas_certificaciones.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-syringe"></i>
-                <p>Vacunas y Certificaciones</p>
-            </a>
-        </li>
-        @endrole
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Gestión de Usuarios
+    </div>
 
-        {{-- PDF Y OTROS (VISIBLES PARA TODOS) --}}
-        <li class="nav-header text-secondary mt-2">
-            <i class="fas fa-file-pdf"></i> Utilidades
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pdf.generar') }}" class="nav-link">
-                <i class="nav-icon fas fa-file-pdf"></i>
-                <p>PDF Ejemplo</p>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('pdf.mascota') }}" class="nav-link">
-                <i class="nav-icon fas fa-file-pdf"></i>
-                <p>PDF Mascota</p>
-            </a>
-        </li>
-    </ul>
-</nav>
+    <!-- Nav Item - Usuarios -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.usuarios.index') }}">
+            <i class="fas fa-fw fa-users"></i>
+            <span>Usuarios</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Roles -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.roles.index') }}">
+            <i class="fas fa-fw fa-user-tag"></i>
+            <span>Roles</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Gestión de Mascotas
+    </div>
+
+    <!-- Nav Item - Mascotas -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.mascotas.index') }}">
+            <i class="fas fa-fw fa-dog"></i>
+            <span>Mascotas</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Razas -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.razas.index') }}">
+            <i class="fas fa-fw fa-paw"></i>
+            <span>Razas</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Barrios -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.barrios.index') }}">
+            <i class="fas fa-fw fa-map-marker-alt"></i>
+            <span>Barrios</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Vacunas y Certificaciones -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.vacunas-certificaciones.index') }}">
+            <i class="fas fa-fw fa-syringe"></i>
+            <span>Vacunas y Certificaciones</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Gestión de Servicios
+    </div>
+
+    <!-- Nav Item - Paseadores -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.paseadores.index') }}">
+            <i class="fas fa-fw fa-walking"></i>
+            <span>Paseadores</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Cuidadores -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.cuidadores.index') }}">
+            <i class="fas fa-fw fa-home"></i>
+            <span>Cuidadores</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    <!-- Heading -->
+    <div class="sidebar-heading">
+        Configuración
+    </div>
+
+    <!-- Nav Item - Configuración -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.configuracion.index') }}">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Configuración</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Rutas de Documentos -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.paths-documentos.index') }}">
+            <i class="fas fa-fw fa-folder-open"></i>
+            <span>Rutas de Documentos</span>
+        </a>
+    </li>
+
+    <!-- Nav Item - Tipos de Documentos -->
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('superadmin.tipo-documentos.index') }}">
+            <i class="fas fa-fw fa-file-alt"></i>
+            <span>Tipos de Documentos</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->
