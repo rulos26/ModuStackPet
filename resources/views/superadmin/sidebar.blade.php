@@ -12,7 +12,7 @@
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
-   
+
 
     <!-- Divider -->
     <hr class="sidebar-divider">
@@ -24,7 +24,7 @@
 
     <!-- Nav Item - Usuarios -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('usuarios.index') }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Usuarios</span>
         </a>
