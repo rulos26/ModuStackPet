@@ -30,7 +30,7 @@
 
     <!-- Nav Item - Usuarios -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.usuarios.index') }}">
+        <a class="nav-link" href="{{ route('superadmin.users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Usuarios</span>
         </a>
@@ -38,7 +38,7 @@
 
     <!-- Nav Item - Roles -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.roles.index') }}">
+        <a class="nav-link" href="{{ route('usuarios.roles.index') }}">
             <i class="fas fa-fw fa-user-tag"></i>
             <span>Roles</span>
         </a>
@@ -54,7 +54,7 @@
 
     <!-- Nav Item - Mascotas -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.mascotas.index') }}">
+        <a class="nav-link" href="{{ route('mascotas.index') }}">
             <i class="fas fa-fw fa-dog"></i>
             <span>Mascotas</span>
         </a>
@@ -62,7 +62,7 @@
 
     <!-- Nav Item - Razas -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.razas.index') }}">
+        <a class="nav-link" href="{{ route('razas.index') }}">
             <i class="fas fa-fw fa-paw"></i>
             <span>Razas</span>
         </a>
@@ -70,7 +70,7 @@
 
     <!-- Nav Item - Barrios -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.barrios.index') }}">
+        <a class="nav-link" href="{{ route('barrios.index') }}">
             <i class="fas fa-fw fa-map-marker-alt"></i>
             <span>Barrios</span>
         </a>
@@ -78,7 +78,7 @@
 
     <!-- Nav Item - Vacunas y Certificaciones -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.vacunas-certificaciones.index') }}">
+        <a class="nav-link" href="{{ route('vacunas_certificaciones.index') }}">
             <i class="fas fa-fw fa-syringe"></i>
             <span>Vacunas y Certificaciones</span>
         </a>
@@ -94,7 +94,7 @@
 
     <!-- Nav Item - Paseadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.paseadores.index') }}">
+        <a class="nav-link" href="{{ route('paseador.perfil.index') }}">
             <i class="fas fa-fw fa-walking"></i>
             <span>Paseadores</span>
         </a>
@@ -102,7 +102,7 @@
 
     <!-- Nav Item - Cuidadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.cuidadores.index') }}">
+        <a class="nav-link" href="{{ route('cliente.perfil.index') }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Cuidadores</span>
         </a>
@@ -118,7 +118,7 @@
 
     <!-- Nav Item - Configuración -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.configuracion.index') }}">
+        <a class="nav-link" href="{{ route('paths-documentos.index') }}">
             <i class="fas fa-fw fa-cog"></i>
             <span>Configuración</span>
         </a>
@@ -126,7 +126,7 @@
 
     <!-- Nav Item - Rutas de Documentos -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.paths-documentos.index') }}">
+        <a class="nav-link" href="{{ route('paths-documentos.index') }}">
             <i class="fas fa-fw fa-folder-open"></i>
             <span>Rutas de Documentos</span>
         </a>
@@ -134,7 +134,7 @@
 
     <!-- Nav Item - Tipos de Documentos -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.tipo-documentos.index') }}">
+        <a class="nav-link" href="{{ route('tipo-documentos.index') }}">
             <i class="fas fa-fw fa-file-alt"></i>
             <span>Tipos de Documentos</span>
         </a>
