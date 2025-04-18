@@ -88,7 +88,7 @@
 
     <!-- Nav Item - Paseadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('paseadores.index') }}">
+        <a class="nav-link" href="{{ route('paseador.perfil.index') }}">
             <i class="fas fa-fw fa-walking"></i>
             <span>Paseadores</span>
         </a>
