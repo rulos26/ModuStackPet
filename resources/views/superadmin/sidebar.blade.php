@@ -32,7 +32,7 @@
 
     <!-- Nav Item - Roles -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('roles.index') }}">
+        <a class="nav-link" href="{{ route(' usuarios.roles.index') }}">
             <i class="fas fa-fw fa-user-tag"></i>
             <span>Roles</span>
         </a>
