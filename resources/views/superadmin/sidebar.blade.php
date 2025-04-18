@@ -30,7 +30,7 @@
 
     <!-- Nav Item - Usuarios -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.users.index') }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Usuarios</span>
         </a>
@@ -38,7 +38,7 @@
 
     <!-- Nav Item - Roles -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.roles.index') }}">
+        <a class="nav-link" href="{{ route('usuarios.roles.index') }}">
             <i class="fas fa-fw fa-user-tag"></i>
             <span>Roles</span>
         </a>
@@ -94,7 +94,7 @@
 
     <!-- Nav Item - Paseadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.paseadores.index') }}">
+        <a class="nav-link" href="{{ route('paseador.perfil.index') }}">
             <i class="fas fa-fw fa-walking"></i>
             <span>Paseadores</span>
         </a>
@@ -102,7 +102,7 @@
 
     <!-- Nav Item - Cuidadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.cuidadores.index') }}">
+        <a class="nav-link" href="{{ route('cliente.perfil.index') }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Cuidadores</span>
         </a>
@@ -118,7 +118,7 @@
 
     <!-- Nav Item - Configuración -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.configuracion.index') }}">
+        <a class="nav-link" href="{{ route('paths-documentos.index') }}">
             <i class="fas fa-fw fa-cog"></i>
             <span>Configuración</span>
         </a>
