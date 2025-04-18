@@ -30,7 +30,7 @@
 
     <!-- Nav Item - Usuarios -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('superadmin.users.index') }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>Usuarios</span>
         </a>
@@ -94,7 +94,7 @@
 
     <!-- Nav Item - Paseadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('paseador.perfil.index') }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-fw fa-walking"></i>
             <span>Paseadores</span>
         </a>
@@ -102,7 +102,7 @@
 
     <!-- Nav Item - Cuidadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('cliente.perfil.index') }}">
+        <a class="nav-link" href="{{ route('users.index') }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Cuidadores</span>
         </a>
