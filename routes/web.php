@@ -167,8 +167,7 @@ Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(functi
 // Rutas para superadmin
 Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
-    Route::resource('users', SuperadminController::class);
+    Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
     Route::post('/users/{user}/toggle-status', [SuperadminController::class, 'toggleStatus'])->name('users.toggle-status');
-    Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
 });
