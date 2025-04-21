@@ -14,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
+use App\Http\Requests\SuperadminRequest;
 
 class SuperadminController extends Controller
 {
@@ -213,18 +214,9 @@ class SuperadminController extends Controller
     /**
      * Cambiar la contraseña del superadmin.
      */
-    public function changePassword(Request $request)
+    public function changePassword(SuperadminRequest $request)
     {
-        $request->validate([
-            'current_password' => ['required', function ($attribute, $value, $fail) {
-                if (!Hash::check($value, auth()->user()->password)) {
-                    $fail(__('La contraseña actual es incorrecta.'));
-                }
-            }],
-            'password' => 'required|string|min:8|confirmed|different:current_password',
-        ]);
-
-        $user = User::role('Superadmin')->first();
+        $user = auth()->user();
         $user->update([
             'password' => Hash::make($request->password)
         ]);

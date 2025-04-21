@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Hash;
 
 class SuperadminRequest extends FormRequest
 {
@@ -21,6 +22,27 @@ class SuperadminRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->routeIs('superadmin.users.change-password')) {
+            return [
+                'current_password' => [
+                    'required',
+                    function ($attribute, $value, $fail) {
+                        if (!Hash::check($value, auth()->user()->password)) {
+                            $fail(__('La contraseña actual es incorrecta.'));
+                        }
+                    }
+                ],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:10',
+                    'confirmed',
+                    'different:current_password',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\*])[A-Za-z\d@$!%*?&\*]+$/'
+                ],
+            ];
+        }
+
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $this->user?->id,
@@ -43,8 +65,12 @@ class SuperadminRequest extends FormRequest
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.email' => 'El correo electrónico debe ser válido.',
             'email.unique' => 'Este correo electrónico ya está registrado.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'current_password.required' => 'La contraseña actual es obligatoria.',
+            'password.required' => 'La nueva contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos :min caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.regex' => 'La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.',
+            'password.different' => 'La nueva contraseña debe ser diferente a la contraseña actual.',
             'role.required' => 'El rol es obligatorio.',
             'role.in' => 'El rol seleccionado no es válido.',
             'avatar.image' => 'El archivo debe ser una imagen.',
