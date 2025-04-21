@@ -36,6 +36,24 @@
                 <p>Usuarios</p>
             </a>
         </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="avisosLegalesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-newspaper me-2"></i> Avisos Legales
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="avisosLegalesDropdown">
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-user-shield me-2"></i> Protección de datos personales
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="fas fa-file-contract me-2"></i> Términos y Condiciones
+                </a>
+              </li>
+            </ul>
+          </li>
+
         <li class="nav-item">
             <a href="{{ route('usuarios.roles.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-user-shield"></i>
