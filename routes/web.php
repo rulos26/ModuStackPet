@@ -140,14 +140,14 @@ Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->nam
 Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
 
 // Rutas para administradores
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('users', AdminController::class);
     Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');
 });
 
 // Rutas para clientes
-Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->name('cliente.')->group(function () {
+Route::middleware(['auth'])->prefix('cliente')->name('cliente.')->group(function () {
     Route::get('/dashboard', [ClienteController::class, 'login_Cliente'])->name('dashboard');
     Route::get('/perfil', [ClienteController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/{user}', [ClienteController::class, 'show'])->name('perfil.show');
@@ -156,7 +156,7 @@ Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->name('cliente.')
 });
 
 // Rutas para paseadores
-Route::middleware(['auth', 'role:paseador'])->prefix('paseador')->name('paseador.')->group(function () {
+Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(function () {
     Route::get('/dashboard', [PaseadorController::class, 'login_Paseador'])->name('dashboard');
     Route::get('/perfil', [PaseadorController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/{user}', [PaseadorController::class, 'show'])->name('perfil.show');
@@ -165,7 +165,7 @@ Route::middleware(['auth', 'role:paseador'])->prefix('paseador')->name('paseador
 });
 
 // Rutas para superadmin
-Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::resource('users', SuperadminController::class);
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
