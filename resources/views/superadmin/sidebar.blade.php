@@ -1,7 +1,9 @@
+{{-- Inicio del menú de navegación --}}
 <nav class="mt-2">
+    {{-- Lista principal de navegación con soporte para árbol de menús --}}
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-        {{-- DASHBOARD GENERAL --}}
+        {{-- Inicio - Dashboard --}}
         <li class="nav-header text-primary">
             <i class="fas fa-tachometer-alt"></i> Dashboard
         </li>
@@ -18,11 +20,13 @@
             </a>
         </li>
 
-        {{-- SUPERADMIN & ADMIN --}}
+        {{-- Sección exclusiva para Superadmin y Admin --}}
         @role('Superadmin|Admin')
         <li class="nav-header text-success mt-2">
             <i class="fas fa-cogs"></i> Configuración del Sistema
         </li>
+
+        {{-- Gestión de Empresas --}}
         <li class="nav-item">
             <a href="{{ route('empresas.index') }}" class="nav-link {{ request()->routeIs('empresas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-building"></i>
@@ -30,7 +34,7 @@
             </a>
         </li>
 
-        {{-- USUARIOS DESPLEGABLE --}}
+        {{-- Menú desplegable de Usuarios con control de roles --}}
         <li class="nav-item has-treeview {{ request()->routeIs('usuarios.*') ? 'menu-open' : '' }}">
             <a href="#" class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
@@ -40,6 +44,7 @@
                 </p>
             </a>
             <ul class="nav nav-treeview">
+                {{-- Opción visible solo para Superadmin --}}
                 @role('Superadmin')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -48,6 +53,8 @@
                     </a>
                 </li>
                 @endrole
+
+                {{-- Opción visible para Superadmin y Admin --}}
                 @role('Superadmin|Admin')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -56,6 +63,8 @@
                     </a>
                 </li>
                 @endrole
+
+                {{-- Opción visible para Superadmin y Cliente --}}
                 @role('Superadmin|Cliente')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -64,6 +73,8 @@
                     </a>
                 </li>
                 @endrole
+
+                {{-- Opción visible para Superadmin y Paseador --}}
                 @role('Superadmin|Paseador')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -75,6 +86,7 @@
             </ul>
         </li>
 
+        {{-- Gestión de Roles --}}
         <li class="nav-item">
             <a href="{{ route('usuarios.roles.index') }}" class="nav-link {{ request()->routeIs('usuarios.roles.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user-shield"></i>
@@ -82,7 +94,7 @@
             </a>
         </li>
 
-        {{-- AVISOS LEGALES DESPLEGABLE --}}
+        {{-- Menú desplegable de Avisos Legales --}}
         <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-newspaper"></i>
@@ -107,9 +119,20 @@
             </ul>
         </li>
 
+        {{-- Configuraciones del Sistema --}}
         <li class="nav-header text-warning mt-2">
             <i class="fas fa-sliders-h"></i> Configuraciones Funcionales
         </li>
+
+        {{-- Mensaje de Bienvenida --}}
+        <li class="nav-item">
+            <a href="{{ route('mensaje-de-bienvenidas.index') }}" class="nav-link {{ request()->routeIs('mensaje-de-bienvenidas.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-comments"></i>
+                <p>Bienvenida</p>
+            </a>
+        </li>
+
+        {{-- Gestión Geográfica --}}
         <li class="nav-item">
             <a href="{{ route('departamentos.index') }}" class="nav-link {{ request()->routeIs('departamentos.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-map-marker-alt"></i>
@@ -128,6 +151,8 @@
                 <p>Sectores</p>
             </a>
         </li>
+
+        {{-- Configuraciones de Empresa y Documentos --}}
         <li class="nav-item">
             <a href="{{ route('tipos-empresas.index') }}" class="nav-link {{ request()->routeIs('tipos-empresas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-building"></i>
@@ -148,7 +173,7 @@
         </li>
         @endrole
 
-        {{-- DASHBOARD PASEADOR --}}
+        {{-- Dashboard Paseador - Visible para Superadmin y Paseador --}}
         @role('Superadmin|Paseador')
         <li class="nav-header text-info mt-2">
             <i class="fas fa-walking"></i> Dashboard Paseador
@@ -179,7 +204,7 @@
         </li>
         @endrole
 
-        {{-- DASHBOARD CLIENTE --}}
+        {{-- Dashboard Cliente - Visible para Superadmin y Cliente --}}
         @role('Superadmin|Cliente')
         <li class="nav-header text-info mt-2">
             <i class="fas fa-user"></i> Dashboard Cliente
@@ -198,7 +223,7 @@
         </li>
         @endrole
 
-        {{-- UTILIDADES COMUNES --}}
+        {{-- Utilidades Comunes - Visibles para todos los usuarios --}}
         <li class="nav-header text-secondary mt-2">
             <i class="fas fa-file-pdf"></i> Utilidades
         </li>
@@ -214,6 +239,5 @@
                 <p>PDF Mascota</p>
             </a>
         </li>
-
     </ul>
 </nav>
