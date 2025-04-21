@@ -42,12 +42,12 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="avisosLegalesDropdown">
                 <li>
-                    <a class="dropdown-item text-white" href="{{ route('data-habeas.index') }}">
+                    <a class="dropdown-item text-white" href="#">
                         <i class="fas fa-user-shield me-2"></i> Protección de datos personales
                     </a>
                 </li>
                 <li>
-                    <a class="dropdown-item text-white" href="{{ route('data-terminos.index') }}">
+                    <a class="dropdown-item text-white" href="#">
                         <i class="fas fa-file-contract me-2"></i> Términos y Condiciones
                     </a>
                 </li>
