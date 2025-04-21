@@ -17,7 +17,7 @@ use Spatie\Permission\Models\Role;
 
 class SuperadminController extends Controller
 {
-   
+
 
     public function login_Superadmin()
     {
@@ -108,9 +108,12 @@ class SuperadminController extends Controller
     /**
      * Mostrar el recurso especificado.
      */
-    public function show(User $user)
+    public function show()
     {
-        return view('user.superadmin.show', compact('user'));
+        // Obtener usuarios con rol Superadmin
+        $superadmins = User::role('Superadmin')->get();
+
+        return view('user.superadmin.show', compact('superadmins'));
     }
 
     /**

@@ -183,7 +183,7 @@ Route::middleware(['auth', 'role:superadmin'])->group(function () {
     Route::get('/superadmin/users', [SuperadminController::class, 'index'])->name('superadmin.users.index');
     Route::get('/superadmin/users/create', [SuperadminController::class, 'create'])->name('superadmin.users.create');
     Route::post('/superadmin/users', [SuperadminController::class, 'store'])->name('superadmin.users.store');
-    Route::get('/superadmin/users/{user}', [SuperadminController::class, 'show'])->name('superadmin.users.show');
+    Route::get('/superadmin/users/show', [SuperadminController::class, 'show'])->name('superadmin.users.show');
     Route::get('/superadmin/users/{user}/edit', [SuperadminController::class, 'edit'])->name('superadmin.users.edit');
     Route::put('/superadmin/users/{user}', [SuperadminController::class, 'update'])->name('superadmin.users.update');
     Route::delete('/superadmin/users/{user}', [SuperadminController::class, 'destroy'])->name('superadmin.users.destroy');

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Ver Usuario
+    Superadministradores
 @endsection
 
 @section('content')
@@ -12,62 +12,47 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-user"></i> Perfil de Usuario
+                                <i class="fas fa-user-shield"></i> Superadministradores del Sistema
                             </span>
-                            <div class="float-right">
-                                <a href="{{ route('superadmin.usuarios.edit', $user->id) }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                                <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-arrow-left"></i> Volver
-                                </a>
-                            </div>
                         </div>
                     </div>
 
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="text-center mb-4">
-                                    <img src="{{ $user->avatar_url }}" alt="Avatar" class="img-thumbnail" style="max-width: 200px;">
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="thead">
+                                    <tr>
+                                        <th>Avatar</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Estado</th>
+                                        <th>Fecha Registro</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($superadmins as $admin)
                                         <tr>
-                                            <th>Nombre:</th>
-                                            <td>{{ $user->name }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Email:</th>
-                                            <td>{{ $user->email }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Teléfono:</th>
-                                            <td>{{ $user->phone }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Dirección:</th>
-                                            <td>{{ $user->address }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Estado:</th>
                                             <td>
-                                                @if($user->is_active)
+                                                @if($admin->avatar)
+                                                    <img src="{{ Storage::url($admin->avatar) }}" alt="Avatar" class="img-thumbnail" width="50">
+                                                @else
+                                                    <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                                                @endif
+                                            </td>
+                                            <td>{{ $admin->name }}</td>
+                                            <td>{{ $admin->email }}</td>
+                                            <td>
+                                                @if($admin->active)
                                                     <span class="badge bg-success">Activo</span>
                                                 @else
                                                     <span class="badge bg-danger">Inactivo</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $admin->created_at->format('d/m/Y') }}</td>
                                         </tr>
-                                        <tr>
-                                            <th>Fecha de Creación:</th>
-                                            <td>{{ $user->created_at->format('d/m/Y H:i:s') }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

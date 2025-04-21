@@ -13,12 +13,7 @@
                 <p>Inicio</p>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{{ route('mensaje-de-bienvenidas.index') }}" class="nav-link {{ request()->routeIs('mensaje-de-bienvenidas.*') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-comments"></i>
-                <p>Bienvenida</p>
-            </a>
-        </li>
+
 
         {{-- Sección exclusiva para Superadmin y Admin --}}
         @role('Superadmin|Admin')
@@ -57,7 +52,7 @@
                 {{-- Opción visible para Superadmin y Admin --}}
                 @role('Superadmin|Admin')
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('superadmin.users.show') }}" class="nav-link">
                         <i class="fas fa-user-cog nav-icon"></i>
                         <p>Administrador</p>
                     </a>
