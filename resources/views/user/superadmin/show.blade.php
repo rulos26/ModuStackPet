@@ -13,7 +13,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Información del Superadmin') }}</h3>
                             <div class="card-tools">
-                                <a href="{{ route('superadmin.users.edit') }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('users.edit') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> {{ __('Editar') }}
                                 </a>
                             </div>
@@ -24,13 +24,13 @@
                             <!-- Foto de Perfil y Datos Básicos -->
                             <div class="col-md-4">
                                 <div class="text-center mb-4">
-                                    {{--  @if($user->profile_photo_path)
-                                        <img src="{{ asset('public/' . $user->profile_photo_path) }}" alt="Foto de perfil" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
-                                    @else  --}}
+                                    @if($user->avatar)
+                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de perfil" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
+                                    @else
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
                                             <i class="fas fa-user fa-4x text-muted"></i>
                                         </div>
-                                   {{--   @endif  --}}
+                                    @endif
                                 </div>
                                 <div class="text-center mb-4">
                                     <h4 class="mb-1">{{ $user->name }}</h4>
@@ -55,19 +55,20 @@
                                                     <dt class="col-sm-4">{{ __('Email') }}</dt>
                                                     <dd class="col-sm-8">{{ $user->email }}</dd>
 
-                                                    <dt class="col-sm-4">{{ __('Rol') }}</dt>
-                                                    <dd class="col-sm-8">
-                                                        <span class="badge bg-primary">
-                                                            {{ __('Superadmin') }}
-                                                        </span>
-                                                    </dd>
+                                                    <dt class="col-sm-4">{{ __('Tipo Documento') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->tipo_documento ?? __('No especificado') }}</dd>
 
-                                                    <dt class="col-sm-4">{{ __('Estado') }}</dt>
-                                                    <dd class="col-sm-8">
-                                                        <span class="badge {{ $user->active ? 'bg-success' : 'bg-danger' }}">
-                                                            {{ $user->active ? __('Activo') : __('Inactivo') }}
-                                                        </span>
-                                                    </dd>
+                                                    <dt class="col-sm-4">{{ __('Cédula') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->cedula ?? __('No especificada') }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Teléfono') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->telefono ?? __('No especificado') }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('WhatsApp') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->whatsapp ?? __('No especificado') }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Fecha Nacimiento') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->fecha_nacimiento ? $user->fecha_nacimiento->format('d/m/Y') : __('No especificada') }}</dd>
                                                 </dl>
                                             </div>
                                         </div>
@@ -81,14 +82,32 @@
                                             </div>
                                             <div class="card-body">
                                                 <dl class="row mb-0">
-                                                    <dt class="col-sm-4">{{ __('Último Acceso') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : __('Nunca') }}</dd>
+                                                    <dt class="col-sm-4">{{ __('Rol') }}</dt>
+                                                    <dd class="col-sm-8">
+                                                        <span class="badge bg-primary">
+                                                            {{ __('Superadmin') }}
+                                                        </span>
+                                                    </dd>
 
-                                                    <dt class="col-sm-4">{{ __('IP Último Acceso') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->last_login_ip ?? __('No disponible') }}</dd>
+                                                    <dt class="col-sm-4">{{ __('Estado') }}</dt>
+                                                    <dd class="col-sm-8">
+                                                        <span class="badge {{ $user->activo ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ $user->activo ? __('Activo') : __('Inactivo') }}
+                                                        </span>
+                                                    </dd>
+
+                                                    <dt class="col-sm-4">{{ __('Email Verificado') }}</dt>
+                                                    <dd class="col-sm-8">
+                                                        <span class="badge {{ $user->email_verified_at ? 'bg-success' : 'bg-warning' }}">
+                                                            {{ $user->email_verified_at ? __('Verificado') : __('No verificado') }}
+                                                        </span>
+                                                    </dd>
 
                                                     <dt class="col-sm-4">{{ __('Fecha Creación') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->created_at->format('d/m/Y') }}</dd>
+                                                    <dd class="col-sm-8">{{ $user->created_at->format('d/m/Y H:i') }}</dd>
+
+                                                    <dt class="col-sm-4">{{ __('Última Actualización') }}</dt>
+                                                    <dd class="col-sm-8">{{ $user->updated_at->format('d/m/Y H:i') }}</dd>
                                                 </dl>
                                             </div>
                                         </div>
