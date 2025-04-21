@@ -111,9 +111,9 @@ class SuperadminController extends Controller
     public function show()
     {
         // Obtener usuarios con rol Superadmin
-        $superadmins = User::role('Superadmin')->get();
+        $user = User::role('Superadmin')->get();
 
-        return view('user.superadmin.show', compact('superadmins'));
+        return view('user.superadmin.show', compact('user'));
     }
 
     /**
