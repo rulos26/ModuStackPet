@@ -36,22 +36,22 @@
                 <p>Usuarios</p>
             </a>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="avisosLegalesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-newspaper me-2"></i> Avisos Legales
+        <li class="nav-item">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAvisos" aria-expanded="true" aria-controls="collapseAvisos">
+                <i class="fas fa-fw fa-newspaper"></i>
+                <span>Avisos Legales</span>
             </a>
-            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="avisosLegalesDropdown">
-                <li>
-                    <a class="dropdown-item text-white" href="#">
-                        <i class="fas fa-user-shield me-2"></i> Protección de datos personales
+            <div id="collapseAvisos" class="collapse" aria-labelledby="headingAvisos" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Gestión de Avisos:</h6>
+                    <a class="collapse-item" href="#">
+                        <i class="fas fa-user-shield fa-fw"></i> Protección de datos
                     </a>
-                </li>
-                <li>
-                    <a class="dropdown-item text-white" href="#">
-                        <i class="fas fa-file-contract me-2"></i> Términos y Condiciones
+                    <a class="collapse-item" href="#">
+                        <i class="fas fa-file-contract fa-fw"></i> Términos y Condiciones
                     </a>
-                </li>
-            </ul>
+                </div>
+            </div>
         </li>
 
         <li class="nav-item">
