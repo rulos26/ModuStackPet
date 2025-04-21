@@ -13,7 +13,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Información del Superadmin') }}</h3>
                             <div class="card-tools">
-                                <a href="{{ route('superadmin.edit') }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('superadmin.users.edit') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> {{ __('Editar') }}
                                 </a>
                             </div>

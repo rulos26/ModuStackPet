@@ -121,8 +121,9 @@ class SuperadminController extends Controller
      */
     public function edit(User $user)
     {
-        $roles = Role::all();
-        return view('user.superadmin.edit', compact('user', 'roles'));
+        //$roles = Role::all();
+        $user = User::role('Superadmin')->get();
+        return view('user.superadmin.edit', compact('user'));
     }
 
     /**
