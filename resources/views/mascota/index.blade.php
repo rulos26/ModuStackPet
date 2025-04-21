@@ -22,11 +22,11 @@
                                 <i class="fas fa-paw"></i> Mascotas
                             </span>
                             @hasanyrole('Superadmin|Admin|Cliente')
-                            <div class="float-right">
+                             <div class="float-right">
                                 <a href="{{ route('mascotas.create') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Nueva Mascota
                                 </a>
-                            </div>
+                              </div>
                             @endhasanyrole
                         </div>
                     </div>
@@ -91,12 +91,12 @@
 
                                                     @hasanyrole('Superadmin|Admin')
                                                     <form action="{{ route('mascotas.destroy', $mascota->id) }}" method="POST" class="d-inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                    @csrf
+                                                    @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
-                                                    </form>
+                                                </form>
                                                     @endhasanyrole
                                                 </div>
                                             </td>

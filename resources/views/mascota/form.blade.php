@@ -28,30 +28,30 @@
                             </option>
                         @endforeach
                     </select>
-                    {!! $errors->first('user_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
+            {!! $errors->first('user_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+        </div>
 
             <div class="col-md-6">
                 <!-- Nombre -->
                 <div class="form-group mb-3">
-                    <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
+            <label for="nombre" class="form-label">{{ __('Nombre') }}</label>
                     <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror"
                         id="nombre" placeholder="{{ __('Nombre de la mascota') }}"
                         value="{{ old('nombre', $mascota->nombre ?? '') }}" required>
-                    {!! $errors->first('nombre', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
+            {!! $errors->first('nombre', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
             </div>
 
             <div class="col-md-6">
                 <!-- Edad -->
                 <div class="form-group mb-3">
-                    <label for="edad" class="form-label">{{ __('Edad') }}</label>
+            <label for="edad" class="form-label">{{ __('Edad') }}</label>
                     <input type="number" name="edad" class="form-control @error('edad') is-invalid @enderror"
                         id="edad" placeholder="{{ __('Edad de la mascota') }}"
                         value="{{ old('edad', $mascota->edad ?? '') }}" min="0" max="30">
-                    {!! $errors->first('edad', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
+            {!! $errors->first('edad', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
             </div>
 
             <div class="col-md-6">
@@ -60,7 +60,7 @@
                     <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
                     <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror"
                         id="fecha_nacimiento" value="{{ old('fecha_nacimiento', $mascota->fecha_nacimiento ?? '') }}">
-                    {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
 
@@ -99,8 +99,8 @@
                             </option>
                         @endforeach
                     </select>
-                    {!! $errors->first('raza_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
+            {!! $errors->first('raza_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
             </div>
 
             <div class="col-md-6">
@@ -159,8 +159,8 @@
                         <input type="checkbox" name="vacunas_completas" class="form-check-input @error('vacunas_completas') is-invalid @enderror"
                             id="vacunas_completas" value="1" {{ old('vacunas_completas', $mascota->vacunas_completas ?? false) ? 'checked' : '' }}>
                         <label class="form-check-label" for="vacunas_completas">{{ __('Sí') }}</label>
-                        {!! $errors->first('vacunas_completas', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                    </div>
+            {!! $errors->first('vacunas_completas', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@
                     <label for="ultima_vacunacion" class="form-label">{{ __('Última Vacunación') }}</label>
                     <input type="date" name="ultima_vacunacion" class="form-control @error('ultima_vacunacion') is-invalid @enderror"
                         id="ultima_vacunacion" value="{{ old('ultima_vacunacion', $mascota->ultima_vacunacion ?? '') }}">
-                    {!! $errors->first('ultima_vacunacion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            {!! $errors->first('ultima_vacunacion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
 
@@ -210,30 +210,30 @@
             <div class="col-md-12">
                 <!-- Comportamiento -->
                 <div class="form-group mb-3">
-                    <label for="comportamiento" class="form-label">{{ __('Comportamiento') }}</label>
+            <label for="comportamiento" class="form-label">{{ __('Comportamiento') }}</label>
                     <textarea name="comportamiento" class="form-control @error('comportamiento') is-invalid @enderror"
                         id="comportamiento" rows="3" placeholder="{{ __('Describa el comportamiento de la mascota') }}">{{ old('comportamiento', $mascota->comportamiento ?? '') }}</textarea>
-                    {!! $errors->first('comportamiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
+            {!! $errors->first('comportamiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+        </div>
 
             <div class="col-md-12">
                 <!-- Recomendaciones -->
                 <div class="form-group mb-3">
-                    <label for="recomendaciones" class="form-label">{{ __('Recomendaciones') }}</label>
+            <label for="recomendaciones" class="form-label">{{ __('Recomendaciones') }}</label>
                     <textarea name="recomendaciones" class="form-control @error('recomendaciones') is-invalid @enderror"
                         id="recomendaciones" rows="3" placeholder="{{ __('Recomendaciones para el cuidado de la mascota') }}">{{ old('recomendaciones', $mascota->recomendaciones ?? '') }}</textarea>
-                    {!! $errors->first('recomendaciones', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
+            {!! $errors->first('recomendaciones', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+        </div>
 
             <div class="col-md-12">
                 <!-- Enfermedades -->
                 <div class="form-group mb-3">
-                    <label for="enfermedades" class="form-label">{{ __('Enfermedades') }}</label>
+            <label for="enfermedades" class="form-label">{{ __('Enfermedades') }}</label>
                     <textarea name="enfermedades" class="form-control @error('enfermedades') is-invalid @enderror"
                         id="enfermedades" rows="3" placeholder="{{ __('Enfermedades o condiciones médicas') }}">{{ old('enfermedades', $mascota->enfermedades ?? '') }}</textarea>
-                    {!! $errors->first('enfermedades', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+            {!! $errors->first('enfermedades', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
         </div>

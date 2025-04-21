@@ -12,7 +12,7 @@
                     <div class="widget-user-header bg-primary">
                         <h3 class="widget-user-username">{{ $mascota->nombre }}</h3>
                         <h5 class="widget-user-desc">{{ $mascota->raza->nombre ?? 'No especificada' }}</h5>
-                    </div>
+                        </div>
                     <div class="widget-user-image">
                         @if($mascota->avatar)
                             <img class="img-circle elevation-2" src="{{ asset('public/' . $mascota->avatar) }}" alt="Avatar de {{ $mascota->nombre }}">
@@ -27,26 +27,26 @@
                                     <h5 class="description-header">{{ __('Edad') }}</h5>
                                     <span class="description-text">{{ $mascota->edad }}</span>
                                 </div>
-                            </div>
+                                </div>
                             <div class="col-sm-4 border-right">
                                 <div class="description-block">
                                     <h5 class="description-header">{{ __('Género') }}</h5>
                                     <span class="description-text">{{ $mascota->genero }}</span>
                                 </div>
-                            </div>
+                                </div>
                             <div class="col-sm-4">
                                 <div class="description-block">
                                     <h5 class="description-header">{{ __('Barrio') }}</h5>
                                     <span class="description-text">{{ $mascota->barrio->nombre ?? 'No especificado' }}</span>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </div>
+                                </div>
+                                </div>
+                                </div>
                 <div class="card">
                     <div class="card-header bg-primary">
                         <h3 class="card-title">{{ __('Información Detallada de la Mascota') }}</h3>
-                    </div>
+                                </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
@@ -82,7 +82,7 @@
                                         <span class="float-right">{{ $mascota->recomendaciones ?? 'No especificadas' }}</span>
                                     </li>
                                 </ul>
-                            </div>
+                                </div>
                             <div class="col-md-6">
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item">
@@ -112,8 +112,8 @@
                                         <span class="float-right">{{ $mascota->ultimo_examen_medico ? \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') : 'No especificado' }}</span>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
+                                </div>
+                                </div>
                     </div>
                 </div>
             </div>
