@@ -38,21 +38,21 @@
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="avisosLegalesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="fas fa-newspaper me-2"></i> Avisos Legales
+                <i class="fas fa-newspaper me-2"></i> Avisos Legales
             </a>
-            <ul class="dropdown-menu" aria-labelledby="avisosLegalesDropdown">
-              <li>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-user-shield me-2"></i> Protección de datos personales
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-file-contract me-2"></i> Términos y Condiciones
-                </a>
-              </li>
+            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="avisosLegalesDropdown">
+                <li>
+                    <a class="dropdown-item text-white" href="{{ route('data-habeas.index') }}">
+                        <i class="fas fa-user-shield me-2"></i> Protección de datos personales
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item text-white" href="{{ route('data-terminos.index') }}">
+                        <i class="fas fa-file-contract me-2"></i> Términos y Condiciones
+                    </a>
+                </li>
             </ul>
-          </li>
+        </li>
 
         <li class="nav-item">
             <a href="{{ route('usuarios.roles.index') }}" class="nav-link">
