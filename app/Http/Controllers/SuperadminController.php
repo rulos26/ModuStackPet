@@ -209,4 +209,26 @@ class SuperadminController extends Controller
             'status' => $user->active
         ]);
     }
+
+    /**
+     * Cambiar la contraseña del superadmin.
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, auth()->user()->password)) {
+                    $fail(__('La contraseña actual es incorrecta.'));
+                }
+            }],
+            'password' => 'required|string|min:8|confirmed|different:current_password',
+        ]);
+
+        $user = User::role('Superadmin')->first();
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->back()->with('success', 'Contraseña actualizada exitosamente.');
+    }
 }

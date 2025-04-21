@@ -169,5 +169,6 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
+    Route::post('/users/change-password', [SuperadminController::class, 'changePassword'])->name('users.change-password');
     Route::post('/users/{user}/toggle-status', [SuperadminController::class, 'toggleStatus'])->name('users.toggle-status');
 });

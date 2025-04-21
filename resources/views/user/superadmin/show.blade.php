@@ -6,6 +6,24 @@
 
 @section('content')
     <div class="container-fluid">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -13,6 +31,9 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Información del Superadmin') }}</h3>
                             <div class="card-tools">
+                                <button type="button" class="btn btn-info btn-sm me-2" data-bs-toggle="modal" data-bs-target="#infoModal">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
                                 <a href="{{ route('superadmin.users.edit') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i> {{ __('Editar') }}
                                 </a>
@@ -23,59 +44,27 @@
                         <div class="row">
                             <!-- Foto de Perfil y Datos Básicos -->
                             <div class="col-md-4">
-                                <div class="text-center mb-4">
-                                   {{--   @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto de perfil" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
-                                    @else  --}}
+                                <div class="text-center mb-4 position-relative">
+                                    <div class="profile-circle">
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
                                             <i class="fas fa-user fa-4x text-muted"></i>
                                         </div>
-                                 {{--     @endif  --}}
+                                    </div>
                                 </div>
                                 <div class="text-center mb-4">
                                     <h4 class="mb-1">{{ $user->name }}</h4>
                                     <p class="text-muted mb-0">{{ $user->email }}</p>
+                                    <button type="button" class="btn btn-warning btn-sm mt-3" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                        <i class="fas fa-key"></i> {{ __('Cambiar Contraseña') }}
+                                    </button>
                                 </div>
                             </div>
 
                             <!-- Información Detallada -->
                             <div class="col-md-8">
                                 <div class="row">
-                                    <!-- Datos Personales -->
-                                    <div class="col-md-6">
-                                        <div class="card mb-4">
-                                            <div class="card-header bg-light">
-                                                <h5 class="card-title mb-0">{{ __('Datos Personales') }}</h5>
-                                            </div>
-                                            <div class="card-body">
-                                                <dl class="row mb-0">
-                                                    <dt class="col-sm-4">{{ __('Nombre') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->name }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('Email') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->email }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('Tipo Documento') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->tipo_documento ?? __('No especificado') }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('Cédula') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->cedula ?? __('No especificada') }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('Teléfono') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->telefono ?? __('No especificado') }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('WhatsApp') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->whatsapp ?? __('No especificado') }}</dd>
-
-                                                    <dt class="col-sm-4">{{ __('Fecha Nacimiento') }}</dt>
-                                                    <dd class="col-sm-8">{{ $user->fecha_nacimiento ? $user->fecha_nacimiento->format('d/m/Y') : __('No especificada') }}</dd>
-                                                </dl>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     <!-- Información de Acceso -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <div class="card mb-4">
                                             <div class="card-header bg-light">
                                                 <h5 class="card-title mb-0">{{ __('Información de Acceso') }}</h5>
@@ -121,6 +110,75 @@
         </div>
     </div>
 
+    <!-- Modal de Información -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">{{ __('Información del Rol Superadmin') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 class="fw-bold">{{ __('¿Qué es un Superadmin?') }}</h6>
+                    <p>El Superadministrador es el rol con el máximo nivel de privilegios en el sistema. Este usuario tiene acceso completo a todas las funcionalidades y puede:</p>
+                    <ul>
+                        <li>Gestionar todos los usuarios del sistema</li>
+                        <li>Configurar parámetros globales</li>
+                        <li>Acceder a todas las secciones y módulos</li>
+                        <li>Asignar y modificar roles de usuarios</li>
+                        <li>Supervisar y auditar actividades del sistema</li>
+                    </ul>
+                    <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> Este rol debe ser asignado con precaución debido a sus altos privilegios.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cambiar Contraseña -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">{{ __('Cambiar Contraseña') }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('superadmin.users.change-password') }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">{{ __('Contraseña Actual') }}</label>
+                            <input type="password" class="form-control @error('current_password') is-invalid @enderror"
+                                id="current_password" name="current_password" required>
+                            @error('current_password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ __('Nueva Contraseña') }}</label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                id="password" name="password" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="form-label">{{ __('Confirmar Nueva Contraseña') }}</label>
+                            <input type="password" class="form-control" id="password_confirmation"
+                                name="password_confirmation" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancelar') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Cambiar Contraseña') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <style>
         .card {
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 0 2px rgba(0,0,0,.075);
@@ -143,5 +201,34 @@
             font-size: 0.875rem;
             padding: 0.35em 0.65em;
         }
+        .profile-circle {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-circle::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border: 3px solid #dc3545;
+            border-radius: 50%;
+        }
+        .me-2 {
+            margin-right: 0.5rem;
+        }
     </style>
 @endsection
+
+@push('scripts')
+<script>
+    // Si hay errores, mostrar el modal
+    @if($errors->has('current_password') || $errors->has('password'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+            modal.show();
+        });
+    @endif
+</script>
+@endpush
