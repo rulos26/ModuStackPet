@@ -24,13 +24,13 @@
                             <!-- Foto de Perfil y Datos Básicos -->
                             <div class="col-md-4">
                                 <div class="text-center mb-4">
-                                    @if($user->profile_photo_path)
+                                    {{--  @if($user->profile_photo_path)
                                         <img src="{{ asset('public/' . $user->profile_photo_path) }}" alt="Foto de perfil" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
-                                    @else
+                                    @else  --}}
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
                                             <i class="fas fa-user fa-4x text-muted"></i>
                                         </div>
-                                    @endif
+                                   {{--   @endif  --}}
                                 </div>
                                 <div class="text-center mb-4">
                                     <h4 class="mb-1">{{ $user->name }}</h4>
