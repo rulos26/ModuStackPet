@@ -31,16 +31,18 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('users.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-users"></i>
-                <p>Usuarios</p>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsuarios" aria-expanded="true" aria-controls="collapseUsuarios">
+                <i class="fas fa-fw fa-users"></i>
+                <span>Usuarios</span>
             </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('usuarios.roles.index') }}" class="nav-link">
-                <i class="nav-icon fas fa-user-shield"></i>
-                <p>Asignar Roles</p>
-            </a>
+            <div id="collapseUsuarios" class="collapse" aria-labelledby="headingUsuarios" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Gestión de Usuarios:</h6>
+                    <a class="collapse-item" href="{{ route('users.index') }}">Lista de Usuarios</a>
+                    <a class="collapse-item" href="{{ route('users.create') }}">Crear Usuario</a>
+                    <a class="collapse-item" href="{{ route('usuarios.roles.index') }}">Asignar Roles</a>
+                </div>
+            </div>
         </li>
         <li class="nav-header text-warning mt-2">
             <i class="fas fa-sliders-h"></i> Configuraciones Funcionales
