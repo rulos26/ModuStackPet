@@ -48,7 +48,7 @@
                     </a>
                 </li>
                 @endrole
-                @role('Admin')
+                @role('Superadmin|Admin')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="fas fa-user-cog nav-icon"></i>
@@ -56,7 +56,7 @@
                     </a>
                 </li>
                 @endrole
-                @role('Cliente')
+                @role('Superadmin|Cliente')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="fas fa-user nav-icon"></i>
@@ -64,7 +64,7 @@
                     </a>
                 </li>
                 @endrole
-                @role('Paseador')
+                @role('Superadmin|Paseador')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="fas fa-walking nav-icon"></i>
@@ -149,7 +149,7 @@
         @endrole
 
         {{-- DASHBOARD PASEADOR --}}
-        @role('Paseador')
+        @role('Superadmin|Paseador')
         <li class="nav-header text-info mt-2">
             <i class="fas fa-walking"></i> Dashboard Paseador
         </li>
@@ -180,7 +180,7 @@
         @endrole
 
         {{-- DASHBOARD CLIENTE --}}
-        @role('Cliente')
+        @role('Superadmin|Cliente')
         <li class="nav-header text-info mt-2">
             <i class="fas fa-user"></i> Dashboard Cliente
         </li>
