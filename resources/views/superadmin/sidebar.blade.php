@@ -96,7 +96,7 @@
 
     <!-- Nav Item - Cuidadores -->
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('cuidadores.index') }}">
+        <a class="nav-link" href="{{ route('paseador.perfil.index') }}">
             <i class="fas fa-fw fa-home"></i>
             <span>Cuidadores</span>
         </a>
