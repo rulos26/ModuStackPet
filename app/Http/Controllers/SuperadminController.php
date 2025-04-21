@@ -119,11 +119,11 @@ class SuperadminController extends Controller
     /**
      * Mostrar el formulario para editar el recurso especificado.
      */
-    public function edit(User $user)
+    public function edit()
     {
-        //$roles = Role::all();
-        $user = User::role('Superadmin')->get();
-        return view('user.superadmin.edit', compact('user'));
+        $user = User::role('Superadmin')->first();
+        $roles = Role::all();
+        return view('user.superadmin.edit', compact('user', 'roles'));
     }
 
     /**
