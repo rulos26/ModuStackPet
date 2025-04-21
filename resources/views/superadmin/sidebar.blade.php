@@ -37,20 +37,28 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAvisos" aria-expanded="true" aria-controls="collapseAvisos">
-                <i class="fas fa-fw fa-newspaper"></i>
-                <span>Avisos Legales</span>
+            <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#collapseAvisos" aria-expanded="false">
+                <i class="nav-icon fas fa-newspaper"></i>
+                <p>
+                    Avisos Legales
+                    <i class="fas fa-angle-left right"></i>
+                </p>
             </a>
-            <div id="collapseAvisos" class="collapse" aria-labelledby="headingAvisos" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Gestión de Avisos:</h6>
-                    <a class="collapse-item" href="#">
-                        <i class="fas fa-user-shield fa-fw"></i> Protección de datos
-                    </a>
-                    <a class="collapse-item" href="#">
-                        <i class="fas fa-file-contract fa-fw"></i> Términos y Condiciones
-                    </a>
-                </div>
+            <div id="collapseAvisos" class="collapse">
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-user-shield"></i>
+                            <p>Protección de datos</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-file-contract"></i>
+                            <p>Términos y Condiciones</p>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </li>
 
