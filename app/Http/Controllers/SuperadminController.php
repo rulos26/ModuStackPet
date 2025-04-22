@@ -139,7 +139,7 @@ class SuperadminController extends Controller
         $roles = $user->roles->pluck('name');
         $cedula_user = $user->cedula ?? $empresa->nit;
         $ruta = $nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes/perfil';
-
+        $rutaDB = 'public/'.$ruta;
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -149,7 +149,7 @@ class SuperadminController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'avatar' => 'public/'.$ruta,
+            'avatar' => $rutaDB,
         ]);
 
         if ($request->hasFile('avatar')) {
