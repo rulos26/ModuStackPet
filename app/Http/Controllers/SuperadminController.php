@@ -140,6 +140,7 @@ class SuperadminController extends Controller
         $cedula_user = $user->cedula ?? $empresa->nit;
         $ruta = $nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes/perfil';
         $rutaDB = 'public/'.$ruta;
+        dd($rutaDB);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
