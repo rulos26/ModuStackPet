@@ -139,11 +139,7 @@ class SuperadminController extends Controller
           $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
           $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
          $roles = $user->roles->pluck('name');
-         if(!$user->cedula){
-            $cedula_user = $user->cedula;
-         }else{
-            $cedula_user = $empresa->nit;
-         }
+         $cedula_user = $user->cedula ?? $empresa->nit;
 
 
          $ruta = 'public/'.$nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes';
