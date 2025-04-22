@@ -143,7 +143,7 @@ class SuperadminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            /* 'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' */
         ]);
 
         $user->update([
