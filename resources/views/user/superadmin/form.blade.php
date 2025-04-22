@@ -22,56 +22,23 @@
                     {!! $errors->first('email', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Sección: Datos de Cuenta -->
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="card-title mb-0">{{ __('Datos de Cuenta') }}</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <!-- Contraseña -->
-                <div class="form-group mb-3">
-                    <label for="password" class="form-label">{{ __('Contraseña') }}</label>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </div>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="{{ __('Ingrese una contraseña') }}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    {!! $errors->first('password', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
 
             <div class="col-md-6">
-                <!-- Confirmar Contraseña -->
+                <!-- Foto de Perfil -->
                 <div class="form-group mb-3">
-                    <label for="password_confirmation" class="form-label">{{ __('Confirmar Contraseña') }}</label>
+                    <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>
                     <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">
-                                <i class="fas fa-lock"></i>
-                            </span>
-                        </div>
-                        <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" placeholder="{{ __('Confirme la contraseña') }}">
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password_confirmation">
-                                <i class="fas fa-eye"></i>
-                            </button>
+                        <div class="custom-file">
+                            <input type="file" name="avatar" class="custom-file-input @error('avatar') is-invalid @enderror" id="avatar" accept="image/*">
+                            <label class="custom-file-label" for="avatar">{{ __('Seleccionar Imagen') }}</label>
                         </div>
                     </div>
-                    {!! $errors->first('password_confirmation', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                    {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                    @if($user?->avatar)
+                        <div class="mt-3">
+                            <img src="{{ asset('public/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
