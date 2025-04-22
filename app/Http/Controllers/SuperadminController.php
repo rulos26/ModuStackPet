@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use App\Http\Requests\SuperadminRequest;
+use App\Models\Empresa;
 
 class SuperadminController extends Controller
 {
@@ -130,8 +131,10 @@ class SuperadminController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        dd($request->all(),$user);
 
+          $empresa = Empresa::all();
+          $empresa = $empresa->first();
+          dd($request->all(),$user,$empresa,$empresa->nombre_legal);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
