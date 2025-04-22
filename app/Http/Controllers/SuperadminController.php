@@ -139,7 +139,7 @@ class SuperadminController extends Controller
           $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
           $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
          $roles = $user->roles;
-          dd($request->all(),$user,$empresa,$empresa->nombre_legal,$nombreEmpresa,$roles);
+          dd($request->all(),$user,$empresa,$empresa->nombre_legal,$nombreEmpresa,$roles,$roles->name);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
