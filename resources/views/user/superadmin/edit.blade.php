@@ -15,7 +15,7 @@
                                 <i class="fas fa-user-edit"></i> Editar Usuario
                             </span>
                             <div class="float-right">
-                                <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-secondary btn-sm">
+                                <a href="{{ route('superadmin.users.edit') }}" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-arrow-left"></i> Volver
                                 </a>
                             </div>
