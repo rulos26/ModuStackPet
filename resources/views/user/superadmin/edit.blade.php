@@ -15,14 +15,14 @@
                                 <i class="fas fa-user-edit"></i> Editar Usuario
                             </span>
                             <div class="float-right">
-                                <a href="{{ route('superadmin.users.edit') }}" class="btn btn-secondary btn-sm">
+                                <a href="{{ route('superadmin.users.show') }}" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-arrow-left"></i> Volver
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('superadmin.usuarios.update', $user->id) }}" role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('superadmin.users.update', $user->id) }}" role="form" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
