@@ -171,5 +171,5 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
     Route::post('/users/change-password', [SuperadminController::class, 'changePassword'])->name('users.change-password');
     Route::post('/users/{user}/toggle-status', [SuperadminController::class, 'toggleStatus'])->name('users.toggle-status');
-    Route::put('/users/{user}', [SuperadminController::class, 'update'])->name('superadmin.users.update');
+    Route::put('/users/{user}', [SuperadminController::class, 'update'])->name('users.update');
 });
