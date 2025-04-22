@@ -131,54 +131,54 @@ class SuperadminController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $empresa = Empresa::all();
+        $empresa = $empresa->first();
+        $nombreEmpresa = str_replace(' ', '_', trim($empresa->nombre_legal)); // Primero reemplazamos espacios
+        $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
+        $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
+        $roles = $user->roles->pluck('name');
+        $cedula_user = $user->cedula ?? $empresa->nit;
+        $ruta = $nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes/perfil';
 
-          $empresa = Empresa::all();
-          $empresa = $empresa->first();
-          // Sanitizar nombres para la ruta y convertir a minúsculas
-          $nombreEmpresa = str_replace(' ', '_', trim($empresa->nombre_legal)); // Primero reemplazamos espacios
-          $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
-          $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
-         $roles = $user->roles->pluck('name');
-         $cedula_user = $user->cedula ?? $empresa->nit;
-
-
-         $ruta = 'public/'.$nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes';
-          dd($user->roles->pluck('name'),$request->all(),$user,$empresa,$empresa->nombre_legal,$nombreEmpresa,$roles[0],$cedula_user,$ruta);
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'roles' => 'required|array',
-            'active' => 'required|boolean',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'active' => $request->active
+            'avatar' => 'public/'.$ruta,
         ]);
 
-        if ($request->filled('password')) {
-            $user->update([
-                'password' => Hash::make($request->password)
-            ]);
-        }
-
         if ($request->hasFile('avatar')) {
+            // Obtener la extensión del archivo
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+
+            // Construir el nombre del archivo usando la cédula
+            $nombreArchivo = $cedula_user . '.' . $extension;
+
+            // Ruta completa del archivo
+            $rutaCompleta = $ruta . '/' . $nombreArchivo;
+
             // Eliminar avatar anterior si existe
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
+            // Asegurarse de que el directorio existe
+            Storage::disk('public')->makeDirectory($ruta);
+
+            // Guardar el nuevo archivo
+            $avatarPath = $request->file('avatar')->storeAs($ruta, $nombreArchivo, 'public');
+
+            // Actualizar el campo avatar en la base de datos
             $user->avatar = $avatarPath;
             $user->save();
         }
 
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('superadmin.users.index')
+        return redirect()->route('superadmin.users.show')
             ->with('success', 'Usuario actualizado exitosamente.');
     }
 
