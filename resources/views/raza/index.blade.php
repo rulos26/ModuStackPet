@@ -22,11 +22,11 @@
                                 <i class="fas fa-dog"></i> Razas
                             </span>
                             @hasanyrole('Superadmin|Admin')
-                            <div class="float-right">
+                             <div class="float-right">
                                 <a href="{{ route('razas.create') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Nueva Raza
                                 </a>
-                            </div>
+                              </div>
                             @endhasanyrole
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                                         <th>Especie</th>
                                         <th>Descripción</th>
                                         <th>Estado</th>
-                                      
+
                                         <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
@@ -87,12 +87,12 @@
 
                                                     @hasrole('Superadmin')
                                                     <form action="{{ route('razas.destroy', $raza->id) }}" method="POST" class="d-inline delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
+                                                    @csrf
+                                                    @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
-                                                    </form>
+                                                </form>
                                                     @endhasrole
                                                 </div>
                                             </td>

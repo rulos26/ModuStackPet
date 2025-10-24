@@ -4,10 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\MensajeDeBienvenida;
+use App\Models\User;
+use App\Models\TipoDocumento;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
+use App\Http\Requests\SuperadminRequest;
+use App\Models\Empresa;
 
 class SuperadminController extends Controller
 {
-    public function index()
+
+
+    public function login_Superadmin()
     {
         // Verificar si el usuario está autenticado
         if (!Auth::check()) {
@@ -39,5 +53,189 @@ class SuperadminController extends Controller
             'descripcion' => $mensajeDeBienvenida->descripcion,
             'logo' => $mensajeDeBienvenida->logo,
         ]);
+    }
+
+    /**
+     * Mostrar una lista de los recursos.
+     */
+    public function index()
+    {
+        $users = User::with('roles')->paginate(10);
+        $roles = Role::all();
+        return view('user.superadmin.index', compact('users', 'roles'));
+    }
+
+    /**
+     * Mostrar el formulario para crear un nuevo recurso.
+     */
+    public function create()
+    {
+        $roles = Role::all();
+        return view('user.superadmin.create', compact('roles'));
+    }
+
+    /**
+     * Almacenar un recurso recién creado en el almacenamiento.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'roles' => 'required|array',
+            'active' => 'required|boolean',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'active' => $request->active
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
+            $user->avatar = $avatarPath;
+            $user->save();
+        }
+
+        $user->syncRoles($request->roles);
+
+        return redirect()->route('superadmin.users.index')
+            ->with('success', 'Usuario creado exitosamente.');
+    }
+
+    /**
+     * Mostrar el recurso especificado.
+     */
+    public function show()
+    {
+        $user = User::role('Superadmin')->first();
+        return view('user.superadmin.show', compact('user'));
+    }
+
+    /**
+     * Mostrar el formulario para editar el recurso especificado.
+     */
+    public function edit()
+    {
+        $user = User::role('Superadmin')->first();
+        $roles = Role::all();
+        return view('user.superadmin.edit', compact('user', 'roles'));
+    }
+
+    /**
+     * Actualizar el recurso especificado en el almacenamiento.
+     */
+    public function update(Request $request, User $user)
+    {
+        $empresa = Empresa::all();
+        $empresa = $empresa->first();
+        $nombreEmpresa = str_replace(' ', '_', trim($empresa->nombre_legal)); // Primero reemplazamos espacios
+        $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
+        $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
+        $roles = $user->roles->pluck('name');
+        $cedula_user = $user->cedula ?? $empresa->nit;
+        $ruta = $nombreEmpresa.'/'.$roles[0].'/'.$cedula_user.'/imagenes/perfil';
+        $rutaDB = 'public/'.$ruta;
+        dd($rutaDB);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            /* 'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' */
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'avatar' => $rutaDB,
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            // Obtener la extensión del archivo
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+
+            // Construir el nombre del archivo usando la cédula
+            $nombreArchivo = $cedula_user . '.' . $extension;
+
+            // Ruta completa del archivo
+            $rutaCompleta = $ruta . '/' . $nombreArchivo;
+
+            // Eliminar avatar anterior si existe
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+
+            // Asegurarse de que el directorio existe
+            Storage::disk('public')->makeDirectory($ruta);
+
+            // Guardar el nuevo archivo
+            $avatarPath = $request->file('avatar')->storeAs($ruta, $nombreArchivo, 'public');
+
+            // Actualizar el campo avatar en la base de datos
+            $user->avatar = $avatarPath;
+            $user->save();
+        }
+
+        return redirect()->route('superadmin.users.show')
+            ->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    /**
+     * Eliminar el recurso especificado del almacenamiento.
+     */
+    public function destroy(User $user)
+    {
+        // No permitir eliminar al propio superadmin
+        if ($user->id === Auth::id()) {
+            return redirect()->route('superadmin.users.index')
+                ->with('error', 'No puedes eliminar tu propio usuario.');
+        }
+
+        // Eliminar avatar si existe
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->delete();
+
+        return redirect()->route('superadmin.users.index')
+            ->with('success', 'Usuario eliminado exitosamente.');
+    }
+
+    public function toggleStatus(User $user)
+    {
+        // No permitir desactivar al propio superadmin
+        if ($user->id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes desactivar tu propio usuario.'
+            ]);
+        }
+
+        $user->update([
+            'active' => !$user->active
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado actualizado correctamente.',
+            'status' => $user->active
+        ]);
+    }
+
+    /**
+     * Cambiar la contraseña del superadmin.
+     */
+    public function changePassword(SuperadminRequest $request)
+    {
+        $user = auth()->user();
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->back()->with('success', 'Contraseña actualizada exitosamente.');
     }
 }

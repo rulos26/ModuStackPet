@@ -68,9 +68,17 @@ class PathDocumentoController extends Controller
                         $cedula = $usuario->cedula ?? '000000';
 
                         // Sanitizar nombres para la ruta y convertir a minúsculas
-                        $nombreEmpresa = strtolower(str_replace(['/', '\\', ' '], '_', $empresa->nombre_legal));
-                        $nombreRol = strtolower(str_replace(['/', '\\', ' '], '_', $rol->name));
-                        $cedula = strtolower(str_replace(['/', '\\', ' '], '_', $cedula));
+                        $nombreEmpresa = str_replace(' ', '_', trim($empresa->nombre_legal)); // Primero reemplazamos espacios
+                        $nombreEmpresa = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreEmpresa)); // Luego limpiamos caracteres especiales
+                        $nombreEmpresa = preg_replace('/_+/', '_', $nombreEmpresa); // Eliminar guiones bajos múltiples
+
+                        $nombreRol = str_replace(' ', '_', trim($rol->name));
+                        $nombreRol = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $nombreRol));
+                        $nombreRol = preg_replace('/_+/', '_', $nombreRol); // Eliminar guiones bajos múltiples
+
+                        $cedula = str_replace(' ', '_', trim($cedula));
+                        $cedula = strtolower(preg_replace('/[^a-zA-Z0-9_-]/', '_', $cedula));
+                        $cedula = preg_replace('/_+/', '_', $cedula); // Eliminar guiones bajos múltiples
 
                         // Crear paths para documentos e imágenes
                         $paths = [
@@ -153,5 +161,27 @@ class PathDocumentoController extends Controller
 
         return redirect()->route('paths-documentos.index')
             ->with('success', 'Ruta de documento eliminada exitosamente.');
+    }
+
+    /**
+     * Cambia el estado de un path de documento.
+     */
+    public function toggleStatus(PathDocumento $pathDocumento)
+    {
+        try {
+            $pathDocumento->estado = !$pathDocumento->estado;
+            $pathDocumento->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado actualizado correctamente',
+                'newStatus' => $pathDocumento->estado
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

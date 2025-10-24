@@ -13,4 +13,6 @@ INSERT INTO `sectores` (`id`, `nombre`) VALUES
 (12, 'Energía y Minería'),
 (13, 'Textil y Moda'),
 (14, 'Gastronomía'),
-(15, 'Publicidad y Medios');
+(15, 'Publicidad y Medios'),
+(16, 'Guardería-paseo-Adiestramiento-hotel'),
+(17, 'Otros');

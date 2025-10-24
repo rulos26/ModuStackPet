@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Gestión de Mascotas
+    Gestión de Usuarios
 @endsection
 
 @push('styles')
@@ -19,15 +19,15 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-paw"></i> Mascotas
+                                <i class="fas fa-users"></i> Usuarios
                             </span>
-                            @hasanyrole('Superadmin|Admin|Cliente')
-                             <div class="float-right">
-                                <a href="{{ route('mascotas.create') }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Nueva Mascota
+                            @hasrole('Superadmin')
+                            <div class="float-right">
+                                <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus"></i> Nuevo Usuario
                                 </a>
-                              </div>
-                            @endhasanyrole
+                            </div>
+                            @endhasrole
                         </div>
                     </div>
 
@@ -47,57 +47,57 @@
 
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover" id="mascotasTable">
+                            <table class="table table-striped table-hover" id="usersTable">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>No.</th>
                                         <th>Nombre</th>
-                                        <th>Especie</th>
-                                        <th>Raza</th>
-                                        <th>Edad</th>
-                                        <th>Propietario</th>
+                                        <th>Email</th>
+                                        <th>Roles</th>
                                         <th>Estado</th>
                                         <th>Fecha Creación</th>
                                         <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($mascotas as $mascota)
+                                    @foreach ($users as $user)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $mascota->nombre }}</td>
-                                            <td>{{ $mascota->especie }}</td>
-                                            <td>{{ $mascota->raza->nombre ?? 'N/A' }}</td>
-                                            <td>{{ $mascota->edad }} años</td>
-                                            <td>{{ $mascota->cliente->nombre ?? 'N/A' }}</td>
+                                            <td>{{ $user->name }}</td>
+                                            <td>{{ $user->email }}</td>
                                             <td>
-                                                @if($mascota->activo)
+                                                @foreach($user->roles as $role)
+                                                    <span class="badge bg-primary">{{ $role->name }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>
+                                                @if($user->is_active)
                                                     <span class="badge bg-success">Activo</span>
                                                 @else
                                                     <span class="badge bg-danger">Inactivo</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $mascota->created_at->format('d/m/Y H:i:s') }}</td>
+                                            <td>{{ $user->created_at->format('d/m/Y H:i:s') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
-                                                    @hasanyrole('Superadmin|Admin|Cliente')
-                                                    <a class="btn btn-info btn-sm" href="{{ route('mascotas.show', $mascota->id) }}" title="Ver">
+                                                    @hasanyrole('Superadmin|Admin')
+                                                    <a class="btn btn-info btn-sm" href="{{ route('admin.users.show', $user->id) }}" title="Ver">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a class="btn btn-success btn-sm" href="{{ route('mascotas.edit', $mascota->id) }}" title="Editar">
+                                                    <a class="btn btn-success btn-sm" href="{{ route('admin.users.edit', $user->id) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     @endhasanyrole
 
-                                                    @hasanyrole('Superadmin|Admin')
-                                                    <form action="{{ route('mascotas.destroy', $mascota->id) }}" method="POST" class="d-inline delete-form">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                    @hasrole('Superadmin')
+                                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
+                                                        @csrf
+                                                        @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
-                                                </form>
-                                                    @endhasanyrole
+                                                    </form>
+                                                    @endhasrole
                                                 </div>
                                             </td>
                                         </tr>
@@ -129,7 +129,7 @@
 
     <script>
         $(document).ready(function() {
-            $('#mascotasTable').DataTable({
+            $('#usersTable').DataTable({
                 responsive: true,
                 dom: 'Bfrtip',
                 buttons: [
@@ -141,21 +141,21 @@
                                 extend: 'excel',
                                 text: '<i class="fas fa-file-excel"></i> Excel',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4,5]
                                 }
                             },
                             {
                                 extend: 'pdf',
                                 text: '<i class="fas fa-file-pdf"></i> PDF',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4,5]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '<i class="fas fa-print"></i> Imprimir',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4,5]
                                 }
                             }
                         ]
