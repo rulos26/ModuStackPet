@@ -183,4 +183,18 @@ class Empresa extends Model
               ->orWhere('nit', 'like', "%{$termino}%");
         });
     }
-}
+
+    /**
+     * Boot del modelo
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento para eliminar logo al eliminar empresa
+        static::deleting(function ($empresa) {
+            if ($empresa->logo && \Storage::disk('public')->exists($empresa->logo)) {
+                \Storage::disk('public')->delete($empresa->logo);
+            }
+        });
+    }

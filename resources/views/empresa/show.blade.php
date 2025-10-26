@@ -13,8 +13,11 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h3 class="card-title mb-0">{{ __('Información de la Empresa') }}</h3>
                             <div class="card-tools">
-                                <a href="{{ route('empresas.edit', $empresa->id) }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('empresas.edit', $empresa->id) }}" class="btn btn-primary btn-sm me-2">
                                     <i class="fas fa-edit"></i> {{ __('Editar') }}
+                                </a>
+                                <a href="{{ route('empresas.pdf', $empresa->id) }}" class="btn btn-success btn-sm" target="_blank">
+                                    <i class="fas fa-file-pdf"></i> {{ __('Descargar PDF') }}
                                 </a>
                             </div>
                         </div>
@@ -25,7 +28,7 @@
                             <div class="col-md-4">
                                 <div class="text-center mb-4">
                                     @if($empresa->logo)
-                                        <img src="{{ asset('public/' . $empresa->logo) }}" alt="Logo" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
+                                        <img src="{{ $empresa->logo_url }}" alt="Logo" class="img-fluid rounded-circle" style="max-width: 200px; border: 3px solid #dee2e6;">
                                     @else
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 200px; height: 200px;">
                                             <i class="fas fa-building fa-4x text-muted"></i>

@@ -27,7 +27,18 @@ class EmpresaRequest extends FormRequest
         return [
             'nombre_legal' => 'required|string|max:255',
             'representante_legal' => 'required|string|max:255',
-            'nit' => 'required|string|regex:/^[0-9]{9,10}$/|unique:empresas,nit,' . $empresaId,
+            'nit' => [
+                'required',
+                'string',
+                'regex:/^[0-9]{9,10}$/',
+                'unique:empresas,nit,' . $empresaId,
+                function ($attribute, $value, $fail) {
+                    if (!$this->validarNitColombiano($value)) {
+                        $fail('El NIT no es válido según el algoritmo colombiano.');
+                    }
+                },
+            ],
+            'dv' => 'required|string|size:1',
             'tipo_empresa_id' => 'required|exists:tipos_empresas,id',
             'sector_id' => 'required|exists:sectores,id',
             'telefono' => 'nullable|string|max:20',
@@ -116,8 +127,44 @@ class EmpresaRequest extends FormRequest
         // Convertir el estado a booleano
         $this->merge([
             'estado' => $this->boolean('estado'),
-            // Asegurarnos de que el NIT se guarde en minúsculas
-            'nit' => $this->input('nit')
+            // Asegurarnos de que el NIT se guarde correctamente
+            'nit' => $this->input('nit'),
+            // Calcular automáticamente el dígito de verificación
+            'dv' => $this->calcularDigitoVerificacion($this->input('nit'))
         ]);
+    }
+
+    /**
+     * Valida el NIT colombiano usando el algoritmo oficial
+     */
+    private function validarNitColombiano($nit)
+    {
+        if (strlen($nit) < 9 || strlen($nit) > 10) {
+            return false;
+        }
+
+        $dvCalculado = $this->calcularDigitoVerificacion($nit);
+        $dvIngresado = $this->input('dv');
+
+        return $dvCalculado == $dvIngresado;
+    }
+
+    /**
+     * Calcula el dígito de verificación del NIT colombiano
+     */
+    private function calcularDigitoVerificacion($nit)
+    {
+        $secuencia = [71, 67, 59, 53, 47, 43, 41, 37, 29, 23, 19, 17, 13, 7, 3];
+        $suma = 0;
+
+        // Asegurar que el NIT tenga 9 dígitos
+        $nit = str_pad($nit, 9, '0', STR_PAD_LEFT);
+
+        for ($i = 0; $i < strlen($nit); $i++) {
+            $suma += intval($nit[$i]) * $secuencia[$i];
+        }
+
+        $residuo = $suma % 11;
+        return $residuo < 2 ? $residuo : 11 - $residuo;
     }
 }

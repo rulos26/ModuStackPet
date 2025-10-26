@@ -26,20 +26,20 @@ class EmpresaController extends Controller
     }
 
     /**
-     * Muestra la información de la empresa o el formulario de creación
+     * Redirige a la vista apropiada según si existe una empresa o no
      */
     public function index()
     {
-        // Verificar si ya existe una empresa
         $empresa = Empresa::first();
 
         if ($empresa) {
-            // Si existe, mostrar la información de la empresa
-            return view('empresa.show', compact('empresa'));
+            // Si existe, redirigir a la vista de detalles
+            return redirect()->route('empresas.show', $empresa);
         }
 
-        // Si no existe, mostrar el formulario de creación
-        return $this->create();
+        // Si no existe, redirigir al formulario de creación
+        return redirect()->route('empresas.create')
+            ->with('info', 'No hay empresa registrada. Complete el formulario para crear la empresa.');
     }
 
     /**
@@ -68,29 +68,29 @@ class EmpresaController extends Controller
     {
         // Verificar si ya existe una empresa
         if (Empresa::exists()) {
-            return redirect()->route('empresas.index')
+            return redirect()->route('empresas.create')
                 ->with('error', 'Ya existe una empresa registrada.');
         }
 
         try {
-            $data = $request->validated();
+            DB::beginTransaction();
 
-            // Procesar el logo si se subió
-            if ($request->hasFile('logo')) {
-                $logo = $request->file('logo');
-                $nombreLogo = Str::slug($data['nombre_legal']) . '-' . time() . '.' . $logo->getClientOriginalExtension();
-                $rutaLogo = $logo->storeAs('logos', $nombreLogo, 'public');
-                $data['logo'] = $rutaLogo;
-            }
+            $data = $request->validated();
+            $data['logo'] = $this->procesarLogo($request);
 
             // Crear la empresa
             $empresa = Empresa::create($data);
 
-            return redirect()->route('empresas.index')
+            DB::commit();
+
+            return redirect()->route('empresas.show', $empresa)
                 ->with('success', 'Empresa creada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al crear empresa: ' . $e->getMessage());
+
             return redirect()->back()
-                ->with('error', 'Error al crear la empresa: ' . $e->getMessage())
+                ->with('error', 'Error al crear la empresa. Intente nuevamente.')
                 ->withInput();
         }
     }
@@ -132,31 +132,26 @@ class EmpresaController extends Controller
     public function update(EmpresaRequest $request, $id)
     {
         try {
+            DB::beginTransaction();
+
             // Buscar la empresa
             $empresa = Empresa::findOrFail($id);
             $data = $request->validated();
-
-            // Procesar el logo si se subió uno nuevo
-            if ($request->hasFile('logo')) {
-                // Eliminar el logo anterior si existe
-                if ($empresa->logo && Storage::disk('public')->exists($empresa->logo)) {
-                    Storage::disk('public')->delete($empresa->logo);
-                }
-
-                $logo = $request->file('logo');
-                $nombreLogo = Str::slug($data['nombre_legal']) . '-' . time() . '.' . $logo->getClientOriginalExtension();
-                $rutaLogo = $logo->storeAs('logos', $nombreLogo, 'public');
-                $data['logo'] = $rutaLogo;
-            }
+            $data['logo'] = $this->procesarLogo($request, $empresa);
 
             // Actualizar la empresa
             $empresa->update($data);
 
-            return redirect()->route('empresas.index')
+            DB::commit();
+
+            return redirect()->route('empresas.show', $empresa)
                 ->with('success', 'Empresa actualizada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al actualizar empresa: ' . $e->getMessage());
+
             return redirect()->back()
-                ->with('error', 'Error al actualizar la empresa: ' . $e->getMessage())
+                ->with('error', 'Error al actualizar la empresa. Intente nuevamente.')
                 ->withInput();
         }
     }
@@ -167,6 +162,8 @@ class EmpresaController extends Controller
     public function destroy($id)
     {
         try {
+            DB::beginTransaction();
+
             // Buscar la empresa
             $empresa = Empresa::findOrFail($id);
 
@@ -177,11 +174,16 @@ class EmpresaController extends Controller
 
             $empresa->delete();
 
-            return redirect()->route('empresas.index')
+            DB::commit();
+
+            return redirect()->route('empresas.create')
                 ->with('success', 'Empresa eliminada exitosamente.');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error al eliminar empresa: ' . $e->getMessage());
+
             return redirect()->back()
-                ->with('error', 'Error al eliminar la empresa: ' . $e->getMessage());
+                ->with('error', 'Error al eliminar la empresa. Intente nuevamente.');
         }
     }
 
@@ -207,5 +209,45 @@ class EmpresaController extends Controller
             Log::error('Error al cargar ciudades: ' . $e->getMessage());
             return response()->json(['error' => 'Error al cargar las ciudades: ' . $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * Genera un PDF con la información de la empresa
+     */
+    public function pdf($id)
+    {
+        try {
+            $empresa = Empresa::with(['tipoEmpresa', 'ciudad', 'departamento', 'sector'])
+                ->findOrFail($id);
+
+            $pdf = \PDF::loadView('empresa.pdf', compact('empresa'));
+
+            return $pdf->download('empresa-' . Str::slug($empresa->nombre_legal) . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Error al generar PDF de empresa: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Error al generar el PDF. Intente nuevamente.');
+        }
+    }
+
+    /**
+     * Procesa el logo subido por el usuario
+     */
+    private function procesarLogo($request, $empresa = null)
+    {
+        if (!$request->hasFile('logo')) {
+            return $empresa ? $empresa->logo : null;
+        }
+
+        // Eliminar logo anterior si existe
+        if ($empresa && $empresa->logo && Storage::disk('public')->exists($empresa->logo)) {
+            Storage::disk('public')->delete($empresa->logo);
+        }
+
+        $logo = $request->file('logo');
+        $nombreLogo = Str::slug($request->nombre_legal) . '-' . time() . '.' . $logo->getClientOriginalExtension();
+
+        return $logo->storeAs('logos', $nombreLogo, 'public');
     }
 }

@@ -131,6 +131,7 @@ Route::resource('sectores', SectoreController::class);
 Route::resource('tipos-empresas', TiposEmpresaController::class);
 Route::resource('empresas', EmpresaController::class);
 Route::get('api/ciudades/{departamentoId}', [EmpresaController::class, 'getCiudades'])->name('empresas.ciudades');
+Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 
 
 Route::resource('paths-documentos', PathDocumentoController::class);
