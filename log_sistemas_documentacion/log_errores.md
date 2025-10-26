@@ -168,4 +168,62 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
 
 ---
 
+## 🚨 Error de Sintaxis PHP - Modelo Empresa
+
+### Descripción del Error
+```
+Unclosed '{' on line 39, app/Models/Empresa.php :1
+```
+
+### Archivo Afectado
+- **Archivo:** `app/Models/Empresa.php`
+- **Línea:** 201 (final del archivo)
+- **Tipo de Error:** Error de sintaxis PHP - Llave de cierre faltante
+
+### Contexto del Error
+El error ocurrió durante las optimizaciones del módulo empresa. Al agregar el método `boot()` y el scope `buscar()`, se olvidó cerrar la llave de la clase `Empresa`, causando un error de sintaxis PHP.
+
+### Causa Raíz
+1. **Llave de cierre faltante:** La clase `Empresa` no tenía su llave de cierre `}`
+2. **Edición incompleta:** Durante las modificaciones se perdió la llave de cierre
+3. **Validación insuficiente:** No se verificó la sintaxis después de las modificaciones
+
+### Solución Implementada
+Se agregó la llave de cierre faltante al final del archivo:
+
+```php
+    /**
+     * Boot del modelo
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Evento para eliminar logo al eliminar empresa
+        static::deleting(function ($empresa) {
+            if ($empresa->logo && \Storage::disk('public')->exists($empresa->logo)) {
+                \Storage::disk('public')->delete($empresa->logo);
+            }
+        });
+    }
+} // ← Llave de cierre agregada
+```
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **RESUELTO**
+- **Severidad:** Alta (impedía el funcionamiento del módulo)
+
+### Impacto
+- **Antes:** Error fatal de sintaxis PHP
+- **Después:** Modelo funcionando correctamente
+
+### Recomendaciones Preventivas
+1. **Validación de sintaxis:** Usar `php -l archivo.php` para verificar sintaxis
+2. **IDE con validación:** Usar editor con validación PHP en tiempo real
+3. **Testing:** Ejecutar pruebas después de modificaciones
+4. **Revisión de código:** Verificar llaves de apertura y cierre
+
+---
+
 *Log generado automáticamente - ModuStackPet Sistema de Documentación*

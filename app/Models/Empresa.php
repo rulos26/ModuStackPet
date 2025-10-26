@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class Empresa
@@ -193,8 +194,9 @@ class Empresa extends Model
 
         // Evento para eliminar logo al eliminar empresa
         static::deleting(function ($empresa) {
-            if ($empresa->logo && \Storage::disk('public')->exists($empresa->logo)) {
-                \Storage::disk('public')->delete($empresa->logo);
+            if ($empresa->logo && Storage::disk('public')->exists($empresa->logo)) {
+                Storage::disk('public')->delete($empresa->logo);
             }
         });
     }
+}
