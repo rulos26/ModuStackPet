@@ -172,4 +172,13 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     Route::post('/users/change-password', [SuperadminController::class, 'changePassword'])->name('users.change-password');
     Route::post('/users/{user}/toggle-status', [SuperadminController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::put('/users/{user}', [SuperadminController::class, 'update'])->name('users.update');
+
+    // Rutas para gestión de usuarios (usuarios)
+    Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/create', [UserController::class, 'create'])->name('usuarios.create');
+    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
+    Route::get('/usuarios/{user}', [UserController::class, 'show'])->name('usuarios.show');
+    Route::get('/usuarios/{user}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('usuarios.update');
+    Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 });
