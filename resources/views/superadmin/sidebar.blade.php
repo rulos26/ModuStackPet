@@ -1,4 +1,4 @@
-{{-- Inicio del menú de navegación --}}
+
 <nav class="mt-2">
     {{-- Lista principal de navegación con soporte para árbol de menús --}}
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
