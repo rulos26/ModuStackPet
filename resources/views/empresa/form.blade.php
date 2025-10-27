@@ -289,19 +289,30 @@
             ciudadSelect.disabled = true;
             ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
 
-            fetch(`/api/ciudades/${departamentoId}`)
+            fetch(`/api-ciudades.php?departamentoId=${departamentoId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            })
                 .then(response => {
+                    console.log('Response status:', response.status);
                     if (!response.ok) {
-                        throw new Error('Error en la petición');
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response.json();
                 })
-                .then(ciudades => {
-                    console.log('Ciudades cargadas:', ciudades);
-                    actualizarCiudades(ciudades);
+                .then(data => {
+                    console.log('Datos recibidos:', data);
+                    if (data.success && data.ciudades) {
+                        actualizarCiudades(data.ciudades);
+                    } else {
+                        throw new Error('Formato de respuesta inválido');
+                    }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Error al cargar ciudades:', error);
                     ciudadSelect.innerHTML = '<option value="">Error al cargar ciudades</option>';
                     ciudadSelect.disabled = false;
                 });
