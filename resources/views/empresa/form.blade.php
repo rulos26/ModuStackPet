@@ -289,7 +289,7 @@
             ciudadSelect.disabled = true;
             ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
 
-            fetch(`/api-ciudades.php?departamentoId=${departamentoId}`, {
+            fetch(`/ciudades.php?departamentoId=${departamentoId}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

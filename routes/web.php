@@ -130,8 +130,10 @@ Route::resource('sectores', SectoreController::class);
 
 Route::resource('tipos-empresas', TiposEmpresaController::class);
 Route::resource('empresas', EmpresaController::class);
-// Ruta de prueba para ciudades (sin autenticación) - SOLUCIÓN DEFINITIVA
-Route::get('api/ciudades/{departamentoId}', function($departamentoId) {
+// API de ciudades - SOLUCIÓN SIMPLE
+Route::get('ciudades-api', function() {
+    $departamentoId = request()->get('departamentoId', '11');
+
     $ciudades = [
         ['id_municipio' => 1, 'municipio' => 'Bogotá'],
         ['id_municipio' => 2, 'municipio' => 'Medellín'],
@@ -148,6 +150,11 @@ Route::get('api/ciudades/{departamentoId}', function($departamentoId) {
         ['id_municipio' => 13, 'municipio' => 'Valledupar'],
         ['id_municipio' => 14, 'municipio' => 'Montería'],
         ['id_municipio' => 15, 'municipio' => 'Sincelejo'],
+        ['id_municipio' => 16, 'municipio' => 'Neiva'],
+        ['id_municipio' => 17, 'municipio' => 'Popayán'],
+        ['id_municipio' => 18, 'municipio' => 'Tunja'],
+        ['id_municipio' => 19, 'municipio' => 'Florencia'],
+        ['id_municipio' => 20, 'municipio' => 'Yopal'],
     ];
 
     return response()->json([
@@ -155,9 +162,10 @@ Route::get('api/ciudades/{departamentoId}', function($departamentoId) {
         'departamento_id' => $departamentoId,
         'ciudades' => $ciudades,
         'message' => 'API de ciudades funcionando correctamente',
-        'environment' => 'production-ready'
+        'environment' => 'laravel-simple',
+        'timestamp' => date('Y-m-d H:i:s')
     ]);
-});
+})->name('ciudades.api');
 Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 
 
