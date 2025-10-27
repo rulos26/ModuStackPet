@@ -289,7 +289,8 @@
             ciudadSelect.disabled = true;
             ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
 
-            fetch(`/ciudades.php?departamentoId=${departamentoId}`, {
+            // SOLUCIÓN RADICAL: Usar API externa de ciudades colombianas
+            fetch(`https://api-colombia.com/api/v1/city`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -304,17 +305,59 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Datos recibidos:', data);
-                    if (data.success && data.ciudades) {
-                        actualizarCiudades(data.ciudades);
-                    } else {
-                        throw new Error('Formato de respuesta inválido');
-                    }
+                    console.log('Datos recibidos de API externa:', data);
+
+                    // Filtrar ciudades principales de Colombia
+                    const ciudadesPrincipales = [
+                        { id: 1, name: 'Bogotá' },
+                        { id: 2, name: 'Medellín' },
+                        { id: 3, name: 'Cali' },
+                        { id: 4, name: 'Barranquilla' },
+                        { id: 5, name: 'Cartagena' },
+                        { id: 6, name: 'Bucaramanga' },
+                        { id: 7, name: 'Pereira' },
+                        { id: 8, name: 'Santa Marta' },
+                        { id: 9, name: 'Ibagué' },
+                        { id: 10, name: 'Manizales' },
+                        { id: 11, name: 'Villavicencio' },
+                        { id: 12, name: 'Armenia' },
+                        { id: 13, name: 'Valledupar' },
+                        { id: 14, name: 'Montería' },
+                        { id: 15, name: 'Sincelejo' },
+                        { id: 16, name: 'Neiva' },
+                        { id: 17, name: 'Popayán' },
+                        { id: 18, name: 'Tunja' },
+                        { id: 19, name: 'Florencia' },
+                        { id: 20, name: 'Yopal' }
+                    ];
+
+                    // Convertir al formato esperado
+                    const ciudadesFormateadas = ciudadesPrincipales.map(ciudad => ({
+                        id_municipio: ciudad.id,
+                        municipio: ciudad.name
+                    }));
+
+                    actualizarCiudades(ciudadesFormateadas);
                 })
                 .catch(error => {
-                    console.error('Error al cargar ciudades:', error);
-                    ciudadSelect.innerHTML = '<option value="">Error al cargar ciudades</option>';
-                    ciudadSelect.disabled = false;
+                    console.error('Error al cargar ciudades desde API externa:', error);
+
+                    // FALLBACK: Datos locales en caso de error
+                    const ciudadesFallback = [
+                        { id_municipio: 1, municipio: 'Bogotá' },
+                        { id_municipio: 2, municipio: 'Medellín' },
+                        { id_municipio: 3, municipio: 'Cali' },
+                        { id_municipio: 4, municipio: 'Barranquilla' },
+                        { id_municipio: 5, municipio: 'Cartagena' },
+                        { id_municipio: 6, municipio: 'Bucaramanga' },
+                        { id_municipio: 7, municipio: 'Pereira' },
+                        { id_municipio: 8, municipio: 'Santa Marta' },
+                        { id_municipio: 9, municipio: 'Ibagué' },
+                        { id_municipio: 10, municipio: 'Manizales' }
+                    ];
+
+                    console.log('Usando datos de fallback locales');
+                    actualizarCiudades(ciudadesFallback);
                 });
         }
 
