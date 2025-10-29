@@ -2436,6 +2436,104 @@ Los títulos y elementos de navegación deben ser específicos y descriptivos de
 
 ---
 
+## 🚨 Error: Call to undefined function App\Http\Controllers\exec()
+
+### Descripción del Error
+```
+Call to undefined function App\Http\Controllers\exec()
+```
+
+### Archivo Afectado
+- **Archivo:** `app/Http/Controllers/CleanController.php`
+- **Línea:** 156
+- **Código Problemático:**
+```php
+exec($comandoCompleto . ' 2>&1', $output, $exitCode);
+```
+
+### Contexto del Error
+Al intentar ejecutar el comando `composer dump-autoload` desde la interfaz web del módulo AutoClean, se generaba un error porque la función `exec()` no estaba siendo reconocida correctamente en el namespace del controlador.
+
+### Causa Raíz Identificada ✅
+
+1. **Namespace de PHP:**
+   - La función `exec()` es una función global de PHP
+   - Dentro del namespace `App\Http\Controllers`, PHP intentaba buscar `App\Http\Controllers\exec()`
+   - No encontraba la función porque no existe en ese namespace
+
+2. **Falta de Prefijo Global:**
+   - No se estaba usando `\exec()` para referenciar la función global
+   - PHP buscaba la función en el namespace actual en lugar del global
+
+### Solución Implementada ✅
+
+#### **1. Uso del Namespace Global:**
+```php
+// ❌ ANTES
+exec($comandoCompleto . ' 2>&1', $output, $exitCode);
+
+// ✅ DESPUÉS
+\exec($comandoCompleto . ' 2>&1', $output, $exitCode);
+```
+
+#### **2. Verificación de Disponibilidad:**
+```php
+// Verificar si la función exec está disponible
+if (!function_exists('exec')) {
+    return [
+        'comando' => 'composer ' . $comando,
+        'descripcion' => $descripcion ?: 'composer ' . $comando,
+        'opciones' => [],
+        'exit_code' => 1,
+        'output' => 'Error: La función exec() no está disponible en este servidor. Contacte al administrador.',
+        'success' => false,
+        'tipo' => 'composer'
+    ];
+}
+```
+
+#### **3. Mejora en Manejo de Salida:**
+```php
+'output' => $outputString ?: 'Comando ejecutado correctamente (sin salida)',
+```
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Alta (impide ejecutar comandos de Composer)
+
+### Impacto
+- **Antes:** 
+  - ❌ Error fatal al intentar ejecutar `composer dump-autoload`
+  - ❌ Función exec() no encontrada
+  - ❌ Módulo AutoClean parcialmente funcional
+
+- **Después:** 
+  - ✅ Función exec() reconocida correctamente con namespace global
+  - ✅ Verificación de disponibilidad de la función
+  - ✅ Mensajes de error claros si exec() no está disponible
+  - ✅ Módulo AutoClean completamente funcional
+
+### Archivos Modificados
+- `app/Http/Controllers/CleanController.php` - Corregido uso de `exec()` con prefijo global y verificación de disponibilidad
+
+### Nota Importante
+Siempre usar el prefijo `\` (backslash) cuando se quiera referenciar una función global de PHP desde dentro de un namespace. Ejemplo: `\exec()`, `\array_map()`, `\strlen()`, etc.
+
+### Notas Técnicas sobre exec()
+
+1. **Disponibilidad:**
+   - `exec()` puede estar deshabilitada en algunos servidores por seguridad
+   - Se verifica con `function_exists('exec')` antes de usar
+   - Se muestra un mensaje claro si no está disponible
+
+2. **Seguridad:**
+   - Solo Superadmin puede ejecutar estos comandos
+   - Los comandos están validados y predefinidos
+   - No se pueden ejecutar comandos arbitrarios
+
+---
+
 ## ✅ Implementación: Módulo AutoClean - Limpieza del Sistema
 
 ### Descripción

@@ -148,11 +148,25 @@ class CleanController extends Controller
     private function ejecutarComandoComposer($comando, $descripcion = '')
     {
         try {
+            // Verificar si la función exec está disponible
+            if (!function_exists('exec')) {
+                return [
+                    'comando' => 'composer ' . $comando,
+                    'descripcion' => $descripcion ?: 'composer ' . $comando,
+                    'opciones' => [],
+                    'exit_code' => 1,
+                    'output' => 'Error: La función exec() no está disponible en este servidor. Contacte al administrador.',
+                    'success' => false,
+                    'tipo' => 'composer'
+                ];
+            }
+
             $comandoCompleto = 'composer ' . $comando;
             $output = [];
             $exitCode = 0;
 
-            exec($comandoCompleto . ' 2>&1', $output, $exitCode);
+            // Usar \exec() para asegurar que use la función global de PHP
+            \exec($comandoCompleto . ' 2>&1', $output, $exitCode);
             $outputString = implode("\n", $output);
 
             return [
@@ -160,7 +174,7 @@ class CleanController extends Controller
                 'descripcion' => $descripcion ?: $comandoCompleto,
                 'opciones' => [],
                 'exit_code' => $exitCode,
-                'output' => $outputString,
+                'output' => $outputString ?: 'Comando ejecutado correctamente (sin salida)',
                 'success' => $exitCode === 0,
                 'tipo' => 'composer'
             ];
