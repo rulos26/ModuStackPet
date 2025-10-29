@@ -10,6 +10,9 @@ class ModuleLog extends Model
 {
     use HasFactory;
 
+    // Deshabilitar timestamps automáticos de Laravel
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
         'module_id',
