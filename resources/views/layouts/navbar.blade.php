@@ -45,16 +45,18 @@
         <!-- Información del usuario -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ auth()->user()->profile_picture_url ? asset('storage/' . auth()->user()->profile_picture_url) : asset('public/storage/img/desfault.png') }}"
+                @php($currentUser = auth()->user())
+                @php($profileUrl = $currentUser && $currentUser->profile_picture_url ? asset('storage/' . $currentUser->profile_picture_url) : asset('public/storage/img/desfault.png'))
+                <img src="{{ $profileUrl }}"
                     alt="Imagen del usuario" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
-                <span class="ms-2">{{ auth()->user()->name }}</span>
+                <span class="ms-2">{{ $currentUser?->name ?? 'Invitado' }}</span>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li class="dropdown-item text-center">
-                    <strong>{{ auth()->user()->email }}</strong>
+                    <strong>{{ $currentUser?->email ?? 'No autenticado' }}</strong>
                     <br>
-                    <small class="text-muted">{{ auth()->user()->roles->pluck('name')->first() }}</small>
+                    <small class="text-muted">{{ optional($currentUser?->roles)->pluck('name')->first() }}</small>
                 </li>
                 <li><hr class="dropdown-divider"></li>
 
