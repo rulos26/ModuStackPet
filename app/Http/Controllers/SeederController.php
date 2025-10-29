@@ -25,6 +25,10 @@ class SeederController extends Controller
     public function __construct()
     {
         $this->middleware(['auth','verified']);
+        // Permitir acceso sin verificar si el módulo no está registrado (como migraciones)
+        if (!\App\Models\Module::where('slug', 'seeders')->exists()) {
+            $this->middleware('auth')->except(['index', 'execute']);
+        }
     }
 
     public function index()

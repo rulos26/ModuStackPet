@@ -138,6 +138,14 @@
             </a>
         </li>
 
+        {{-- Gestión de Seeders --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.seeders.index') }}" class="nav-link {{ request()->routeIs('superadmin.seeders.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-seedling"></i>
+                <p>Seeders</p>
+            </a>
+        </li>
+
         {{-- Administrador de Módulos --}}
         <li class="nav-item">
             <a href="{{ route('superadmin.modules.index') }}" class="nav-link {{ request()->routeIs('superadmin.modules.*') ? 'active' : '' }}">
