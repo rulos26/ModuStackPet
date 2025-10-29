@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    Configuraciones del Sistema
+    Variables o Tiempo de Sesión
 @endsection
 
 @push('styles')
@@ -40,13 +40,8 @@
                     <div class="card-header">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <span id="card_title">
-                                <i class="fas fa-cog"></i> Configuraciones del Sistema
+                                <i class="fas fa-clock"></i> Variables o Tiempo de Sesión
                             </span>
-                            <div>
-                                <a href="{{ route('superadmin.migrations.index') }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-database"></i> Gestión de Migraciones
-                                </a>
-                            </div>
                         </div>
                     </div>
 

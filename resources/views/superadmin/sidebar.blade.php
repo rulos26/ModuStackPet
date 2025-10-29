@@ -114,11 +114,11 @@
             </ul>
         </li>
 
-        {{-- Configuraciones del Sistema --}}
+        {{-- Variables o Tiempo de Sesión --}}
         <li class="nav-item">
             <a href="{{ route('superadmin.configuraciones.index') }}" class="nav-link {{ request()->routeIs('superadmin.configuraciones.*') ? 'active' : '' }}">
-                <i class="nav-icon fas fa-cog"></i>
-                <p>Configuraciones del Sistema</p>
+                <i class="nav-icon fas fa-clock"></i>
+                <p>Variables o Tiempo de Sesión</p>
             </a>
         </li>
 
