@@ -7,7 +7,19 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionTimeout
 {
-    protected $timeout = 1800; // Tiempo en segundos (30 minutos)
+    /**
+     * Obtener el timeout de sesión desde la configuración
+     * Si no existe en BD, usar valor por defecto (1800 segundos = 30 minutos)
+     */
+    protected function getTimeout()
+    {
+        try {
+            return \App\Models\Configuracion::getSessionTimeout();
+        } catch (\Exception $e) {
+            // Si hay error al leer la configuración, usar valor por defecto
+            return 1800; // 30 minutos
+        }
+    }
 
     public function handle($request, Closure $next)
     {
@@ -17,16 +29,20 @@ class SessionTimeout
         }
 
         if (Auth::check()) {
+            $timeout = $this->getTimeout();
             $lastActivity = session('last_activity');
             $currentTime = time();
 
-            if ($lastActivity && ($currentTime - $lastActivity > $this->timeout)) {
+            if ($lastActivity && ($currentTime - $lastActivity > $timeout)) {
                 Auth::logout();
                 session()->invalidate();
                 session()->regenerateToken();
 
+                // Convertir timeout a minutos para el mensaje
+                $minutos = round($timeout / 60);
+
                 // Redirigir al login con mensaje claro
-                return redirect()->route('login')->with('message', 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.');
+                return redirect()->route('login')->with('message', "Tu sesión ha expirado por inactividad (más de {$minutos} minutos). Por favor, inicia sesión nuevamente.");
             }
 
             session(['last_activity' => $currentTime]);

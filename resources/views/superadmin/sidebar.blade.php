@@ -115,6 +115,22 @@
         </li>
 
         {{-- Configuraciones del Sistema --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.configuraciones.index') }}" class="nav-link {{ request()->routeIs('superadmin.configuraciones.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-cog"></i>
+                <p>Configuraciones del Sistema</p>
+            </a>
+        </li>
+
+        {{-- Gestión de Migraciones --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.migrations.index') }}" class="nav-link {{ request()->routeIs('superadmin.migrations.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-database"></i>
+                <p>Gestión de Migraciones</p>
+            </a>
+        </li>
+
+        {{-- Configuraciones Funcionales --}}
         <li class="nav-header text-warning mt-2">
             <i class="fas fa-sliders-h"></i> Configuraciones Funcionales
         </li>

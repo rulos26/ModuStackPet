@@ -24,6 +24,8 @@ use App\Http\Controllers\TiposEmpresaController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\PathDocumentoController;
 use App\Http\Controllers\PDFController;
+use App\Http\Controllers\ConfiguracionController;
+use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
@@ -217,7 +219,7 @@ Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(functi
     Route::put('/perfil/{user}', [PaseadorController::class, 'update'])->name('perfil.update');
 });
 
-// Rutas para superadmin
+// Rutas para configuraciones del sistema (solo superadmin)
 Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
@@ -234,4 +236,14 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     Route::get('/usuarios/{user}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
     Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('usuarios.update');
     Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+
+    // Rutas para configuraciones del sistema
+    Route::get('/configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
+    Route::get('/configuraciones/{id}/edit', [ConfiguracionController::class, 'edit'])->name('configuraciones.edit');
+    Route::put('/configuraciones/{id}', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
+    Route::post('/configuraciones/session-timeout', [ConfiguracionController::class, 'updateSessionTimeout'])->name('configuraciones.update-session-timeout');
+
+    // Rutas para gestión de migraciones
+    Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
+    Route::post('/migrations/execute', [MigrationController::class, 'execute'])->name('migrations.execute');
 });
