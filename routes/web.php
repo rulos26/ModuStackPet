@@ -26,6 +26,7 @@ use App\Http\Controllers\PathDocumentoController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\MigrationController;
+use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CleanController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -134,12 +135,18 @@ Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name(
 Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
 });
 
-Route::resource('mascotas', MascotaController::class);
+Route::middleware(['module.active:mascotas'])->group(function () {
+    Route::resource('mascotas', MascotaController::class);
+});
 Route::resource('razas', RazaController::class);
 Route::resource('barrios', BarrioController::class);
-Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
-Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
-Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
+Route::middleware(['module.active:reportes'])->group(function () {
+    Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
+    Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
+});
+Route::middleware(['module.active:certificados'])->group(function () {
+    Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
+});
 
 
 Route::resource('departamentos', DepartamentoController::class);
@@ -148,8 +155,11 @@ Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggle
 Route::resource('sectores', SectoreController::class);
 
 
-Route::resource('tipos-empresas', TiposEmpresaController::class);
-Route::resource('empresas', EmpresaController::class);
+Route::middleware(['module.active:empresas'])->group(function () {
+    Route::resource('tipos-empresas', TiposEmpresaController::class);
+    Route::resource('empresas', EmpresaController::class);
+    Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
+});
 // API de ciudades - SOLUCIÓN SIMPLE
 Route::get('ciudades-api', function() {
     $departamentoId = request()->get('departamentoId', '11');
@@ -221,7 +231,7 @@ Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(functi
 });
 
 // Rutas para configuraciones del sistema (solo superadmin)
-Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
@@ -239,16 +249,38 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
     // Rutas para configuraciones del sistema
-    Route::get('/configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
-    Route::get('/configuraciones/{id}/edit', [ConfiguracionController::class, 'edit'])->name('configuraciones.edit');
-    Route::put('/configuraciones/{id}', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
-    Route::post('/configuraciones/session-timeout', [ConfiguracionController::class, 'updateSessionTimeout'])->name('configuraciones.update-session-timeout');
+    Route::middleware(['module.active:configuracion'])->group(function () {
+        Route::get('/configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
+        Route::get('/configuraciones/{id}/edit', [ConfiguracionController::class, 'edit'])->name('configuraciones.edit');
+        Route::put('/configuraciones/{id}', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
+        Route::post('/configuraciones/session-timeout', [ConfiguracionController::class, 'updateSessionTimeout'])->name('configuraciones.update-session-timeout');
+    });
 
     // Rutas para gestión de migraciones
-    Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
-    Route::post('/migrations/execute', [MigrationController::class, 'execute'])->name('migrations.execute');
+    Route::middleware(['module.active:migraciones'])->group(function () {
+        Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
+        Route::post('/migrations/execute', [MigrationController::class, 'execute'])
+            ->middleware('throttle:2,1') // 2 intentos por minuto para migraciones
+            ->name('migrations.execute');
+    });
 
     // Rutas para AutoClean - Limpieza del Sistema
-    Route::get('/clean', [CleanController::class, 'index'])->name('clean.index');
-    Route::post('/clean/execute', [CleanController::class, 'execute'])->name('clean.execute');
+    Route::middleware(['module.active:clean'])->group(function () {
+        Route::get('/clean', [CleanController::class, 'index'])->name('clean.index');
+        Route::post('/clean/execute', [CleanController::class, 'execute'])
+            ->middleware('throttle:2,1') // 2 intentos por minuto para limpieza
+            ->name('clean.execute');
+    });
+
+    // Rutas para administración de módulos
+    Route::get('/modules', [ModuleController::class, 'index'])->name('modules.index');
+    Route::post('/modules/{module}/request-toggle', [ModuleController::class, 'requestToggleStatus'])
+        ->middleware('throttle:5,1') // 5 intentos por minuto
+        ->name('modules.request-toggle');
+    Route::get('/modules/{module}/verify', [ModuleController::class, 'showVerificationForm'])->name('modules.verify');
+    Route::post('/modules/{module}/confirm', [ModuleController::class, 'confirmToggleStatus'])
+        ->middleware('throttle:3,1') // 3 intentos por minuto para verificación
+        ->name('modules.confirm');
+    Route::get('/modules/{module}/logs', [ModuleController::class, 'showLogs'])->name('modules.logs');
+    Route::get('/modules-logs', [ModuleController::class, 'showAllLogs'])->name('modules.all-logs');
 });

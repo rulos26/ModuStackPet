@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Module;
+use App\Models\ModuleLog;
 
 class RoleAssignmentController extends Controller
 {
@@ -30,6 +32,19 @@ class RoleAssignmentController extends Controller
 
         try {
             $user->syncRoles($request->rol); // Asignar los roles al usuario
+
+            // Registrar auditoría permission_changed
+            $usuariosModule = Module::where('slug', 'usuarios')->first();
+            if ($usuariosModule) {
+                ModuleLog::createLog(
+                    auth()->id() ?? 0,
+                    $usuariosModule->id,
+                    ModuleLog::ACTION_PERMISSION_CHANGED,
+                    $request->ip(),
+                    $request->userAgent()
+                );
+            }
+
             return redirect()->route('usuarios.roles.index')->with('success', 'Roles asignados correctamente.');
         } catch (\Exception $e) {
             return redirect()->route('usuarios.roles.index')->with('error', 'Ocurrió un error al asignar los roles.');

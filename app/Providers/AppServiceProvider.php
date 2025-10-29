@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Module;
+use App\Observers\ModuleObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,5 +29,8 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('roles', $roles);
             }
         });
+
+        // Register Module Observer
+        Module::observe(ModuleObserver::class);
     }
 }

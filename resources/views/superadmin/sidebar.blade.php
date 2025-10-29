@@ -138,6 +138,24 @@
             </a>
         </li>
 
+        {{-- Administrador de Módulos --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.modules.index') }}" class="nav-link {{ request()->routeIs('superadmin.modules.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-puzzle-piece"></i>
+                <p>Módulos del Sistema</p>
+            </a>
+        </li>
+
+        {{-- Menú dinámico por módulos activos y permisos --}}
+        <li class="nav-header text-primary mt-2">
+            <i class="fas fa-puzzle-piece"></i> Módulos Activos
+        </li>
+        <li class="nav-item">
+            <div class="px-2 py-1">
+                <livewire:menu.modules-menu />
+            </div>
+        </li>
+
         {{-- Configuraciones Funcionales --}}
         <li class="nav-header text-warning mt-2">
             <i class="fas fa-sliders-h"></i> Configuraciones Funcionales
