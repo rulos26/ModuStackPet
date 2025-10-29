@@ -315,6 +315,33 @@ Route::post('/migrations/execute', [MigrationController::class, 'execute'])
 - Acceso a `/superadmin/migrations` sin errores aunque `modules` no esté lista.
 - Ejecuciones limitadas por rate limiting.
 
+---
+
+## ✅ Ajuste: "Seeder no permitido" en módulo Seeders
+
+### Síntoma
+Mensaje al ejecutar desde UI: `Seeder no permitido.`
+
+### Causa
+- Diferencias de casing en nombres de clases (`RoleSeeder` vs `roleSeeder`) o envío del nombre base en lugar del FQCN.
+
+### Solución Implementada
+- Lista blanca ampliada con variantes de casing.
+- Validación flexible: permite por FQCN exacto o por nombre base case-insensitive.
+
+```php
+// En SeederController
+$allowedByClass = in_array($seederClass, $this->allowedSeeders, true);
+$allowedBaseNames = array_map(fn($fqcn) => strtolower(class_basename($fqcn)), $this->allowedSeeders);
+$allowedByBase = in_array(strtolower(class_basename($seederClass)), $allowedBaseNames, true);
+if (!$allowedByClass && !$allowedByBase) {
+    return back()->with('error', 'Seeder no permitido.');
+}
+```
+
+### Resultado
+- Seeders listados en UI se ejecutan aunque el casing difiera.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error

@@ -14,12 +14,15 @@ use Illuminate\Support\Facades\Log;
 class SeederController extends Controller
 {
     private array $allowedSeeders = [
+        // FQCN con casing estándar
         'Database\\Seeders\\ModuleSeeder',
         'Database\\Seeders\\ExecuteSqlSeeder',
         'Database\\Seeders\\UserSeeder',
-        'Database\\Seeders\\roleSeeder',
+        'Database\\Seeders\\RoleSeeder',
         'Database\\Seeders\\TokenSeeder',
         'Database\\Seeders\\DepartamentoSqlSeeder',
+        // Variantes tolerantes por si el proyecto define clases con casing distinto
+        'Database\\Seeders\\roleSeeder',
     ];
 
     public function __construct()
@@ -48,7 +51,13 @@ class SeederController extends Controller
         ]);
 
         $seederClass = $request->string('seeder');
-        if (!in_array($seederClass, $this->allowedSeeders, true)) {
+
+        // Normalizar comparación: aceptar por FQCN exacto o por nombre base (case-insensitive)
+        $allowedByClass = in_array($seederClass, $this->allowedSeeders, true);
+        $allowedBaseNames = array_map(function ($fqcn) { return strtolower(class_basename($fqcn)); }, $this->allowedSeeders);
+        $allowedByBase = in_array(strtolower(class_basename($seederClass)), $allowedBaseNames, true);
+
+        if (!$allowedByClass && !$allowedByBase) {
             return back()->with('error', 'Seeder no permitido.');
         }
 
