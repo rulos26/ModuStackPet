@@ -27,6 +27,7 @@ use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\SeederController;
 use App\Http\Controllers\CleanController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -283,4 +284,12 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
         ->name('modules.confirm');
     Route::get('/modules/{module}/logs', [ModuleController::class, 'showLogs'])->name('modules.logs');
     Route::get('/modules-logs', [ModuleController::class, 'showAllLogs'])->name('modules.all-logs');
+
+    // Módulo: Gestión de Seeders
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':seeders'])->group(function () {
+        Route::get('/seeders', [SeederController::class, 'index'])->name('seeders.index');
+        Route::post('/seeders/execute', [SeederController::class, 'execute'])
+            ->middleware('throttle:1,1')
+            ->name('seeders.execute');
+    });
 });

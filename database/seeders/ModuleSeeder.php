@@ -56,6 +56,12 @@ class ModuleSeeder extends Seeder
                 'status' => true,
             ],
             [
+                'name' => 'Ejecución de Seeders',
+                'slug' => 'seeders',
+                'description' => 'Gestión y ejecución segura de seeders del sistema',
+                'status' => true,
+            ],
+            [
                 'name' => 'Limpieza del Sistema',
                 'slug' => 'clean',
                 'description' => 'Herramientas de limpieza y mantenimiento del sistema',
