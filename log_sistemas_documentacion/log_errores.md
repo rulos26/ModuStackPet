@@ -2583,6 +2583,57 @@ private function ejecutarComandoComposer($comando, $descripcion = '')
 - ✅ Separación de salida estándar y errores
 - ✅ Viene incluido con Laravel (Symfony Component)
 
+### Actualización - Configuración de Variables de Entorno ✅
+
+Después de implementar Process, se identificó que Composer requiere las variables de entorno `HOME` o `COMPOSER_HOME`. Se agregó lógica automática para establecer estas variables antes de ejecutar Composer.
+
+#### **Configuración Automática de Variables de Entorno:**
+```php
+// Preparar variables de entorno para Composer
+$env = $_ENV;
+
+// Establecer HOME si no está definida
+if (empty($env['HOME']) && empty($env['COMPOSER_HOME'])) {
+    $home = \getenv('HOME') ?: \getenv('USERPROFILE'); // USERPROFILE para Windows
+    
+    if (empty($home)) {
+        // Si no hay HOME del sistema, usar storage como alternativa
+        $home = storage_path();
+        $env['COMPOSER_HOME'] = storage_path('composer');
+    } else {
+        $env['HOME'] = $home;
+    }
+}
+
+// Asegurar que COMPOSER_HOME esté definida
+if (empty($env['COMPOSER_HOME']) && !empty($env['HOME'])) {
+    $env['COMPOSER_HOME'] = $env['HOME'] . '/.composer';
+}
+
+$process = new Process(
+    ['composer', $comando],
+    base_path(),
+    $env,  // Variables de entorno configuradas
+    null,
+    120    // Timeout aumentado a 120 segundos
+);
+```
+
+#### **Características:**
+- ✅ Detecta automáticamente `HOME` o `USERPROFILE` (Windows)
+- ✅ Usa `storage_path()` como fallback si no hay HOME del sistema
+- ✅ Configura `COMPOSER_HOME` automáticamente
+- ✅ Timeout aumentado a 120 segundos (Composer puede tardar más)
+- ✅ Mensajes de error mejorados con sugerencias
+
+### Estado de la Actualización
+- **Fecha de Actualización:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Errores Corregidos:**
+  - ✅ Call to undefined function exec() → Usa Process de Symfony
+  - ✅ HOME/COMPOSER_HOME no definidas → Configuración automática
+  - ✅ Timeout insuficiente → Aumentado a 120 segundos
+
 ---
 
 ## ✅ Implementación: Módulo AutoClean - Limpieza del Sistema

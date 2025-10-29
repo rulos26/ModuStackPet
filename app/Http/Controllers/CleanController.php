@@ -151,14 +151,43 @@ class CleanController extends Controller
         try {
             $comandoCompleto = 'composer ' . $comando;
 
+            // Preparar variables de entorno para Composer
+            // Composer requiere HOME o COMPOSER_HOME para funcionar correctamente
+            $env = $_ENV;
+
+            // Establecer HOME si no está definida (usando el directorio home del usuario o storage)
+            if (empty($env['HOME']) && empty($env['COMPOSER_HOME'])) {
+                // Intentar obtener el home del usuario del sistema
+                $home = \getenv('HOME') ?: \getenv('USERPROFILE'); // USERPROFILE para Windows
+
+                if (empty($home)) {
+                    // Si no hay HOME del sistema, usar storage como alternativa
+                    $home = storage_path();
+                    $env['COMPOSER_HOME'] = storage_path('composer');
+                } else {
+                    $env['HOME'] = $home;
+                }
+            } elseif (!empty($env['HOME'])) {
+                // Si HOME está definida, usarla
+                $env['HOME'] = $env['HOME'];
+            } elseif (!empty($env['COMPOSER_HOME'])) {
+                // Si COMPOSER_HOME está definida, usarla
+                $env['COMPOSER_HOME'] = $env['COMPOSER_HOME'];
+            }
+
+            // Asegurar que COMPOSER_HOME esté definida incluso si HOME existe
+            if (empty($env['COMPOSER_HOME']) && !empty($env['HOME'])) {
+                $env['COMPOSER_HOME'] = $env['HOME'] . '/.composer';
+            }
+
             // Usar Process de Symfony en lugar de exec()
             // Esto es más seguro y no requiere que exec() esté habilitada
             $process = new Process(
                 ['composer', $comando],
                 base_path(),
+                $env,
                 null,
-                null,
-                60 // Timeout de 60 segundos
+                120 // Timeout de 120 segundos (composer puede tardar más)
             );
 
             $process->run();
@@ -190,12 +219,19 @@ class CleanController extends Controller
                 'tipo' => 'composer'
             ];
         } catch (Exception $e) {
+            $errorMessage = 'Error: ' . $e->getMessage();
+
+            // Mensaje específico para errores de entorno de Composer
+            if (strpos($e->getMessage(), 'HOME') !== false || strpos($e->getMessage(), 'COMPOSER_HOME') !== false) {
+                $errorMessage .= "\n\nSolución: Configure la variable de entorno HOME o COMPOSER_HOME en el servidor.";
+            }
+
             return [
                 'comando' => 'composer ' . $comando,
                 'descripcion' => $descripcion ?: 'composer ' . $comando,
                 'opciones' => [],
                 'exit_code' => 1,
-                'output' => 'Error: ' . $e->getMessage() .
+                'output' => $errorMessage .
                     (strpos($e->getMessage(), 'Process') !== false
                         ? "\n\nNota: Asegúrate de que 'composer' esté disponible en el PATH del servidor."
                         : ''),
