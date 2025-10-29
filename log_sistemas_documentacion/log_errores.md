@@ -1185,3 +1185,105 @@ class Configuracion extends Model
 Cuando el nombre de la tabla no sigue las convenciones de Laravel (plural inglés), siempre se debe especificar explícitamente usando `protected $table` en el modelo.
 
 ---
+
+## 🚨 Error: Route [configuraciones.update-session-timeout] Not Defined
+
+### Descripción del Error
+```
+Route [configuraciones.update-session-timeout] not defined.
+```
+
+### Archivo Afectado
+- **Archivos:** 
+  - `resources/views/configuracion/index.blade.php`
+  - `resources/views/configuracion/edit.blade.php`
+  - `app/Http/Controllers/ConfiguracionController.php`
+
+### Contexto del Error
+Las rutas de configuraciones están definidas dentro del grupo `superadmin` con el prefijo `name('superadmin.')`, lo que significa que todas las rutas dentro de ese grupo tienen el prefijo `superadmin.` en su nombre. Sin embargo, las vistas y el controlador estaban usando los nombres de rutas sin este prefijo.
+
+### Causa Raíz Identificada ✅
+
+1. **Prefijo de Grupo de Rutas:**
+   - Las rutas están en `Route::prefix('superadmin')->name('superadmin.')`
+   - Esto añade `superadmin.` al inicio de todos los nombres de rutas
+   - La ruta real es `superadmin.configuraciones.update-session-timeout`, no `configuraciones.update-session-timeout`
+
+2. **Referencias Incorrectas:**
+   - Las vistas usaban `route('configuraciones.*')` sin el prefijo
+   - El controlador redirigía a `route('configuraciones.index')` sin el prefijo
+   - Todas las referencias necesitaban incluir `superadmin.`
+
+### Solución Implementada ✅
+
+#### **1. Corrección en Vistas:**
+
+**index.blade.php:**
+```php
+// ❌ ANTES
+route('configuraciones.update-session-timeout')
+route('configuraciones.edit', $config->id)
+
+// ✅ DESPUÉS
+route('superadmin.configuraciones.update-session-timeout')
+route('superadmin.configuraciones.edit', $config->id)
+```
+
+**edit.blade.php:**
+```php
+// ❌ ANTES
+route('configuraciones.index')
+route('configuraciones.update', $configuracion->id)
+
+// ✅ DESPUÉS
+route('superadmin.configuraciones.index')
+route('superadmin.configuraciones.update', $configuracion->id)
+```
+
+#### **2. Corrección en Controlador:**
+
+**ConfiguracionController.php:**
+```php
+// ❌ ANTES
+return redirect()->route('configuraciones.index')
+
+// ✅ DESPUÉS
+return redirect()->route('superadmin.configuraciones.index')
+```
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Alta (impide el funcionamiento de actualización de configuraciones)
+
+### Impacto
+- **Antes:** 
+  - ❌ Error: Route not defined al actualizar timeout de sesión
+  - ❌ Formularios no funcionan correctamente
+  - ❌ Redirecciones fallan
+  - ❌ Enlaces de edición no funcionan
+
+- **Después:** 
+  - ✅ Todas las rutas funcionan correctamente con el prefijo
+  - ✅ Formularios envían datos correctamente
+  - ✅ Redirecciones funcionan
+  - ✅ Enlaces de edición funcionan
+  - ✅ Actualización de timeout de sesión operativa
+
+### Archivos Modificados
+- `resources/views/configuracion/index.blade.php` - Rutas corregidas (3 referencias)
+- `resources/views/configuracion/edit.blade.php` - Rutas corregidas (3 referencias)
+- `app/Http/Controllers/ConfiguracionController.php` - Redirecciones corregidas (2 referencias)
+
+### Lista de Rutas Corregidas
+- ✅ `configuraciones.index` → `superadmin.configuraciones.index`
+- ✅ `configuraciones.edit` → `superadmin.configuraciones.edit`
+- ✅ `configuraciones.update` → `superadmin.configuraciones.update`
+- ✅ `configuraciones.update-session-timeout` → `superadmin.configuraciones.update-session-timeout`
+
+### Nota Importante
+Cuando las rutas están dentro de un grupo con prefijo de nombre, TODAS las referencias a esas rutas deben incluir el prefijo completo. Siempre verificar que los nombres de rutas en vistas y controladores coincidan con los definidos en `routes/web.php`.
+
+---
+
+*Log generado automáticamente - ModuStackPet Sistema de Documentación*

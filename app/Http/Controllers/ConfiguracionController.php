@@ -59,7 +59,7 @@ class ConfiguracionController extends Controller
 
             Log::info("Configuración actualizada: {$configuracion->clave} = {$request->valor} (anterior: {$valorAnterior})");
 
-            return redirect()->route('configuraciones.index')
+            return redirect()->route('superadmin.configuraciones.index')
                 ->with('success', "Configuración '{$configuracion->descripcion}' actualizada correctamente.");
         } catch (\Exception $e) {
             Log::error('Error al actualizar configuración: ' . $e->getMessage());
@@ -96,7 +96,7 @@ class ConfiguracionController extends Controller
 
             Log::info("Timeout de sesión actualizado: {$request->session_timeout}s ({$minutos} min) - Anterior: {$valorAnterior}s ({$minutosAnterior} min)");
 
-            return redirect()->route('configuraciones.index')
+            return redirect()->route('superadmin.configuraciones.index')
                 ->with('success', "Tiempo de sesión actualizado a {$minutos} minutos ({$request->session_timeout} segundos).");
         } catch (\Exception $e) {
             Log::error('Error al actualizar timeout de sesión: ' . $e->getMessage());

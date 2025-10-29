@@ -14,7 +14,7 @@
                             <span id="card_title">
                                 <i class="fas fa-edit"></i> Editar Configuración
                             </span>
-                            <a href="{{ route('configuraciones.index') }}" class="btn btn-secondary btn-sm">
+                            <a href="{{ route('superadmin.configuraciones.index') }}" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-arrow-left"></i> Volver
                             </a>
                         </div>
@@ -35,7 +35,7 @@
                     @endif
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('configuraciones.update', $configuracion->id) }}" role="form">
+                        <form method="POST" action="{{ route('superadmin.configuraciones.update', $configuracion->id) }}" role="form">
                             @csrf
                             @method('PUT')
 
@@ -91,7 +91,7 @@
                             @endif
 
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a href="{{ route('configuraciones.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('superadmin.configuraciones.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Cancelar
                                 </a>
                                 <button type="submit" class="btn btn-primary">

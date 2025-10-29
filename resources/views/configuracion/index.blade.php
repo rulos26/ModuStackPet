@@ -90,7 +90,7 @@
                                                             <small class="text-muted">({{ number_format($config->valor) }} segundos)</small>
                                                         </div>
 
-                                                        <form action="{{ route('configuraciones.update-session-timeout') }}" method="POST" id="form-timeout-{{ $config->id }}">
+                                                        <form action="{{ route('superadmin.configuraciones.update-session-timeout') }}" method="POST" id="form-timeout-{{ $config->id }}">
                                                             @csrf
                                                             <div class="mb-3">
                                                                 <label for="session_timeout" class="form-label">
@@ -124,7 +124,7 @@
                                                                 <button type="submit" class="btn btn-primary">
                                                                     <i class="fas fa-save"></i> Guardar Cambios
                                                                 </button>
-                                                                <a href="{{ route('configuraciones.edit', $config->id) }}" class="btn btn-outline-secondary btn-sm">
+                                                                <a href="{{ route('superadmin.configuraciones.edit', $config->id) }}" class="btn btn-outline-secondary btn-sm">
                                                                     <i class="fas fa-edit"></i> Editar Detalles
                                                                 </a>
                                                             </div>
@@ -142,7 +142,7 @@
                                                         <p class="card-text text-muted small">
                                                             Clave: <code>{{ $config->clave }}</code>
                                                         </p>
-                                                        <a href="{{ route('configuraciones.edit', $config->id) }}" class="btn btn-primary btn-sm">
+                                                        <a href="{{ route('superadmin.configuraciones.edit', $config->id) }}" class="btn btn-primary btn-sm">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </a>
                                                     </div>
