@@ -236,6 +236,20 @@ php artisan route:list | findstr module.active
 - Rutas con `->middleware('module.active:slug')` funcionan sin error.
 - No aparece más el error en `index.php :17`.
 
+### Ajuste adicional sin usar Artisan ✅
+Para entornos donde no es posible ejecutar comandos Artisan, se reemplazó el alias del middleware por el FQCN directamente en `routes/web.php`. Ejemplo:
+```php
+// Antes
+Route::middleware(['module.active:mascotas'])->group(function () { /* ... */ });
+
+// Después (usa FQCN y evita caché de alias)
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () { /* ... */ });
+```
+
+### Resultado
+- Se evita la resolución de alias en caché.
+- El middleware se carga por clase totalmente calificada en todas las rutas.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error

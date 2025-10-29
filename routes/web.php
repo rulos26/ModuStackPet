@@ -135,16 +135,16 @@ Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name(
 Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
 });
 
-Route::middleware(['module.active:mascotas'])->group(function () {
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () {
     Route::resource('mascotas', MascotaController::class);
 });
 Route::resource('razas', RazaController::class);
 Route::resource('barrios', BarrioController::class);
-Route::middleware(['module.active:reportes'])->group(function () {
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':reportes'])->group(function () {
     Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
     Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
 });
-Route::middleware(['module.active:certificados'])->group(function () {
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':certificados'])->group(function () {
     Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
 });
 
@@ -155,7 +155,7 @@ Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggle
 Route::resource('sectores', SectoreController::class);
 
 
-Route::middleware(['module.active:empresas'])->group(function () {
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
     Route::resource('tipos-empresas', TiposEmpresaController::class);
     Route::resource('empresas', EmpresaController::class);
     Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
@@ -249,7 +249,7 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
     Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
     // Rutas para configuraciones del sistema
-    Route::middleware(['module.active:configuracion'])->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':configuracion'])->group(function () {
         Route::get('/configuraciones', [ConfiguracionController::class, 'index'])->name('configuraciones.index');
         Route::get('/configuraciones/{id}/edit', [ConfiguracionController::class, 'edit'])->name('configuraciones.edit');
         Route::put('/configuraciones/{id}', [ConfiguracionController::class, 'update'])->name('configuraciones.update');
@@ -257,7 +257,7 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
     });
 
     // Rutas para gestión de migraciones
-    Route::middleware(['module.active:migraciones'])->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':migraciones'])->group(function () {
         Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
         Route::post('/migrations/execute', [MigrationController::class, 'execute'])
             ->middleware('throttle:2,1') // 2 intentos por minuto para migraciones
@@ -265,7 +265,7 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
     });
 
     // Rutas para AutoClean - Limpieza del Sistema
-    Route::middleware(['module.active:clean'])->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':clean'])->group(function () {
         Route::get('/clean', [CleanController::class, 'index'])->name('clean.index');
         Route::post('/clean/execute', [CleanController::class, 'execute'])
             ->middleware('throttle:2,1') // 2 intentos por minuto para limpieza
