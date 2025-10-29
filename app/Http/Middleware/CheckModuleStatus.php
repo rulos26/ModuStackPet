@@ -7,12 +7,31 @@ use App\Models\ModuleLog;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CheckModuleStatus
 {
     public function handle(Request $request, Closure $next, string $moduleSlug)
     {
-        $module = Module::where('slug', $moduleSlug)->first();
+        // Si la tabla 'modules' aún no existe (entorno sin migraciones), permitir el paso
+        if (!Schema::hasTable('modules')) {
+            Log::warning('Tabla modules no existe, se permite acceso temporal', [
+                'slug' => $moduleSlug,
+                'path' => $request->path(),
+            ]);
+            return $next($request);
+        }
+
+        try {
+            $module = Module::where('slug', $moduleSlug)->first();
+        } catch (\Throwable $e) {
+            // Si hay error de conexión o tabla, permitir paso para no romper UX
+            Log::error('Error consultando tabla modules en middleware', [
+                'error' => $e->getMessage(),
+                'slug' => $moduleSlug,
+            ]);
+            return $next($request);
+        }
 
         if (!$module || !$module->status) {
             // Log access denied attempt

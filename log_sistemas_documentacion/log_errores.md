@@ -250,6 +250,41 @@ Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])
 - Se evita la resolución de alias en caché.
 - El middleware se carga por clase totalmente calificada en todas las rutas.
 
+---
+
+## 🚨 Error: Tabla `modules` no existe (entorno sin migraciones)
+
+### Descripción del Error
+```
+SQLSTATE[42S02]: Base table or view not found: 1146 Table '...modules' doesn't exist
+```
+
+### Causa Raíz
+- El middleware `module.active` consulta la tabla `modules`. En entornos donde no es posible ejecutar migraciones (producción sin consola), fallaba la consulta.
+
+### Solución Implementada ✅
+En `App\Http\Middleware\CheckModuleStatus` se agregó tolerancia a entornos sin tabla:
+```php
+if (!Schema::hasTable('modules')) {
+    Log::warning('Tabla modules no existe, se permite acceso temporal', ['slug' => $moduleSlug]);
+    return $next($request);
+}
+
+try {
+    $module = Module::where('slug', $moduleSlug)->first();
+} catch (\Throwable $e) {
+    Log::error('Error consultando tabla modules', ['error' => $e->getMessage()]);
+    return $next($request);
+}
+```
+
+### Resultado
+- No rompe la app si faltan migraciones; permite el acceso temporal y registra en logs.
+- Una vez creada la tabla, el control vuelve a ser estricto.
+
+### Recomendación
+- En cuanto sea posible, crear las tablas con migraciones o SQL directo y poblar `modules` (seed o inserciones).
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error
