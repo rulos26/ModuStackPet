@@ -160,6 +160,39 @@ resources/views/layouts/navbar.blade.php : line rol
 - Usuario sin roles: renderiza cadena vacía sin errores.
 - Usuario con roles: muestra el primer rol correctamente.
 
+---
+
+## 🚨 Error: Undefined variable $roles (sidebar)
+
+### Descripción del Error
+```
+Undefined variable $roles
+resources/views/layouts/sidebar.blade.php :11
+```
+
+### Causa Raíz
+- La vista asumía una variable `$roles` compartida. En ciertos contextos la vista se rendereaba sin ese composer, causando variable indefinida.
+
+### Solución Implementada ✅
+Se reemplazó la dependencia de `$roles` por comprobaciones directas al usuario autenticado con Spatie Permission:
+```php
+@if(auth()->user()?->hasRole('Admin'))
+    {{-- @include('admin.sidebar') --}}
+@endif
+
+@if(auth()->user()?->hasRole('Cliente'))
+  {{-- @include('cliente.sidebar') --}}
+@endif
+
+@if(auth()->user()?->hasRole('Superadmin'))
+    @include('superadmin.sidebar')
+@endif
+```
+
+### Verificación
+- Sesión cerrada: no muestra secciones y no hay errores.
+- Sesión con rol Admin/Cliente/Superadmin: muestra la sección correcta.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error

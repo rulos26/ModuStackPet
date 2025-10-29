@@ -8,18 +8,18 @@
     </a>
     <div class="sidebar">
         <!-- Permisos por rol -->
-        @if($roles->contains('Admin'))
+        @if(auth()->user()?->hasRole('Admin'))
             {{-- @include('admin.sidebar') --}}
         @endif
 
-        @if($roles->contains('Cliente'))
+        @if(auth()->user()?->hasRole('Cliente'))
           {{-- @include('cliente.sidebar') --}}
         @endif
 
-        @if($roles->contains('Superadmin'))
+        @if(auth()->user()?->hasRole('Superadmin'))
             @include('superadmin.sidebar')
         @endif
 
-        
+
     </div>
 </aside>
