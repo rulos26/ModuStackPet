@@ -324,10 +324,12 @@ Mensaje al ejecutar desde UI: `Seeder no permitido.`
 
 ### Causa
 - Diferencias de casing en nombres de clases (`RoleSeeder` vs `roleSeeder`) o envío del nombre base en lugar del FQCN.
+- En Laravel 11, `Request::string()` devuelve `Stringable`; llegaba un objeto y no el string.
 
 ### Solución Implementada
 - Lista blanca ampliada con variantes de casing.
 - Validación flexible: permite por FQCN exacto o por nombre base case-insensitive.
+- Casteo explícito del seeder recibido a string.
 
 ```php
 // En SeederController

@@ -50,7 +50,8 @@ class SeederController extends Controller
             'seeder' => ['required','string'],
         ]);
 
-        $seederClass = $request->string('seeder');
+        // En Laravel 11, request->string() retorna Stringable: castear a string
+        $seederClass = (string) $request->string('seeder');
 
         // Debug: Log del seeder recibido
         Log::info('Seeder recibido', [
