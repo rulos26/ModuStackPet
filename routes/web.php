@@ -30,7 +30,23 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', function () {
-    return view('auth.login');
+    // Si el usuario está autenticado, redirigir según su rol
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->hasRole('Superadmin')) {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($user->hasRole('Admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->hasRole('Cliente')) {
+            return redirect()->route('cliente.dashboard');
+        } elseif ($user->hasRole('Paseador')) {
+            return redirect()->route('paseador.dashboard');
+        }
+        return redirect()->route('temp.index');
+    }
+
+    // Si no está autenticado, mostrar login
+    return redirect()->route('login');
 });
 
 Route::middleware(['web'])->group(function () {
@@ -55,7 +71,8 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('temp.index');
 
-Route::get('login', [LoginController::class, 'login'])->name('login');
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
 
 // Rutas para Superadmin
 Route::get('/superadmin/dashboard', [SuperadminController::class, 'login_Superadmin'])->name('superadmin.dashboard');

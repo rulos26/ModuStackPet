@@ -591,3 +591,144 @@ ciudadesFormateadas.sort((a, b) => {
   - ✅ Logging detallado para debugging
 
 ---
+
+## 🚨 Error: ERR_TOO_MANY_REDIRECTS en /login
+
+### Descripción del Error
+```
+Esta página no funciona
+rulossoluciones.com te redireccionó demasiadas veces.
+Intenta borrar las cookies.
+ERR_TOO_MANY_REDIRECTS
+```
+El navegador muestra un error de bucle de redirección al intentar acceder a `https://rulossoluciones.com/ModuStackPet/login` después de un período de inactividad.
+
+### Archivo Afectado
+- **URL:** `https://rulossoluciones.com/ModuStackPet/login`
+- **Archivos Involucrados:**
+    - `routes/web.php` (línea 58)
+    - `app/Http/Middleware/SessionTimeout.php`
+    - `app/Http/Controllers/Auth/LoginController.php`
+
+### Contexto del Error
+El error ocurre después de un período de inactividad (aproximadamente 30 minutos según el timeout de sesión) cuando el usuario intenta acceder a la página de login. El sistema entra en un bucle infinito de redirecciones que impide el acceso a la aplicación.
+
+### Causa Raíz Identificada ✅
+
+1. **Ruta GET `/login` Incorrecta:**
+   ```php
+   // ❌ INCORRECTO - Llamaba al método login (POST) en lugar de showLoginForm
+   Route::get('login', [LoginController::class, 'login'])->name('login');
+   ```
+   Esto causaba que al acceder a `/login` se intentara procesar un login sin credenciales, generando redirecciones.
+
+2. **Middleware SessionTimeout en Todas las Rutas:**
+   - El middleware `SessionTimeout` estaba en el grupo `web`, ejecutándose en TODAS las rutas
+   - Cuando la sesión expiraba, redirigía a `/` que a su vez podría crear un bucle
+   - No excluía las rutas de autenticación (`/login`, `/logout`, etc.)
+
+3. **Ruta Raíz `/` Sin Lógica Clara:**
+   - La ruta `/` simplemente mostraba `auth.login` sin verificar el estado de autenticación
+   - Si había una sesión corrupta o cookies problemáticas, podía crear un bucle
+
+### Solución Implementada ✅
+
+#### **1. Corrección de Rutas de Login:**
+```php
+// ✅ CORRECTO - Separar GET y POST
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [LoginController::class, 'login']);
+```
+
+#### **2. Mejora del Middleware SessionTimeout:**
+```php
+public function handle($request, Closure $next)
+{
+    // Excluir rutas de autenticación y logout del timeout de sesión
+    if ($request->is('login', 'logout', 'register', 'password/*', 'email/verify*')) {
+        return $next($request);
+    }
+
+    if (Auth::check()) {
+        $lastActivity = session('last_activity');
+        $currentTime = time();
+
+        if ($lastActivity && ($currentTime - $lastActivity > $this->timeout)) {
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+
+            // Redirigir al login con mensaje claro
+            return redirect()->route('login')->with('message', 'Tu sesión ha expirado por inactividad. Por favor, inicia sesión nuevamente.');
+        }
+
+        session(['last_activity' => $currentTime]);
+    }
+
+    return $next($request);
+}
+```
+
+**Mejoras:**
+- ✅ Excluye rutas de autenticación del timeout
+- ✅ Regenera el token CSRF al expirar sesión
+- ✅ Redirige directamente a `route('login')` en lugar de `/`
+- ✅ Mensaje claro para el usuario
+
+#### **3. Mejora de la Ruta Raíz `/`:**
+```php
+Route::get('/', function () {
+    // Si el usuario está autenticado, redirigir según su rol
+    if (Auth::check()) {
+        $user = Auth::user();
+        if ($user->hasRole('Superadmin')) {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($user->hasRole('Admin')) {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->hasRole('Cliente')) {
+            return redirect()->route('cliente.dashboard');
+        } elseif ($user->hasRole('Paseador')) {
+            return redirect()->route('paseador.dashboard');
+        }
+        return redirect()->route('temp.index');
+    }
+    
+    // Si no está autenticado, mostrar login
+    return redirect()->route('login');
+});
+```
+
+**Mejoras:**
+- ✅ Verifica estado de autenticación antes de redirigir
+- ✅ Redirige según el rol del usuario si está autenticado
+- ✅ Redirige a login solo si NO está autenticado
+- ✅ Usa rutas con nombre en lugar de URLs hardcodeadas
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Alta (impide el acceso a la aplicación)
+- **Impacto:**
+    - **Antes:** Bucle infinito de redirecciones después de inactividad
+    - **Después:** Sesión expira correctamente y redirige al login sin bucles
+    - **Ventajas:** 
+      - ✅ Sin bucles de redirección
+      - ✅ Manejo correcto de sesiones expiradas
+      - ✅ Mensajes claros al usuario
+      - ✅ Rutas separadas para GET y POST del login
+      - ✅ Exclusión de rutas de autenticación del timeout
+
+### Recomendaciones Preventivas
+1. **Separar Rutas GET y POST:** Siempre separar las rutas GET y POST para formularios
+2. **Excluir Rutas de Autenticación:** Los middlewares de timeout deben excluir rutas de autenticación
+3. **Usar Rutas con Nombre:** Usar `route('login')` en lugar de URLs hardcodeadas
+4. **Regenerar Tokens:** Regenerar tokens CSRF al expirar sesiones
+5. **Testing de Timeout:** Probar regularmente el comportamiento del timeout de sesión
+
+### Archivos Modificados
+- `routes/web.php` - Corrección de rutas de login y ruta raíz
+- `app/Http/Middleware/SessionTimeout.php` - Mejora del manejo de timeout
+
+---
+
+*Log generado automáticamente - ModuStackPet Sistema de Documentación*
