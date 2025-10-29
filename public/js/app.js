@@ -1,4 +1,3 @@
-
 // Detecta el tema preferido del sistema
 function applySystemTheme() {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -32,3 +31,11 @@ window.addEventListener('load', () => {
     // Escucha los cambios en el tema del sistema (si el usuario cambia la configuración)
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener('change', applySystemTheme);
 });
+
+// Inicializar axios si está disponible (desde CDN o bundle)
+if (typeof axios !== 'undefined') {
+    window.axios = axios;
+    window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}
+
+console.log('app.js cargado correctamente');

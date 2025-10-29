@@ -966,3 +966,144 @@ Todos los intentos de login se registran en `storage/logs/laravel.log` con:
 5. **Buscar entradas con "LoginController:"**
 
 ---
+
+## 🚨 Error: Vite Manifest Not Found
+
+### Descripción del Error
+```
+Vite manifest not found at: /home/u494150416/domains/rulossoluciones.com/public_html/ModuStackPet/public/build/manifest.json
+resources/views/layouts/app.blade.php :133
+```
+
+### Archivo Afectado
+- **Archivo:** `resources/views/layouts/app.blade.php`
+- **Línea:** 133
+- **Código Problemático:**
+```php
+@vite(['resources/js/app.js'])
+```
+
+### Contexto del Error
+El error ocurre en producción cuando Laravel intenta usar la directiva `@vite` pero el archivo `manifest.json` no existe porque los assets no han sido compilados con `npm run build`. Esto impide que la aplicación cargue correctamente los scripts JavaScript.
+
+### Causa Raíz Identificada ✅
+
+1. **Assets No Compilados:**
+   - La directiva `@vite` requiere que exista `public/build/manifest.json`
+   - Este archivo solo se genera después de ejecutar `npm run build`
+   - En producción, los assets deben estar pre-compilados
+
+2. **Falta de Fallback:**
+   - No había una alternativa cuando el manifest no existe
+   - La aplicación falla completamente si Vite no está disponible
+   - No se verifica si los assets están compilados antes de usar `@vite`
+
+3. **Configuración de Entorno:**
+   - En desarrollo, Vite dev server genera el manifest dinámicamente
+   - En producción, necesita assets compilados previamente
+   - No hay diferenciación entre entornos
+
+### Solución Implementada ✅
+
+#### **1. Verificación Condicional con Fallback:**
+```php
+<!-- Cargar archivo app.js usando Vite (solo si está compilado o en desarrollo) -->
+@if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+    @vite(['resources/js/app.js'])
+@else
+    {{-- Fallback: Solo cargar si el archivo existe en public --}}
+    @if (file_exists(public_path('js/app.js')))
+        <script src="{{ asset('js/app.js') }}"></script>
+    @endif
+    {{-- Log de advertencia solo en desarrollo --}}
+    @if (config('app.debug'))
+        <script>
+            console.warn('Vite manifest no encontrado. Ejecuta "npm run build" para compilar los assets.');
+        </script>
+    @endif
+@endif
+```
+
+**Cómo Funciona:**
+1. **Primero verifica** si existe `manifest.json` (producción con assets compilados)
+2. **O verifica** si existe `hot` (desarrollo con Vite dev server)
+3. **Si no existe ninguno**, usa el fallback `public/js/app.js` si existe
+4. **Muestra advertencia** solo en modo debug
+
+#### **2. Archivos de Fallback Existentes:**
+- ✅ `public/js/app.js` - Ya existe y contiene código JavaScript
+- ✅ `public/js/bootstrap.js` - Bootstrap de Laravel
+- ✅ `public/css/app.css` - Estilos CSS
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Media (afecta carga de JavaScript)
+
+### Impacto
+- **Antes:** 
+  - ❌ Error fatal cuando no existe manifest.json
+  - ❌ JavaScript no carga en producción
+  - ❌ Aplicación puede romperse completamente
+
+- **Después:** 
+  - ✅ Verificación condicional antes de usar Vite
+  - ✅ Fallback automático a `public/js/app.js`
+  - ✅ Funciona en desarrollo y producción
+  - ✅ Advertencia útil en modo debug
+  - ✅ Sin errores fatales
+
+### Recomendaciones Preventivas
+1. **Compilar Assets Antes de Desplegar:**
+   ```bash
+   npm run build
+   ```
+2. **Incluir en Deploy Script:**
+   - Agregar `npm run build` al proceso de despliegue
+   - Verificar que `public/build/` exista antes de desplegar
+3. **Documentar Requisitos:**
+   - Mencionar en README que se necesita `npm run build` para producción
+4. **CI/CD:**
+   - Ejecutar `npm run build` en pipeline de CI/CD
+
+### Archivos Modificados
+- `resources/views/layouts/app.blade.php` - Verificación condicional con fallback
+
+### Archivos de Fallback Disponibles
+- `public/js/app.js` - Script principal
+- `public/js/bootstrap.js` - Bootstrap de Laravel
+- `public/css/app.css` - Estilos CSS
+
+### Instrucciones para Compilar Assets en Producción
+
+1. **Conectarse al servidor:**
+   ```bash
+   ssh usuario@rulossoluciones.com
+   ```
+
+2. **Ir al directorio del proyecto:**
+   ```bash
+   cd /home/u494150416/domains/rulossoluciones.com/public_html/ModuStackPet
+   ```
+
+3. **Instalar dependencias (si no están instaladas):**
+   ```bash
+   npm install
+   ```
+
+4. **Compilar assets:**
+   ```bash
+   npm run build
+   ```
+
+5. **Verificar que se creó el manifest:**
+   ```bash
+   ls -la public/build/manifest.json
+   ```
+
+### Nota Importante
+Si tienes acceso SSH al servidor, puedes ejecutar `npm run build` directamente en producción. Si no, el fallback automático permitirá que la aplicación funcione usando `public/js/app.js` directamente.
+
+---
+
+*Log generado automáticamente - ModuStackPet Sistema de Documentación*

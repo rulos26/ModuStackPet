@@ -129,8 +129,21 @@
         });
     </script>
 
-    <!-- Cargar archivo app.js usando Vite -->
-    @vite(['resources/js/app.js'])
+    <!-- Cargar archivo app.js usando Vite (solo si está compilado o en desarrollo) -->
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+        @vite(['resources/js/app.js'])
+    @else
+        {{-- Fallback: Solo cargar si el archivo existe en public --}}
+        @if (file_exists(public_path('js/app.js')))
+            <script src="{{ asset('js/app.js') }}"></script>
+        @endif
+        {{-- Log de advertencia solo en desarrollo --}}
+        @if (config('app.debug'))
+            <script>
+                console.warn('Vite manifest no encontrado. Ejecuta "npm run build" para compilar los assets.');
+            </script>
+        @endif
+    @endif
     @yield('js')
     @stack('scripts')
 </body>
