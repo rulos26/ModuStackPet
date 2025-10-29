@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Process\Process;
 use Exception;
 
 class CleanController extends Controller
@@ -148,34 +149,44 @@ class CleanController extends Controller
     private function ejecutarComandoComposer($comando, $descripcion = '')
     {
         try {
-            // Verificar si la función exec está disponible
-            if (!function_exists('exec')) {
-                return [
-                    'comando' => 'composer ' . $comando,
-                    'descripcion' => $descripcion ?: 'composer ' . $comando,
-                    'opciones' => [],
-                    'exit_code' => 1,
-                    'output' => 'Error: La función exec() no está disponible en este servidor. Contacte al administrador.',
-                    'success' => false,
-                    'tipo' => 'composer'
-                ];
+            $comandoCompleto = 'composer ' . $comando;
+
+            // Usar Process de Symfony en lugar de exec()
+            // Esto es más seguro y no requiere que exec() esté habilitada
+            $process = new Process(
+                ['composer', $comando],
+                base_path(),
+                null,
+                null,
+                60 // Timeout de 60 segundos
+            );
+
+            $process->run();
+
+            $output = $process->getOutput();
+            $errorOutput = $process->getErrorOutput();
+            $exitCode = $process->getExitCode();
+
+            // Combinar salida estándar y errores
+            $outputString = trim($output);
+            if (!empty($errorOutput)) {
+                $outputString .= (!empty($outputString) ? "\n" : '') . $errorOutput;
             }
 
-            $comandoCompleto = 'composer ' . $comando;
-            $output = [];
-            $exitCode = 0;
-
-            // Usar \exec() para asegurar que use la función global de PHP
-            \exec($comandoCompleto . ' 2>&1', $output, $exitCode);
-            $outputString = implode("\n", $output);
+            // Si no hay salida, mostrar mensaje informativo
+            if (empty($outputString)) {
+                $outputString = $exitCode === 0
+                    ? 'Comando ejecutado correctamente (sin salida visible)'
+                    : 'Error al ejecutar el comando (código de salida: ' . $exitCode . ')';
+            }
 
             return [
                 'comando' => $comandoCompleto,
                 'descripcion' => $descripcion ?: $comandoCompleto,
                 'opciones' => [],
-                'exit_code' => $exitCode,
-                'output' => $outputString ?: 'Comando ejecutado correctamente (sin salida)',
-                'success' => $exitCode === 0,
+                'exit_code' => $exitCode ?? 1,
+                'output' => $outputString,
+                'success' => ($exitCode ?? 1) === 0,
                 'tipo' => 'composer'
             ];
         } catch (Exception $e) {
@@ -184,7 +195,10 @@ class CleanController extends Controller
                 'descripcion' => $descripcion ?: 'composer ' . $comando,
                 'opciones' => [],
                 'exit_code' => 1,
-                'output' => 'Error: ' . $e->getMessage(),
+                'output' => 'Error: ' . $e->getMessage() .
+                    (strpos($e->getMessage(), 'Process') !== false
+                        ? "\n\nNota: Asegúrate de que 'composer' esté disponible en el PATH del servidor."
+                        : ''),
                 'success' => false,
                 'tipo' => 'composer'
             ];

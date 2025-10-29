@@ -2520,17 +2520,68 @@ if (!function_exists('exec')) {
 ### Nota Importante
 Siempre usar el prefijo `\` (backslash) cuando se quiera referenciar una función global de PHP desde dentro de un namespace. Ejemplo: `\exec()`, `\array_map()`, `\strlen()`, etc.
 
-### Notas Técnicas sobre exec()
+### Actualización - Solución Mejorada ✅
 
-1. **Disponibilidad:**
-   - `exec()` puede estar deshabilitada en algunos servidores por seguridad
-   - Se verifica con `function_exists('exec')` antes de usar
-   - Se muestra un mensaje claro si no está disponible
+Después de corregir el namespace, se implementó una solución mejorada usando `Process` de Symfony en lugar de `exec()`, ya que algunos servidores tienen `exec()` deshabilitada por seguridad.
 
-2. **Seguridad:**
-   - Solo Superadmin puede ejecutar estos comandos
-   - Los comandos están validados y predefinidos
-   - No se pueden ejecutar comandos arbitrarios
+#### **Implementación con Process de Symfony:**
+```php
+// ✅ SOLUCIÓN MEJORADA
+use Symfony\Component\Process\Process;
+
+private function ejecutarComandoComposer($comando, $descripcion = '')
+{
+    try {
+        $process = new Process(
+            ['composer', $comando],
+            base_path(),
+            null,
+            null,
+            60 // Timeout de 60 segundos
+        );
+        
+        $process->run();
+        
+        $output = $process->getOutput();
+        $errorOutput = $process->getErrorOutput();
+        $exitCode = $process->getExitCode();
+        
+        // Combinar salida estándar y errores
+        $outputString = trim($output);
+        if (!empty($errorOutput)) {
+            $outputString .= (!empty($outputString) ? "\n" : '') . $errorOutput;
+        }
+        
+        return [
+            'comando' => 'composer ' . $comando,
+            'descripcion' => $descripcion ?: 'composer ' . $comando,
+            'opciones' => [],
+            'exit_code' => $exitCode ?? 1,
+            'output' => $outputString ?: 'Comando ejecutado correctamente',
+            'success' => ($exitCode ?? 1) === 0,
+            'tipo' => 'composer'
+        ];
+    } catch (Exception $e) {
+        return [
+            'comando' => 'composer ' . $comando,
+            'descripcion' => $descripcion ?: 'composer ' . $comando,
+            'opciones' => [],
+            'exit_code' => 1,
+            'output' => 'Error: ' . $e->getMessage(),
+            'success' => false,
+            'tipo' => 'composer'
+        ];
+    }
+}
+```
+
+#### **Ventajas de Process sobre exec():**
+- ✅ No requiere que `exec()` esté habilitada
+- ✅ Más seguro y controlado
+- ✅ Mejor manejo de errores
+- ✅ Timeout configurable
+- ✅ Separación de salida estándar y errores
+- ✅ Viene incluido con Laravel (Symfony Component)
 
 ---
 
