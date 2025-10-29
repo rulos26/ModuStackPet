@@ -257,13 +257,11 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
         Route::post('/configuraciones/session-timeout', [ConfiguracionController::class, 'updateSessionTimeout'])->name('configuraciones.update-session-timeout');
     });
 
-    // Rutas para gestión de migraciones
-    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':migraciones'])->group(function () {
-        Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
-        Route::post('/migrations/execute', [MigrationController::class, 'execute'])
-            ->middleware('throttle:2,1') // 2 intentos por minuto para migraciones
-            ->name('migrations.execute');
-    });
+    // Rutas para gestión de migraciones (acceso directo como seeders)
+    Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
+    Route::post('/migrations/execute', [MigrationController::class, 'execute'])
+        ->middleware('throttle:2,1') // 2 intentos por minuto para migraciones
+        ->name('migrations.execute');
 
     // Rutas para AutoClean - Limpieza del Sistema
     Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':clean'])->group(function () {

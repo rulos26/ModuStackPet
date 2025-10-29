@@ -285,6 +285,36 @@ try {
 ### Recomendación
 - En cuanto sea posible, crear las tablas con migraciones o SQL directo y poblar `modules` (seed o inserciones).
 
+---
+
+## 🔧 Ajuste: Migraciones con acceso directo (sin `module.active`)
+
+### Contexto
+Para empatar el comportamiento con el nuevo módulo de Seeders, las rutas de migraciones ahora no dependen del alias `module.active:migraciones`.
+
+### Cambio
+```php
+// Antes
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':migraciones'])->group(function () {
+    Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
+    Route::post('/migrations/execute', [MigrationController::class, 'execute'])->name('migrations.execute');
+});
+
+// Después (acceso directo)
+Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
+Route::post('/migrations/execute', [MigrationController::class, 'execute'])
+    ->middleware('throttle:2,1')
+    ->name('migrations.execute');
+```
+
+### Motivo
+- Evitar bloqueo cuando la tabla `modules` no existe o no puede activarse el módulo.
+- Mantener seguridad con `auth`, `verified` y `throttle` a nivel de controlador/ruta.
+
+### Verificación
+- Acceso a `/superadmin/migrations` sin errores aunque `modules` no esté lista.
+- Ejecuciones limitadas por rate limiting.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error
