@@ -289,7 +289,7 @@
             ciudadSelect.disabled = true;
             ciudadSelect.innerHTML = '<option value="">Cargando ciudades...</option>';
 
-            // SOLUCIÓN RADICAL: Usar API externa de ciudades colombianas
+            // SOLUCIÓN RADICAL: Usar API externa de ciudades colombianas FILTRADA POR DEPARTAMENTO
             fetch(`https://api-colombia.com/api/v1/city`, {
                 method: 'GET',
                 headers: {
@@ -307,36 +307,25 @@
                 .then(data => {
                     console.log('Datos recibidos de API externa:', data);
 
-                    // Filtrar ciudades principales de Colombia
-                    const ciudadesPrincipales = [
-                        { id: 1, name: 'Bogotá' },
-                        { id: 2, name: 'Medellín' },
-                        { id: 3, name: 'Cali' },
-                        { id: 4, name: 'Barranquilla' },
-                        { id: 5, name: 'Cartagena' },
-                        { id: 6, name: 'Bucaramanga' },
-                        { id: 7, name: 'Pereira' },
-                        { id: 8, name: 'Santa Marta' },
-                        { id: 9, name: 'Ibagué' },
-                        { id: 10, name: 'Manizales' },
-                        { id: 11, name: 'Villavicencio' },
-                        { id: 12, name: 'Armenia' },
-                        { id: 13, name: 'Valledupar' },
-                        { id: 14, name: 'Montería' },
-                        { id: 15, name: 'Sincelejo' },
-                        { id: 16, name: 'Neiva' },
-                        { id: 17, name: 'Popayán' },
-                        { id: 18, name: 'Tunja' },
-                        { id: 19, name: 'Florencia' },
-                        { id: 20, name: 'Yopal' }
-                    ];
+                    // Filtrar ciudades por departamento seleccionado
+                    const ciudadesFiltradas = data.filter(ciudad => {
+                        return ciudad.departmentId == departamentoId;
+                    });
+
+                    console.log(`Ciudades encontradas para departamento ${departamentoId}:`, ciudadesFiltradas.length);
 
                     // Convertir al formato esperado
-                    const ciudadesFormateadas = ciudadesPrincipales.map(ciudad => ({
+                    const ciudadesFormateadas = ciudadesFiltradas.map(ciudad => ({
                         id_municipio: ciudad.id,
                         municipio: ciudad.name
                     }));
 
+                    // Ordenar ciudades alfabéticamente por nombre
+                    ciudadesFormateadas.sort((a, b) => {
+                        return a.municipio.localeCompare(b.municipio);
+                    });
+
+                    console.log('Ciudades formateadas:', ciudadesFormateadas);
                     actualizarCiudades(ciudadesFormateadas);
                 })
                 .catch(error => {

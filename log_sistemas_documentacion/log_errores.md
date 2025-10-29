@@ -478,4 +478,116 @@ fetch(`https://api-colombia.com/api/v1/city`, {
 
 ---
 
-*Log generado automáticamente - ModuStackPet Sistema de Documentación*
+## 🚨 Error 404 - js/app.js No Encontrado
+
+### Descripción del Error
+```
+GET https://rulossoluciones.com/ModuStackPet/js/app.js net::ERR_ABORTED 404 (Not Found)
+```
+
+### Archivo Afectado
+- **Archivo:** `resources/views/layouts/app.blade.php`
+- **Línea:** 133
+- **Código Problemático:**
+```php
+<script src="{{ asset('js/app.js') }}"></script>
+```
+
+### Contexto del Error
+El error ocurrió porque el layout estaba intentando cargar `js/app.js` directamente desde `public/js/app.js`, pero en Laravel con Vite, los assets deben compilarse primero y luego cargarse usando la directiva `@vite`.
+
+### Causa Raíz
+1. **Assets no compilados:** El archivo `js/app.js` no existe en `public/js/` porque necesita ser compilado por Vite
+2. **Uso incorrecto de asset():** Se estaba usando `asset('js/app.js')` en lugar de `@vite(['resources/js/app.js'])`
+3. **Falta compilación:** Los assets no se han compilado para producción
+
+### Solución Implementada ✅
+
+**Antes:**
+```php
+<script src="{{ asset('js/app.js') }}"></script>
+```
+
+**Después:**
+```php
+@vite(['resources/js/app.js'])
+```
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Baja (no afecta funcionalidad principal)
+
+### Nota Importante
+Para que funcione correctamente en producción, se debe ejecutar:
+```bash
+npm run build
+```
+
+Esto compilará los assets y los colocará en `public/build/` donde Laravel los encontrará automáticamente.
+
+---
+
+## 🚨 Error - Ciudades No Filtradas por Departamento
+
+### Descripción del Error
+La API de ciudades estaba funcionando correctamente (Status 200, 1123 ciudades), pero siempre mostraba las mismas 20 ciudades hardcodeadas sin importar el departamento seleccionado.
+
+### Archivo Afectado
+- **Archivo:** `resources/views/empresa/form.blade.php`
+- **Línea:** 292-350
+
+### Contexto del Error
+Aunque la API externa retornaba todas las ciudades correctamente, el código JavaScript estaba usando siempre las mismas 20 ciudades hardcodeadas en lugar de filtrar por `departmentId`.
+
+### Causa Raíz
+1. **Filtrado faltante:** No se estaba filtrando por `departmentId` del departamento seleccionado
+2. **Datos hardcodeados:** Se usaban ciudades fijas en lugar de usar los datos de la API
+3. **Lógica incorrecta:** No se aprovechaba la información de `departmentId` en la respuesta de la API
+
+### Solución Implementada ✅
+
+**Antes:**
+```javascript
+// Filtrar ciudades principales de Colombia (hardcodeadas)
+const ciudadesPrincipales = [
+    { id: 1, name: 'Bogotá' },
+    { id: 2, name: 'Medellín' },
+    // ... siempre las mismas 20 ciudades
+];
+```
+
+**Después:**
+```javascript
+// Filtrar ciudades por departamento seleccionado
+const ciudadesFiltradas = data.filter(ciudad => {
+    return ciudad.departmentId == departamentoId;
+});
+
+// Convertir al formato esperado
+const ciudadesFormateadas = ciudadesFiltradas.map(ciudad => ({
+    id_municipio: ciudad.id,
+    municipio: ciudad.name
+}));
+
+// Ordenar ciudades alfabéticamente por nombre
+ciudadesFormateadas.sort((a, b) => {
+    return a.municipio.localeCompare(b.municipio);
+});
+```
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Media (afecta funcionalidad de formulario)
+
+### Impacto
+- **Antes:** Siempre mostraba las mismas 20 ciudades sin importar el departamento
+- **Después:** Muestra solo las ciudades del departamento seleccionado, ordenadas alfabéticamente
+- **Ventajas:** 
+  - ✅ Filtrado correcto por departamento
+  - ✅ Ordenamiento alfabético
+  - ✅ Uso correcto de datos de API externa
+  - ✅ Logging detallado para debugging
+
+---

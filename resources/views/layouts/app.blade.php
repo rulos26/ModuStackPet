@@ -129,8 +129,8 @@
         });
     </script>
 
-    <!-- Cargar archivo app.js de manera estática -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Cargar archivo app.js usando Vite -->
+    @vite(['resources/js/app.js'])
     @yield('js')
     @stack('scripts')
 </body>
