@@ -56,7 +56,7 @@
                 <li class="dropdown-item text-center">
                     <strong>{{ $currentUser?->email ?? 'No autenticado' }}</strong>
                     <br>
-                    <small class="text-muted">{{ optional($currentUser?->roles)->pluck('name')->first() }}</small>
+                    <small class="text-muted">{{ $currentUser?->roles?->pluck('name')->first() ?? '' }}</small>
                 </li>
                 <li><hr class="dropdown-divider"></li>
 

@@ -111,6 +111,55 @@ Módulo creado para ejecutar comandos de limpieza de Laravel desde la interfaz w
 ---
 
 *Log generado automáticamente - ModuStackPet Sistema de Documentación*
+
+---
+
+## 🚨 Error: Attempt to read property "profile_picture_url" on null
+
+### Descripción del Error
+```
+Attempt to read property "profile_picture_url" on null
+resources/views/layouts/navbar.blade.php :48
+```
+
+### Causa Raíz
+- Se accedía a `auth()->user()->profile_picture_url` sin comprobar si había usuario autenticado.
+
+### Solución Implementada ✅
+```php
+@php($currentUser = auth()->user())
+@php($profileUrl = $currentUser && $currentUser->profile_picture_url ? asset('storage/' . $currentUser->profile_picture_url) : asset('public/storage/img/desfault.png'))
+<img src="{{ $profileUrl }}" ...>
+<span class="ms-2">{{ $currentUser?->name ?? 'Invitado' }}</span>
+```
+
+### Verificación
+- Sesión cerrada: navbar renderiza sin errores y muestra “Invitado”.
+- Sesión abierta sin foto: usa imagen por defecto.
+- Sesión abierta con foto: muestra imagen de `storage`.
+
+---
+
+## 🚨 Error: Call to a member function first() on null (navbar roles)
+
+### Descripción del Error
+```
+Call to a member function first() on null
+resources/views/layouts/navbar.blade.php : line rol
+```
+
+### Causa Raíz
+- Se encadenaba `->first()` sobre el resultado de `pluck()` cuando `roles` podía ser null/no cargado.
+
+### Solución Implementada ✅
+```php
+<small class="text-muted">{{ $currentUser?->roles?->pluck('name')->first() ?? '' }}</small>
+```
+
+### Verificación
+- Usuario sin roles: renderiza cadena vacía sin errores.
+- Usuario con roles: muestra el primer rol correctamente.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error
