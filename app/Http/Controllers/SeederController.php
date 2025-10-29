@@ -52,13 +52,26 @@ class SeederController extends Controller
 
         $seederClass = $request->string('seeder');
 
+        // Debug: Log del seeder recibido
+        Log::info('Seeder recibido', [
+            'seeder_class' => $seederClass,
+            'allowed_seeders' => $this->allowedSeeders,
+            'user_id' => Auth::id()
+        ]);
+
         // Normalizar comparación: aceptar por FQCN exacto o por nombre base (case-insensitive)
         $allowedByClass = in_array($seederClass, $this->allowedSeeders, true);
         $allowedBaseNames = array_map(function ($fqcn) { return strtolower(class_basename($fqcn)); }, $this->allowedSeeders);
         $allowedByBase = in_array(strtolower(class_basename($seederClass)), $allowedBaseNames, true);
 
         if (!$allowedByClass && !$allowedByBase) {
-            return back()->with('error', 'Seeder no permitido.');
+            Log::warning('Seeder rechazado', [
+                'seeder_class' => $seederClass,
+                'allowed_by_class' => $allowedByClass,
+                'allowed_by_base' => $allowedByBase,
+                'user_id' => Auth::id()
+            ]);
+            return back()->with('error', 'Seeder no permitido: ' . $seederClass);
         }
 
         try {
