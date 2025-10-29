@@ -130,6 +130,14 @@
             </a>
         </li>
 
+        {{-- AutoClean - Limpieza del Sistema --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.clean.index') }}" class="nav-link {{ request()->routeIs('superadmin.clean.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-broom"></i>
+                <p>AutoClean</p>
+            </a>
+        </li>
+
         {{-- Configuraciones Funcionales --}}
         <li class="nav-header text-warning mt-2">
             <i class="fas fa-sliders-h"></i> Configuraciones Funcionales

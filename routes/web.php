@@ -26,6 +26,7 @@ use App\Http\Controllers\PathDocumentoController;
 use App\Http\Controllers\PDFController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\MigrationController;
+use App\Http\Controllers\CleanController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
@@ -246,4 +247,8 @@ Route::middleware(['auth'])->prefix('superadmin')->name('superadmin.')->group(fu
     // Rutas para gestión de migraciones
     Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
     Route::post('/migrations/execute', [MigrationController::class, 'execute'])->name('migrations.execute');
+
+    // Rutas para AutoClean - Limpieza del Sistema
+    Route::get('/clean', [CleanController::class, 'index'])->name('clean.index');
+    Route::post('/clean/execute', [CleanController::class, 'execute'])->name('clean.execute');
 });
