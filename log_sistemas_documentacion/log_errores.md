@@ -1106,4 +1106,82 @@ Si tienes acceso SSH al servidor, puedes ejecutar `npm run build` directamente e
 
 ---
 
-*Log generado automáticamente - ModuStackPet Sistema de Documentación*
+## 🚨 Error: Tabla 'configuracions' No Existe
+
+### Descripción del Error
+```
+SQLSTATE[42S02]: Base table or view not found: 1146 Table 'u494150416_B33pE.configuracions' doesn't exist
+SQL: select * from `configuracions` order by `categoria` asc, `clave` asc
+```
+
+### Archivo Afectado
+- **Archivo:** `app/Models/Configuracion.php`
+- **Problema:** El modelo no especifica el nombre correcto de la tabla
+
+### Contexto del Error
+Laravel usa convenciones de nombres automáticas. Cuando el modelo se llama `Configuracion` (singular), Laravel automáticamente busca la tabla en plural inglés: `configuracions`. Sin embargo, la migración crea la tabla con el nombre español: `configuraciones`.
+
+### Causa Raíz Identificada ✅
+
+1. **Convención de Nombres de Laravel:**
+   - Laravel pluraliza automáticamente el nombre del modelo
+   - `Configuracion` → busca tabla `configuracions` (plural inglés)
+   - Pero la migración crea `configuraciones` (plural español)
+
+2. **Falta de Especificación:**
+   - El modelo no especificaba explícitamente el nombre de la tabla
+   - Laravel asumía el nombre por convención incorrecta
+
+### Solución Implementada ✅
+
+#### **Especificar el Nombre de la Tabla en el Modelo:**
+```php
+class Configuracion extends Model
+{
+    /**
+     * Nombre de la tabla (Laravel busca 'configuracions' por defecto)
+     */
+    protected $table = 'configuraciones';
+
+    protected $fillable = [
+        'clave',
+        'valor',
+        'descripcion',
+        'tipo',
+        'categoria',
+        'activo',
+    ];
+    // ...
+}
+```
+
+**Explicación:**
+- Al agregar `protected $table = 'configuraciones';`, el modelo usa el nombre correcto
+- Laravel ya no intenta pluralizar automáticamente
+- La tabla `configuraciones` se busca correctamente
+
+### Estado
+- **Fecha de Resolución:** $(date)
+- **Estado:** ✅ **SOLUCIONADO**
+- **Severidad:** Alta (impide el funcionamiento de configuraciones)
+
+### Impacto
+- **Antes:** 
+  - ❌ Error SQL: tabla 'configuracions' no existe
+  - ❌ No se pueden listar configuraciones
+  - ❌ No se puede obtener timeout de sesión
+  - ❌ Configuraciones del sistema inaccesibles
+
+- **Después:** 
+  - ✅ Tabla 'configuraciones' encontrada correctamente
+  - ✅ Configuraciones se listan sin errores
+  - ✅ Timeout de sesión funciona
+  - ✅ Todas las funciones de configuración operativas
+
+### Archivos Modificados
+- `app/Models/Configuracion.php` - Agregado `protected $table = 'configuraciones';`
+
+### Nota Importante
+Cuando el nombre de la tabla no sigue las convenciones de Laravel (plural inglés), siempre se debe especificar explícitamente usando `protected $table` en el modelo.
+
+---

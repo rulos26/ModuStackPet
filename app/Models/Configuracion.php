@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Cache;
 
 class Configuracion extends Model
 {
+    /**
+     * Nombre de la tabla (Laravel busca 'configuracions' por defecto)
+     */
+    protected $table = 'configuraciones';
+
     protected $fillable = [
         'clave',
         'valor',
