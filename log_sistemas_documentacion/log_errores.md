@@ -193,6 +193,49 @@ Se reemplazó la dependencia de `$roles` por comprobaciones directas al usuario 
 - Sesión cerrada: no muestra secciones y no hay errores.
 - Sesión con rol Admin/Cliente/Superadmin: muestra la sección correcta.
 
+---
+
+## 🚨 Error: Target class [module.active] does not exist
+
+### Descripción del Error
+```
+Target class [module.active] does not exist.
+index.php :17
+```
+
+### Causa Raíz
+- El alias del middleware `module.active` estaba definido en `$middlewareAliases`, pero algunas rutas (o caché de rutas) intentaban resolverlo desde `$routeMiddleware`, provocando que no lo encontrara en ciertos contextos.
+
+### Solución Implementada ✅
+Se registró el alias también en `$routeMiddleware` para compatibilidad total:
+```php
+// app/Http/Kernel.php
+protected $routeMiddleware = [
+    // ...
+    'verified' => EnsureEmailIsVerified::class,
+    'module.active' => \App\Http\Middleware\CheckModuleStatus::class, // ← agregado
+];
+
+protected $middlewareAliases = [
+    // ...
+    'module.active' => \App\Http\Middleware\CheckModuleStatus::class,
+];
+```
+
+### Acciones recomendadas
+1. Limpiar cachés después del cambio:
+```bash
+php artisan route:clear && php artisan config:clear && php artisan cache:clear
+```
+2. Verificar listado de rutas para confirmar middleware:
+```bash
+php artisan route:list | findstr module.active
+```
+
+### Verificación
+- Rutas con `->middleware('module.active:slug')` funcionan sin error.
+- No aparece más el error en `index.php :17`.
+
 ## 🚨 Error Reportado
 
 ### Descripción del Error

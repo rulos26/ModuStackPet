@@ -91,6 +91,8 @@ class Kernel extends HttpKernel
         'signed' => ValidateSignature::class,
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
+        // Alias explícito para compatibilidad
+        'module.active' => \App\Http\Middleware\CheckModuleStatus::class,
     ];
 
     protected $middlewareAliases = [
