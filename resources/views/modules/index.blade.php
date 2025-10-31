@@ -72,7 +72,24 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <livewire:modules.toggle-button :module="$module" />
+                                                <div class="module-toggle-wrapper" data-module-id="{{ $module->id }}" data-module-slug="{{ $module->slug }}">
+                                                    @if($module->status)
+                                                        <button type="button" class="btn btn-sm btn-danger toggle-module-btn" data-action="desactivar">
+                                                            <i class="fas fa-ban"></i> Desactivar
+                                                        </button>
+                                                    @else
+                                                        <button type="button" class="btn btn-sm btn-success toggle-module-btn" data-action="activar">
+                                                            <i class="fas fa-check"></i> Activar
+                                                        </button>
+                                                    @endif
+                                                    <div class="verification-form mt-2" style="display: none;">
+                                                        <input type="text" class="form-control form-control-sm d-inline-block" style="max-width: 140px;" placeholder="Código" maxlength="6" id="code_{{ $module->id }}">
+                                                        <button type="button" class="btn btn-sm btn-primary confirm-code-btn" data-module-id="{{ $module->id }}">
+                                                            <i class="fas fa-check"></i> Confirmar
+                                                        </button>
+                                                    </div>
+                                                    <div class="message mt-2"></div>
+                                                </div>
                                             </td>
                                             <td>
                                                 <a href="{{ route('superadmin.modules.logs', $module) }}" class="btn btn-sm btn-info">
@@ -93,8 +110,86 @@
         </div>
     </div>
 
-
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar clic en botones de toggle
+    document.querySelectorAll('.toggle-module-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const wrapper = this.closest('.module-toggle-wrapper');
+            const moduleId = wrapper.dataset.moduleId;
+            const action = this.dataset.action;
+
+            // Solicitar código de verificación
+            fetch(`/superadmin/modules/${moduleId}/request-toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok || data.message) {
+                    wrapper.querySelector('.verification-form').style.display = 'block';
+                    wrapper.querySelector('.message').innerHTML = '<div class="alert alert-info py-1 px-2 mb-0">Se envió un código a tu correo. Ingresa el código para confirmar.</div>';
+                    this.style.display = 'none';
+                } else {
+                    wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error: ' + (data.message || 'Error desconocido') + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error de conexión. Intenta de nuevo.</div>';
+            });
+        });
+    });
+
+    // Manejar confirmación de código
+    document.querySelectorAll('.confirm-code-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const moduleId = this.dataset.moduleId;
+            const wrapper = this.closest('.module-toggle-wrapper');
+            const codeInput = document.getElementById('code_' + moduleId);
+            const code = codeInput.value.trim();
+
+            if (code.length !== 6) {
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-warning py-1 px-2 mb-0">El código debe tener 6 dígitos.</div>';
+                return;
+            }
+
+            // Confirmar cambio de estado
+            fetch(`/superadmin/modules/${moduleId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ verification_code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    wrapper.querySelector('.message').innerHTML = '<div class="alert alert-success py-1 px-2 mb-0">' + data.message + '</div>';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">' + (data.message || 'Código inválido o expirado') + '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error de conexión. Intenta de nuevo.</div>';
+            });
+        });
+    });
+});
+</script>
+@endpush
 
 
 
