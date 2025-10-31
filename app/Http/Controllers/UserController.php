@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Paseador;
 use App\Models\TipoDocumento;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 use App\Http\Controllers\Controller; // Asegúrate de que este namespace esté presente
@@ -38,7 +41,7 @@ class UserController extends Controller
         $user = new User();
         $tiposDocumento = TipoDocumento::all(); // Obtener todos los tipos de documento
 
-        return view('user.create', compact('user', 'tiposDocumento')); // Pasar los datos a la vista
+        return view('user.superadmin.create', compact('user', 'tiposDocumento')); // Pasar los datos a la vista
     }
 
     /**
@@ -64,26 +67,57 @@ class UserController extends Controller
             ],
             'telefono' => 'nullable|string|max:15',
             'whatsapp' => 'nullable|string|max:15',
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:8',
             'activo' => 'boolean',
             'avatar' => 'nullable|image|max:2048', // Validar que sea una imagen
         ]);
 
+        // Generar password si no se proporciona
+        $password = $validatedData['password'] ?? Str::random(12);
+
         // Manejar la subida de la imagen
+        $avatarPath = null;
         if ($request->hasFile('avatar')) {
             $cedula = $validatedData['cedula'];
             $avatarPath = 'avatars/' . $cedula;
             $avatarName = $cedula . '.' . $request->file('avatar')->getClientOriginalExtension();
             $request->file('avatar')->move(public_path($avatarPath), $avatarName);
-            $validatedData['avatar'] = $avatarPath . '/' . $avatarName;
+            $avatarPath = $avatarPath . '/' . $avatarName;
         }
 
         // Crear el usuario con los datos validados
-        $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
-        User::create($validatedData);
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($password),
+            'tipo_documento' => $validatedData['tipo_documento'],
+            'cedula' => $validatedData['cedula'],
+            'fecha_nacimiento' => $validatedData['fecha_nacimiento'],
+            'telefono' => $validatedData['telefono'] ?? null,
+            'whatsapp' => $validatedData['whatsapp'] ?? null,
+            'activo' => $validatedData['activo'] ?? true,
+            'avatar' => $avatarPath,
+        ]);
 
-        return Redirect::route('users.index')
-            ->with('success', 'Usuario creado exitosamente.');
+        // Asignar rol "Paseador" automáticamente
+        $user->assignRole('Paseador');
+
+        // Crear perfil en tabla paseadores
+        Paseador::create([
+            'user_id' => $user->id,
+            'tipo_documento_id' => $validatedData['tipo_documento'],
+            'cedula' => $validatedData['cedula'],
+            'telefono' => $validatedData['telefono'] ?? null,
+            'whatsapp' => $validatedData['whatsapp'] ?? null,
+            'fecha_nacimiento' => $validatedData['fecha_nacimiento'],
+            'disponibilidad' => true,
+            'avatar' => $avatarPath,
+        ]);
+
+        // TODO: Enviar email con credenciales (se implementará después con notificación)
+
+        return Redirect::route('superadmin.usuarios.index')
+            ->with('success', 'Paseador creado exitosamente. ' . ($request->has('password') ? '' : 'Se generó una contraseña automáticamente.'));
     }
 
     /**

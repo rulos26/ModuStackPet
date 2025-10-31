@@ -7291,3 +7291,588 @@ $table->boolean('status')->default(true); //   Por defecto activo
 
 *Categorizaci√≥n generada autom√°ticamente - ModuStackPet Sistema de Documentaci√≥n*
 
+# x 9  Informe: An√°lisis de Flujos de Registro - ModuStackPet
+
+**Fecha:** 2025-01-29  
+**Estado:** ‚a†Ô∏è **INCOMPLETO - REQUIERE IMPLEMENTACI√ N**
+
+---
+
+## x ` RESUMEN EJECUTIVO
+
+### Flujos Requeridos:
+1. **Flujo Administrador ‚    Paseador:** ‚S&  Parcialmente implementado
+2. **Flujo Cliente Auto-registro:** ‚a†Ô∏è Implementado b√°sico (SIN redes sociales)
+
+### Estado General: **40/100** ‚a†Ô∏è
+
+---
+
+## x ç AN√ÅLISIS DETALLADO POR FLUJO
+
+### 1. x ¥ FLUJO ADMINISTRADOR ‚    PASEADOR
+
+#### Estado Actual: ‚a†Ô∏è **PARCIALMENTE FUNCIONAL**
+
+**Lo que S√ç funciona:**
+- ‚S&  Existe ruta: `/superadmin/usuarios/create`
+- ‚S&  Existe controlador: `UserController@create` y `store`
+- ‚S&  Existe formulario: `user/superadmin/create.blade.php`
+- ‚S&  Formulario tiene campos completos (tipo_documento, c√©dula, fecha_nacimiento, etc.)
+- ‚S&  Validaciones implementadas
+
+**Lo que NO funciona:**
+- ‚ùR **NO asigna rol "Paseador" autom√°ticamente**
+- ‚ùR **NO crea registro en tabla `paseadores` (si existe)**
+- ‚ùR **NO habilita usuario autom√°ticamente** (`activo = true` pero no verificado)
+- ‚ùR **NO env√≠a credenciales al paseador** (email con password)
+- ‚ùR **Problemas t√©cnicos:** Rutas incorrectas, password nullable, vista incorrecta
+
+**Estructura de BD Actual:**
+```
+users (tabla principal)
+  - id
+  - name, email, password
+  - tipo_documento, cedula, fecha_nacimiento (campos en users)
+  - activo (default true)
+  - NO hay tabla separada 'paseadores'
+```
+
+**Relaci√≥n con Mascotas:**
+- ‚S&  `mascotas.user_id` ‚    Foreign key a `users.id`
+- ‚a†Ô∏è La relaci√≥n es por `user_id`, no distingue si es Cliente o Paseador
+
+---
+
+### 2. x ¥ FLUJO CLIENTE AUTO-REGISTRO
+
+#### Estado Actual: ‚a†Ô∏è **BASICO - SIN REDES SOCIALES**
+
+**Lo que S√ç funciona:**
+- ‚S&  Ruta p√∫blica: `/register` (GET y POST)
+- ‚S&  Controlador: `RegisterController`
+- ‚S&  Vista: `auth/register.blade.php`
+- ‚S&  Validaciones b√°sicas (name, email, password)
+- ‚S&  Auto-login despu√©s de registro
+
+**Lo que NO funciona:**
+- ‚ùR **NO asigna rol "Cliente" autom√°ticamente**
+- ‚ùR **NO crea registro en tabla `clientes`**
+- ‚ùR **NO solicita datos complementarios** (mascota, tipo_documento, etc.)
+- ‚ùR **NO verifica email** (aunque User implementa MustVerifyEmail)
+- ‚ùR **NO redirige seg√∫n rol** (redirige a `/dashboard` gen√©rico)
+- ‚ùR **NO tiene registro por redes sociales** (Google, Facebook, etc.)
+
+**Problemas T√©cnicos:**
+```php
+// RegisterController@register - L√≠nea 31-35
+$user = User::create([
+    'name' => $request->name,
+    'email' => $request->email,
+    'password' => Hash::make($request->password),
+]);
+// ‚ùR NO asigna rol
+// ‚ùR NO crea perfil en tabla clientes
+```
+
+---
+
+## xa® PROBLEMAS IDENTIFICADOS
+
+### Problemas Cr√≠ticos:
+
+1. **Estructura de BD Incompleta:**
+   - ‚ùR Tabla `clientes` existe pero NO tiene `user_id` (foreign key)
+   - ‚ùR NO existe tabla `paseadores`
+   - ‚ùR Campos de Cliente/Paseador est√°n mezclados en `users`
+   - ‚a†Ô∏è No hay separaci√≥n clara entre datos de autenticaci√≥n y perfil
+
+2. **Roles NO Asignados Autom√°ticamente:**
+   - ‚ùR Registro p√∫blico NO asigna rol "Cliente"
+   - ‚ùR Creaci√≥n por admin NO asigna rol "Paseador" expl√≠citamente
+   - ‚a†Ô∏è Depende de asignaci√≥n manual posterior
+
+3. **Sin Registro por Redes Sociales:**
+   - ‚ùR NO hay paquete Laravel Socialite instalado
+   - ‚ùR NO hay controladores para OAuth
+   - ‚ùR NO hay vistas para botones de login social
+
+4. **Flujo Incompleto:**
+   - ‚ùR Cliente registrado NO puede agregar mascota en el mismo flujo
+   - ‚ùR Paseador creado NO recibe credenciales por email
+   - ‚ùR No hay verificaci√≥n de habilitaci√≥n antes de acceso
+
+---
+
+## x 9  ESTRUCTURA DE BASE DE DATOS RECOMENDADA
+
+### Opci√≥n A: Tablas Separadas (RECOMENDADA) ‚S& 
+
+```
+users (autenticaci√≥n)
+  - id
+  - name, email, password
+  - email_verified_at
+  - activo (habilitado/deshabilitado)
+  - created_at, updated_at
+
+clientes (perfil de cliente)
+  - id
+  - user_id (FK ‚    users.id)
+  - tipo_documento_id (FK)
+  - cedula
+  - telefono
+  - whatsapp
+  - fecha_nacimiento
+  - direccion
+  - ciudad_id (FK)
+  - barrio_id (FK)
+  - avatar
+  - created_at, updated_at
+
+paseadores (perfil de paseador)
+  - id
+  - user_id (FK ‚    users.id)
+  - tipo_documento_id (FK)
+  - cedula
+  - telefono
+  - whatsapp
+  - fecha_nacimiento
+  - direccion
+  - ciudad_id (FK)
+  - barrio_id (FK)
+  - experiencia_anos
+  - calificacion_promedio
+  - disponibilidad
+  - tarifa_hora
+  - documentos_verificados (JSON)
+  - avatar
+  - created_at, updated_at
+
+social_accounts (para OAuth)
+  - id
+  - user_id (FK ‚    users.id)
+  - provider (google, facebook, github)
+  - provider_id (ID del usuario en el provider)
+  - avatar_url
+  - created_at, updated_at
+```
+
+### Opci√≥n B: Campo `tipo` en users (ACTUAL - NO RECOMENDADA)
+
+**Problema:** Mezcla datos de autenticaci√≥n con datos de perfil
+
+---
+
+## x ß TECNOLOG√çAS RECOMENDADAS
+
+### 1. Laravel Socialite (Para Redes Sociales) ‚S& 
+
+**Paquete:** `laravel/socialite`
+
+```bash
+composer require laravel/socialite
+```
+
+**Providers Soportados:**
+- ‚S&  Google
+- ‚S&  Facebook
+- ‚S&  GitHub
+- ‚S&  Twitter/X
+- ‚S&  LinkedIn
+- ‚S&  Microsoft
+
+**Implementaci√≥n:**
+```php
+// config/services.php
+'google' => [
+    'client_id' => env('GOOGLE_CLIENT_ID'),
+    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+    'redirect' => env('GOOGLE_REDIRECT_URI'),
+],
+```
+
+### 2. Laravel Notification (Para Emails) ‚S& 
+
+**Ya incluido en Laravel 11**
+
+Para enviar credenciales a paseadores:
+```php
+$user->notify(new CredencialesNotification($password));
+```
+
+### 3. Laravel Queue (Para Procesos As√≠ncronos) ‚S& 
+
+**Ya incluido en Laravel 11**
+
+Para procesar verificaci√≥n de email y env√≠o de notificaciones en background.
+
+---
+
+## x &  CRONOGRAMA DE IMPLEMENTACI√ N
+
+### FASE 1: Correcciones Urgentes (2-3 d√≠as)
+
+**D√≠a 1:**
+- ‚S&  Corregir rutas en `UserController`
+- ‚S&  Corregir manejo de password nullable
+- ‚S&  Corregir vista en m√©todo `create()`
+- ‚S&  Agregar asignaci√≥n autom√°tica de rol "Paseador"
+
+**D√≠a 2:**
+- ‚S&  Modificar `RegisterController` para asignar rol "Cliente"
+- ‚S&  Agregar middleware de autorizaci√≥n
+- ‚S&  Corregir redirecci√≥n seg√∫n rol
+
+**D√≠a 3:**
+- ‚S&  Testing de flujos b√°sicos
+- ‚S&  Correcci√≥n de bugs encontrados
+
+---
+
+### FASE 2: Estructura de BD (3-4 d√≠as)
+
+**D√≠a 4:**
+- ‚S&  Crear migraci√≥n `add_user_id_to_clientes_table`
+- ‚S&  Crear migraci√≥n `create_paseadores_table`
+- ‚S&  Crear migraci√≥n `create_social_accounts_table`
+- ‚S&  Crear modelos `Cliente` y `Paseador` con relaciones
+
+**D√≠a 5:**
+- ‚S&  Actualizar `UserController@store` para crear registro en `paseadores`
+- ‚S&  Actualizar `RegisterController@register` para crear registro en `clientes`
+- ‚S&  Agregar relaciones en modelos
+
+**D√≠a 6-7:**
+- ‚S&  Migrar datos existentes
+- ‚S&  Testing de integridad referencial
+
+---
+
+### FASE 3: Registro por Redes Sociales (4-5 d√≠as)
+
+**D√≠a 8:**
+- ‚S&  Instalar `laravel/socialite`
+- ‚S&  Configurar providers (Google, Facebook)
+- ‚S&  Crear controlador `SocialAuthController`
+
+**D√≠a 9:**
+- ‚S&  Crear rutas OAuth
+- ‚S&  Implementar callback handlers
+- ‚S&  Crear vista con botones sociales
+
+**D√≠a 10:**
+- ‚S&  Manejar creaci√≥n de usuario desde OAuth
+- ‚S&  Asignar rol "Cliente" autom√°ticamente
+- ‚S&  Guardar informaci√≥n de provider en `social_accounts`
+
+**D√≠a 11-12:**
+- ‚S&  Testing de flujos OAuth
+- ‚S&  Manejo de errores y edge cases
+
+---
+
+### FASE 4: Flujo Completo Cliente (2-3 d√≠as)
+
+**D√≠a 13:**
+- ‚S&  Modificar `auth/register.blade.php` para solicitar datos complementarios
+- ‚S&  Agregar campos: tipo_documento, c√©dula, tel√©fono
+- ‚S&  Validaciones adicionales
+
+**D√≠a 14:**
+- ‚S&  Integrar creaci√≥n de mascota en flujo de registro (opcional)
+- ‚S&  O crear wizard paso a paso
+
+**D√≠a 15:**
+- ‚S&  Testing end-to-end
+- ‚S&  Documentaci√≥n
+
+---
+
+### FASE 5: Flujo Completo Paseador (2 d√≠as)
+
+**D√≠a 16:**
+- ‚S&  Crear notificaci√≥n `CredencialesPaseadorNotification`
+- ‚S&  Generar password aleatorio si no se proporciona
+- ‚S&  Enviar email con credenciales
+
+**D√≠a 17:**
+- ‚S&  Verificar que usuario est√© `activo = true` antes de login
+- ‚S&  Testing completo
+
+---
+
+## x ê ESTRUCTURA DE MIGRACIONES NECESARIAS
+
+### 1. Migraci√≥n: `add_user_id_to_clientes_table`
+```php
+Schema::table('clientes', function (Blueprint $table) {
+    $table->foreignId('user_id')->after('id')
+          ->constrained('users')->onDelete('cascade');
+    $table->index('user_id');
+});
+```
+
+### 2. Migraci√≥n: `create_paseadores_table`
+```php
+Schema::create('paseadores', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+    $table->foreignId('tipo_documento_id')->nullable()->constrained('tipo_documentos');
+    $table->string('cedula')->unique();
+    $table->string('telefono')->nullable();
+    $table->string('whatsapp')->nullable();
+    $table->date('fecha_nacimiento')->nullable();
+    $table->string('direccion')->nullable();
+    $table->foreignId('ciudad_id')->nullable()->constrained('ciudades');
+    $table->foreignId('barrio_id')->nullable()->constrained('barrios');
+    $table->integer('experiencia_anos')->default(0);
+    $table->decimal('calificacion_promedio', 3, 2)->default(0);
+    $table->boolean('disponibilidad')->default(true);
+    $table->decimal('tarifa_hora', 10, 2)->nullable();
+    $table->json('documentos_verificados')->nullable();
+    $table->string('avatar')->nullable();
+    $table->timestamps();
+    
+    $table->index('user_id');
+    $table->index('ciudad_id');
+    $table->index('barrio_id');
+});
+```
+
+### 3. Migraci√≥n: `create_social_accounts_table`
+```php
+Schema::create('social_accounts', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+    $table->string('provider'); // google, facebook, github
+    $table->string('provider_id');
+    $table->string('avatar_url')->nullable();
+    $table->timestamps();
+    
+    $table->unique(['provider', 'provider_id']);
+    $table->index('user_id');
+});
+```
+
+---
+
+## x ª C√ DIGO RECOMENDADO
+
+### 1. RegisterController Mejorado
+
+```php
+public function register(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'tipo_documento' => 'required|exists:tipo_documentos,id',
+        'cedula' => 'required|numeric|digits_between:6,12|unique:users,cedula',
+        'telefono' => 'nullable|string|max:15',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()->withErrors($validator)->withInput();
+    }
+
+    // Crear usuario
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'tipo_documento' => $request->tipo_documento,
+        'cedula' => $request->cedula,
+        'telefono' => $request->telefono,
+        'activo' => true, // Clientes activos por defecto
+    ]);
+
+    // Asignar rol Cliente
+    $user->assignRole('Cliente');
+
+    // Crear perfil en tabla clientes
+    Cliente::create([
+        'user_id' => $user->id,
+        'nombre' => $request->name,
+        // ... otros campos
+    ]);
+
+    // Enviar email de verificaci√≥n
+    $user->sendEmailVerificationNotification();
+
+    // Auto-login
+    Auth::login($user);
+
+    // Redirigir a dashboard de cliente
+    return redirect()->route('cliente.dashboard')
+        ->with('success', '¬°Registro exitoso! Verifica tu correo electr√≥nico.');
+}
+```
+
+### 2. UserController Mejorado (Paseador)
+
+```php
+public function store(Request $request): RedirectResponse
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'tipo_documento' => 'required|exists:tipo_documentos,id',
+        'cedula' => 'required|numeric|digits_between:6,12|unique:users,cedula',
+        'fecha_nacimiento' => ['required', 'date', function ($attribute, $value, $fail) {
+            if (\Carbon\Carbon::parse($value)->age < 18) {
+                $fail('Debe tener al menos 18 a√±os.');
+            }
+        }],
+        'telefono' => 'nullable|string|max:15',
+        'whatsapp' => 'nullable|string|max:15',
+        'password' => 'nullable|string|min:8',
+        'activo' => 'boolean',
+        'avatar' => 'nullable|image|max:2048',
+    ]);
+
+    // Generar password si no se proporciona
+    if (empty($validatedData['password'])) {
+        $password = \Illuminate\Support\Str::random(12);
+    } else {
+        $password = $validatedData['password'];
+    }
+
+    // Crear usuario
+    $user = User::create([
+        'name' => $validatedData['name'],
+        'email' => $validatedData['email'],
+        'password' => Hash::make($password),
+        'tipo_documento' => $validatedData['tipo_documento'],
+        'cedula' => $validatedData['cedula'],
+        'fecha_nacimiento' => $validatedData['fecha_nacimiento'],
+        'telefono' => $validatedData['telefono'] ?? null,
+        'whatsapp' => $validatedData['whatsapp'] ?? null,
+        'activo' => $validatedData['activo'] ?? true,
+    ]);
+
+    // Asignar rol Paseador
+    $user->assignRole('Paseador');
+
+    // Crear perfil en tabla paseadores
+    Paseador::create([
+        'user_id' => $user->id,
+        'tipo_documento_id' => $validatedData['tipo_documento'],
+        'cedula' => $validatedData['cedula'],
+        'telefono' => $validatedData['telefono'] ?? null,
+        'whatsapp' => $validatedData['whatsapp'] ?? null,
+        'fecha_nacimiento' => $validatedData['fecha_nacimiento'],
+        'disponibilidad' => true,
+    ]);
+
+    // Enviar email con credenciales
+    $user->notify(new CredencialesPaseadorNotification($password));
+
+    return Redirect::route('superadmin.usuarios.index')
+        ->with('success', 'Paseador creado exitosamente. Se enviaron las credenciales por email.');
+}
+```
+
+### 3. SocialAuthController (Nuevo)
+
+```php
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\Cliente;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
+
+class SocialAuthController extends Controller
+{
+    public function redirect($provider)
+    {
+        return Socialite::driver($provider)->redirect();
+    }
+
+    public function callback($provider)
+    {
+        try {
+            $socialUser = Socialite::driver($provider)->user();
+            
+            // Buscar usuario existente por email
+            $user = User::where('email', $socialUser->getEmail())->first();
+            
+            if (!$user) {
+                // Crear nuevo usuario
+                $user = User::create([
+                    'name' => $socialUser->getName(),
+                    'email' => $socialUser->getEmail(),
+                    'password' => Hash::make(Str::random(32)),
+                    'email_verified_at' => now(),
+                    'activo' => true,
+                ]);
+                
+                // Asignar rol Cliente
+                $user->assignRole('Cliente');
+                
+                // Crear perfil de cliente
+                Cliente::create([
+                    'user_id' => $user->id,
+                    'nombre' => $socialUser->getName(),
+                ]);
+                
+                // Guardar cuenta social
+                $user->socialAccounts()->create([
+                    'provider' => $provider,
+                    'provider_id' => $socialUser->getId(),
+                    'avatar_url' => $socialUser->getAvatar(),
+                ]);
+            }
+            
+            // Auto-login
+            Auth::login($user);
+            
+            return redirect()->route('cliente.dashboard')
+                ->with('success', '¬°Bienvenido!');
+                
+        } catch (\Exception $e) {
+            return redirect()->route('login')
+                ->with('error', 'Error al autenticar con ' . $provider);
+        }
+    }
+}
+```
+
+---
+
+## x ` RESUMEN DE IMPLEMENTACI√ N
+
+### Estado Actual vs Requerido:
+
+| Requerimiento | Estado Actual | Requerido | Prioridad |
+|--------------|---------------|-----------|-----------|
+| Admin registra Paseador | ‚a†Ô∏è Parcial | ‚S&  Completo | ALTA |
+| Cliente auto-registro (formulario) | ‚S&  B√°sico | ‚S&  Completo | ALTA |
+| Cliente auto-registro (redes sociales) | ‚ùR No existe | ‚S&  Completo | MEDIA |
+| Asignaci√≥n autom√°tica de roles | ‚ùR No existe | ‚S&  Completo | ALTA |
+| Creaci√≥n de perfil Cliente | ‚ùR No existe | ‚S&  Completo | ALTA |
+| Creaci√≥n de perfil Paseador | ‚ùR No existe | ‚S&  Completo | ALTA |
+| Env√≠o credenciales Paseador | ‚ùR No existe | ‚S&  Completo | MEDIA |
+| Verificaci√≥n email | ‚a†Ô∏è Parcial | ‚S&  Completo | MEDIA |
+
+---
+
+## x}Ø CONCLUSI√ N
+
+**Estado General:** ‚a†Ô∏è **40/100 - REQUIERE IMPLEMENTACI√ N COMPLETA**
+
+**Tiempo Estimado Total:** 15-17 d√≠as de desarrollo
+
+**Prioridades:**
+1. **URGENTE:** Correcciones t√©cnicas (rutas, password, vista)
+2. **ALTA:** Estructura de BD (paseadores, clientes con user_id)
+3. **ALTA:** Asignaci√≥n autom√°tica de roles
+4. **MEDIA:** Registro por redes sociales
+5. **MEDIA:** Env√≠o de credenciales por email
+

@@ -49,6 +49,56 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'activo' => 'boolean',
+            'fecha_nacimiento' => 'date',
         ];
+    }
+
+    /**
+     * Relación: Un usuario puede tener un perfil de cliente
+     */
+    public function cliente()
+    {
+        return $this->hasOne(Cliente::class);
+    }
+
+    /**
+     * Relación: Un usuario puede tener un perfil de paseador
+     */
+    public function paseador()
+    {
+        return $this->hasOne(Paseador::class);
+    }
+
+    /**
+     * Relación: Un usuario puede tener múltiples cuentas sociales
+     */
+    public function socialAccounts()
+    {
+        return $this->hasMany(SocialAccount::class);
+    }
+
+    /**
+     * Relación: Un usuario puede tener múltiples mascotas
+     */
+    public function mascotas()
+    {
+        return $this->hasMany(Mascota::class);
+    }
+
+    /**
+     * Verificar si el usuario es un cliente
+     */
+    public function isCliente(): bool
+    {
+        return $this->hasRole('Cliente');
+    }
+
+    /**
+     * Verificar si el usuario es un paseador
+     */
+    public function isPaseador(): bool
+    {
+        return $this->hasRole('Paseador');
     }
 }
