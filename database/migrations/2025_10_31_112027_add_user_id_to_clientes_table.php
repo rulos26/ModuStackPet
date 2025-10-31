@@ -69,13 +69,24 @@ return new class extends Migration
         }
         
         if (!Schema::hasColumn('clientes', 'ciudad_id')) {
-            Schema::table('clientes', function (Blueprint $table) use ($hasCiudades) {
-                if ($hasCiudades) {
-                    $table->foreignId('ciudad_id')->nullable()->after('direccion')->constrained('ciudades')->nullOnDelete();
-                } else {
-                    $table->unsignedBigInteger('ciudad_id')->nullable()->after('direccion');
-                }
+            Schema::table('clientes', function (Blueprint $table) {
+                // ciudad_id debe referenciar id_municipio en ciudades, no id
+                $table->unsignedBigInteger('ciudad_id')->nullable()->after('direccion');
             });
+            
+            // Agregar foreign key de ciudad_id después (referencia id_municipio)
+            if ($hasCiudades) {
+                try {
+                    Schema::table('clientes', function (Blueprint $table) {
+                        $table->foreign('ciudad_id')
+                              ->references('id_municipio')
+                              ->on('ciudades')
+                              ->nullOnDelete();
+                    });
+                } catch (\Exception $e) {
+                    // Foreign key ya existe
+                }
+            }
         }
         
         if (!Schema::hasColumn('clientes', 'barrio_id')) {

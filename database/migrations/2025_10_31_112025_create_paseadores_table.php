@@ -34,11 +34,8 @@ return new class extends Migration
                 $table->string('whatsapp')->nullable();
                 $table->date('fecha_nacimiento')->nullable();
                 $table->string('direccion')->nullable();
-                if ($hasCiudades) {
-                    $table->foreignId('ciudad_id')->nullable()->constrained('ciudades')->nullOnDelete();
-                } else {
-                    $table->unsignedBigInteger('ciudad_id')->nullable();
-                }
+                // ciudad_id debe referenciar id_municipio en ciudades, no id
+                $table->unsignedBigInteger('ciudad_id')->nullable();
                 if ($hasBarrios) {
                     $table->foreignId('barrio_id')->nullable()->constrained('barrios')->nullOnDelete();
                 } else {
@@ -57,6 +54,20 @@ return new class extends Migration
                 $table->index('ciudad_id');
                 $table->index('barrio_id');
             });
+            
+            // Agregar foreign key de ciudad_id después de crear la tabla (referencia id_municipio)
+            if ($hasCiudades) {
+                try {
+                    Schema::table('paseadores', function (Blueprint $table) {
+                        $table->foreign('ciudad_id')
+                              ->references('id_municipio')
+                              ->on('ciudades')
+                              ->nullOnDelete();
+                    });
+                } catch (\Exception $e) {
+                    // Foreign key ya existe
+                }
+            }
         }
     }
 
