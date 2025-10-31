@@ -114,10 +114,24 @@ class UserController extends Controller
             'avatar' => $avatarPath,
         ]);
 
-        // TODO: Enviar email con credenciales (se implementará después con notificación)
+        // Enviar email con credenciales
+        try {
+            $user->notify(new \App\Notifications\CredencialesPaseadorNotification(
+                $password,
+                $validatedData['email']
+            ));
+        } catch (\Exception $e) {
+            \Log::warning('Error al enviar email de credenciales al paseador', [
+                'user_id' => $user->id,
+                'email' => $validatedData['email'],
+                'error' => $e->getMessage(),
+            ]);
+            // No interrumpir el flujo si falla el email
+        }
 
         return Redirect::route('superadmin.usuarios.index')
-            ->with('success', 'Paseador creado exitosamente. ' . ($request->has('password') ? '' : 'Se generó una contraseña automáticamente.'));
+            ->with('success', 'Paseador creado exitosamente. ' . 
+                ($request->has('password') ? 'Credenciales enviadas por email.' : 'Se generó una contraseña automáticamente y se envió por email.'));
     }
 
     /**
