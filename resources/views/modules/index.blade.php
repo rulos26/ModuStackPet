@@ -72,7 +72,11 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <div class="module-toggle-wrapper" data-module-id="{{ $module->id }}" data-module-slug="{{ $module->slug }}">
+                                                <div class="module-toggle-wrapper" 
+                                                     data-module-id="{{ $module->id }}" 
+                                                     data-module-slug="{{ $module->slug }}"
+                                                     data-request-url="{{ route('superadmin.modules.request-toggle', $module) }}"
+                                                     data-confirm-url="{{ route('superadmin.modules.confirm', $module) }}">
                                                     @if($module->status)
                                                         <button type="button" class="btn btn-sm btn-danger toggle-module-btn" data-action="desactivar">
                                                             <i class="fas fa-ban"></i> Desactivar
@@ -139,8 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Solicitar código de verificación
-            fetch(`/superadmin/modules/${moduleId}/request-toggle`, {
+            // Solicitar código de verificación (usar URL desde data attribute para mantener prefijo)
+            const requestToggleUrl = wrapper.dataset.requestUrl;
+            fetch(requestToggleUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -197,8 +202,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Confirmar cambio de estado
-            fetch(`/superadmin/modules/${moduleId}/confirm`, {
+            // Confirmar cambio de estado (usar URL desde data attribute para mantener prefijo)
+            const confirmUrl = wrapper.dataset.confirmUrl;
+            fetch(confirmUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
