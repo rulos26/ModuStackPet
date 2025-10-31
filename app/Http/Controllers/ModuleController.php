@@ -49,68 +49,128 @@ class ModuleController extends Controller
 
     public function requestToggleStatus(Request $request, Module $module)
     {
-        $this->authorize('update', $module);
-
-        $nuevoEstado = !$module->status;
-        $action = $nuevoEstado ? 'activar' : 'desactivar';
-
-        // Create verification record
-        $verification = ModuleVerification::createForModule(
-            Auth::id(),
-            $module->id,
-            $action
-        );
-
-        // Send verification email
         try {
-            Mail::to(Auth::user()->email)->send(
-                new ModuleVerificationMail(
-                    $verification->verification_code,
-                    $module->name,
+            $this->authorize('update', $module);
+
+            $nuevoEstado = !$module->status;
+            $action = $nuevoEstado ? 'activar' : 'desactivar';
+
+            // Create verification record
+            try {
+                $verification = ModuleVerification::createForModule(
+                    Auth::id(),
+                    $module->id,
                     $action
-                )
-            );
+                );
+            } catch (\Exception $e) {
+                Log::error('Error creando registro de verificación', [
+                    'module' => $module->slug,
+                    'user_id' => Auth::id(),
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
 
-            // Log verification sent
-            ModuleLog::createLog(
-                Auth::id(),
-                $module->id,
-                ModuleLog::ACTION_VERIFICATION_SENT,
-                $request->ip(),
-                $request->userAgent()
-            );
+                if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => 'Error al generar el código de verificación. Verifica que la tabla module_verifications exista en la base de datos.',
+                    ], 500);
+                }
 
-            Log::info('Código de verificación enviado para cambio de estado de módulo', [
+                return back()->with('error', 'Error al generar el código de verificación. Intenta nuevamente.');
+            }
+
+            // Send verification email
+            try {
+                Mail::to(Auth::user()->email)->send(
+                    new ModuleVerificationMail(
+                        $verification->verification_code,
+                        $module->name,
+                        $action
+                    )
+                );
+
+                // Log verification sent
+                ModuleLog::createLog(
+                    Auth::id(),
+                    $module->id,
+                    ModuleLog::ACTION_VERIFICATION_SENT,
+                    $request->ip(),
+                    $request->userAgent()
+                );
+
+                Log::info('Código de verificación enviado para cambio de estado de módulo', [
+                    'module' => $module->slug,
+                    'action' => $action,
+                    'user_id' => Auth::id(),
+                    'verification_id' => $verification->id,
+                ]);
+
+                if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'ok' => true,
+                        'message' => 'Código enviado a tu correo. Ingresa el código para confirmar.',
+                        'module' => $module->only(['id','name','slug']),
+                    ]);
+                }
+
+                return back()->with('info', 'Se ha enviado un código de verificación a tu correo electrónico. Úsalo para confirmar la acción.');
+            } catch (\Exception $e) {
+                Log::error('Error enviando código de verificación', [
+                    'module' => $module->slug,
+                    'user_id' => Auth::id(),
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Still log that verification was created
+                ModuleLog::createLog(
+                    Auth::id(),
+                    $module->id,
+                    ModuleLog::ACTION_VERIFICATION_SENT,
+                    $request->ip(),
+                    $request->userAgent()
+                );
+
+                if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'ok' => false,
+                        'message' => 'Error enviando el correo. Verifica la configuración SMTP. El código de verificación es: ' . $verification->verification_code,
+                    ], 500);
+                }
+
+                return back()->with('error', 'Error enviando el código de verificación. Intenta nuevamente.');
+            }
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            Log::warning('Intento no autorizado de cambio de estado de módulo', [
                 'module' => $module->slug,
-                'action' => $action,
                 'user_id' => Auth::id(),
-                'verification_id' => $verification->id,
             ]);
 
             if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'ok' => true,
-                    'message' => 'Código enviado a tu correo. Ingresa el código para confirmar.',
-                    'module' => $module->only(['id','name','slug']),
-                ]);
+                    'ok' => false,
+                    'message' => 'No tienes permisos para realizar esta acción.',
+                ], 403);
             }
 
-            return back()->with('info', 'Se ha enviado un código de verificación a tu correo electrónico. Úsalo para confirmar la acción.');
+            return back()->with('error', 'No tienes permisos para realizar esta acción.');
         } catch (\Exception $e) {
-            Log::error('Error enviando código de verificación', [
-                'module' => $module->slug,
+            Log::error('Error inesperado en requestToggleStatus', [
+                'module' => $module->slug ?? 'unknown',
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            if ($request->expectsJson() || $request->ajax()) {
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'ok' => false,
-                    'message' => 'Error enviando el código de verificación: ' . $e->getMessage(),
+                    'message' => 'Error inesperado: ' . $e->getMessage(),
                 ], 500);
             }
 
-            return back()->with('error', 'Error enviando el código de verificación. Intenta nuevamente.');
+            return back()->with('error', 'Error inesperado. Intenta nuevamente.');
         }
     }
 
