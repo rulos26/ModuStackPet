@@ -87,7 +87,7 @@ class ModuleController extends Controller
                 'verification_id' => $verification->id,
             ]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'ok' => true,
                     'message' => 'Código enviado a tu correo. Ingresa el código para confirmar.',
@@ -102,6 +102,13 @@ class ModuleController extends Controller
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
             ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'Error enviando el código de verificación: ' . $e->getMessage(),
+                ], 500);
+            }
 
             return back()->with('error', 'Error enviando el código de verificación. Intenta nuevamente.');
         }
@@ -137,7 +144,7 @@ class ModuleController extends Controller
                 'ip' => $request->ip(),
             ]);
 
-            if ($request->expectsJson()) {
+            if ($request->expectsJson() || $request->ajax()) {
                 return response()->json(['ok' => false, 'message' => 'Código inválido o expirado.'], 422);
             }
             return back()->with('error', 'Código de verificación inválido o expirado.');
@@ -169,7 +176,7 @@ class ModuleController extends Controller
             'verification_id' => $verification->id,
         ]);
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'ok' => true,
                 'message' => 'Módulo ' . $module->name . ' ' . ($nuevoEstado ? 'activado' : 'desactivado') . ' correctamente.',

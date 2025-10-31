@@ -132,16 +132,35 @@ document.addEventListener('DOMContentLoaded', function() {
             const moduleId = wrapper.dataset.moduleId;
             const action = this.dataset.action;
 
+            // Obtener token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error: Token CSRF no encontrado. Recarga la página.</div>';
+                return;
+            }
+
             // Solicitar código de verificación
             fetch(`/superadmin/modules/${moduleId}/request-toggle`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({ action: action })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error del servidor');
+                    }).catch(() => {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.ok || data.message) {
                     wrapper.querySelector('.verification-form').style.display = 'block';
@@ -153,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error de conexión. Intenta de nuevo.</div>';
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error: ' + error.message + '</div>';
             });
         });
     });
@@ -171,16 +190,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // Obtener token CSRF
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error: Token CSRF no encontrado. Recarga la página.</div>';
+                return;
+            }
+
             // Confirmar cambio de estado
             fetch(`/superadmin/modules/${moduleId}/confirm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken.content,
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
+                credentials: 'same-origin',
                 body: JSON.stringify({ verification_code: code })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error del servidor');
+                    }).catch(() => {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.ok) {
                     wrapper.querySelector('.message').innerHTML = '<div class="alert alert-success py-1 px-2 mb-0">' + data.message + '</div>';
@@ -193,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error de conexión. Intenta de nuevo.</div>';
+                wrapper.querySelector('.message').innerHTML = '<div class="alert alert-danger py-1 px-2 mb-0">Error: ' + error.message + '</div>';
             });
         });
     });
