@@ -51,6 +51,7 @@ class ModulesMenu extends Component
             'migraciones' => 'superadmin.migrations.index',
             'clean' => 'superadmin.clean.index',
             'seeders' => 'superadmin.seeders.index',
+            'modulos' => 'superadmin.modules.index',
         ];
         return $map[$slug] ?? '#';
     }

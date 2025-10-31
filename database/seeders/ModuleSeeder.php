@@ -13,6 +13,13 @@ class ModuleSeeder extends Seeder
     public function run(): void
     {
         $modules = [
+            // Módulos principales del sistema
+            [
+                'name' => 'Módulos del Sistema',
+                'slug' => 'modulos',
+                'description' => 'Administración centralizada de todos los módulos del sistema',
+                'status' => true,
+            ],
             [
                 'name' => 'Gestión de Mascotas',
                 'slug' => 'mascotas',
@@ -26,21 +33,15 @@ class ModuleSeeder extends Seeder
                 'status' => true,
             ],
             [
-                'name' => 'Geolocalización',
-                'slug' => 'geolocalizacion',
-                'description' => 'Módulo para servicios de geolocalización y mapas',
+                'name' => 'Reportes PDF',
+                'slug' => 'reportes',
+                'description' => 'Generación de reportes y documentos PDF',
                 'status' => true,
             ],
             [
-                'name' => 'Notificaciones Electrónicas',
-                'slug' => 'notificaciones',
-                'description' => 'Sistema de notificaciones push y por correo electrónico',
-                'status' => true,
-            ],
-            [
-                'name' => 'Gestión de Usuarios',
-                'slug' => 'usuarios',
-                'description' => 'Administración de usuarios, roles y permisos',
+                'name' => 'Gestión de Empresas',
+                'slug' => 'empresas',
+                'description' => 'Administración de empresas y tipos de empresa',
                 'status' => true,
             ],
             [
@@ -67,16 +68,23 @@ class ModuleSeeder extends Seeder
                 'description' => 'Herramientas de limpieza y mantenimiento del sistema',
                 'status' => true,
             ],
+            // Módulos adicionales (pueden estar desactivados inicialmente)
             [
-                'name' => 'Reportes PDF',
-                'slug' => 'reportes',
-                'description' => 'Generación de reportes y documentos PDF',
-                'status' => true,
+                'name' => 'Geolocalización',
+                'slug' => 'geolocalizacion',
+                'description' => 'Módulo para servicios de geolocalización y mapas',
+                'status' => false,
             ],
             [
-                'name' => 'Gestión de Empresas',
-                'slug' => 'empresas',
-                'description' => 'Administración de empresas y tipos de empresa',
+                'name' => 'Notificaciones Electrónicas',
+                'slug' => 'notificaciones',
+                'description' => 'Sistema de notificaciones push y por correo electrónico',
+                'status' => false,
+            ],
+            [
+                'name' => 'Gestión de Usuarios',
+                'slug' => 'usuarios',
+                'description' => 'Administración de usuarios, roles y permisos',
                 'status' => true,
             ],
         ];

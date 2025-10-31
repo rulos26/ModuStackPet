@@ -60,9 +60,50 @@ class SuperadminController extends Controller
      */
     public function index()
     {
+        // Si se solicita desde la ruta /superadmin/dashboard, mostrar el dashboard
+        if (request()->routeIs('superadmin.dashboard')) {
+            return $this->showDashboard();
+        }
+        
+        // Si no, mostrar la lista de usuarios
         $users = User::with('roles')->paginate(10);
         $roles = Role::all();
         return view('user.superadmin.index', compact('users', 'roles'));
+    }
+
+    /**
+     * Mostrar el dashboard de superadmin con acciones rápidas
+     */
+    private function showDashboard()
+    {
+        $user = Auth::user();
+        $roles = $user->roles->pluck('name');
+
+        if ($roles->isEmpty()) {
+            Auth::logout();
+            session()->invalidate();
+            return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
+        }
+
+        $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', $roles->first())->first();
+
+        if (!$mensajeDeBienvenida) {
+            return redirect()->route('dashboard')->withErrors(['message' => 'No se encontró un mensaje de bienvenida para tu rol.']);
+        }
+
+        // Obtener módulos activos para acciones rápidas
+        $modules = \App\Models\Module::where('status', true)
+            ->whereIn('slug', ['mascotas', 'certificados', 'empresas', 'configuracion', 'migraciones', 'seeders', 'clean', 'modulos', 'reportes'])
+            ->orderBy('name')
+            ->get();
+
+        return view('superadmin.dashboard', [
+            'roles' => $roles,
+            'titulo' => $mensajeDeBienvenida->titulo,
+            'descripcion' => $mensajeDeBienvenida->descripcion,
+            'logo' => $mensajeDeBienvenida->logo,
+            'modules' => $modules,
+        ]);
     }
 
     /**
