@@ -12,13 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         if (!Schema::hasTable('vacunas_certificaciones')) {
-            Schema::create('vacunas_certificaciones', function (Blueprint $table) {
+            $hasMascotas = Schema::hasTable('mascotas');
+            Schema::create('vacunas_certificaciones', function (Blueprint $table) use ($hasMascotas) {
                 $table->id();
                 $table->string('nombre');
                 $table->string('tipo');
                 $table->date('fecha_vencimiento');
                 $table->string('archivo')->nullable();
-                $table->foreignId('mascota_id')->constrained('mascotas')->onDelete('cascade');
+                if ($hasMascotas) {
+                    $table->foreignId('mascota_id')->constrained('mascotas')->onDelete('cascade');
+                } else {
+                    $table->unsignedBigInteger('mascota_id');
+                }
                 $table->timestamps();
                 $table->softDeletes();
             });

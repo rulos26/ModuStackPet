@@ -11,22 +11,88 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('clientes', function (Blueprint $table) {
-            // Agregar user_id después de id
-            $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
-            $table->index('user_id');
-            
-            // Agregar campos adicionales para perfil completo
-            $table->foreignId('tipo_documento_id')->nullable()->after('user_id')->constrained('tipo_documentos')->nullOnDelete();
-            $table->string('cedula')->nullable()->after('tipo_documento_id');
-            $table->string('telefono')->nullable()->after('cedula');
-            $table->string('whatsapp')->nullable()->after('telefono');
-            $table->date('fecha_nacimiento')->nullable()->after('whatsapp');
-            $table->string('direccion')->nullable()->after('fecha_nacimiento');
-            $table->foreignId('ciudad_id')->nullable()->after('direccion')->constrained('ciudades')->nullOnDelete();
-            $table->foreignId('barrio_id')->nullable()->after('ciudad_id')->constrained('barrios')->nullOnDelete();
-            $table->string('avatar')->nullable()->after('barrio_id');
-        });
+        if (!Schema::hasTable('clientes')) {
+            return; // Si la tabla no existe, no hacer nada
+        }
+
+        // Verificar y agregar user_id
+        if (!Schema::hasColumn('clientes', 'user_id')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->foreignId('user_id')->after('id')->constrained('users')->onDelete('cascade');
+                $table->index('user_id');
+            });
+        }
+
+        // Verificar y agregar campos adicionales uno por uno
+        $hasTipoDocumentos = Schema::hasTable('tipo_documentos');
+        $hasCiudades = Schema::hasTable('ciudades');
+        $hasBarrios = Schema::hasTable('barrios');
+        
+        if (!Schema::hasColumn('clientes', 'tipo_documento_id')) {
+            Schema::table('clientes', function (Blueprint $table) use ($hasTipoDocumentos) {
+                if ($hasTipoDocumentos) {
+                    $table->foreignId('tipo_documento_id')->nullable()->after('user_id')->constrained('tipo_documentos')->nullOnDelete();
+                } else {
+                    $table->unsignedBigInteger('tipo_documento_id')->nullable()->after('user_id');
+                }
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'cedula')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->string('cedula')->nullable()->after('tipo_documento_id');
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'telefono')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->string('telefono')->nullable()->after('cedula');
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'whatsapp')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->string('whatsapp')->nullable()->after('telefono');
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'fecha_nacimiento')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->date('fecha_nacimiento')->nullable()->after('whatsapp');
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'direccion')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->string('direccion')->nullable()->after('fecha_nacimiento');
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'ciudad_id')) {
+            Schema::table('clientes', function (Blueprint $table) use ($hasCiudades) {
+                if ($hasCiudades) {
+                    $table->foreignId('ciudad_id')->nullable()->after('direccion')->constrained('ciudades')->nullOnDelete();
+                } else {
+                    $table->unsignedBigInteger('ciudad_id')->nullable()->after('direccion');
+                }
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'barrio_id')) {
+            Schema::table('clientes', function (Blueprint $table) use ($hasBarrios) {
+                if ($hasBarrios) {
+                    $table->foreignId('barrio_id')->nullable()->after('ciudad_id')->constrained('barrios')->nullOnDelete();
+                } else {
+                    $table->unsignedBigInteger('barrio_id')->nullable()->after('ciudad_id');
+                }
+            });
+        }
+        
+        if (!Schema::hasColumn('clientes', 'avatar')) {
+            Schema::table('clientes', function (Blueprint $table) {
+                $table->string('avatar')->nullable()->after('barrio_id');
+            });
+        }
     }
 
     /**

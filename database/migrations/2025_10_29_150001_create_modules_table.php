@@ -8,15 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('modules', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description')->nullable();
-            $table->boolean('status')->default(true); // true = activo, false = inactivo
-            $table->timestamps();
-            $table->index(['slug', 'status']);
-        });
+        if (!Schema::hasTable('modules')) {
+            Schema::create('modules', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('slug')->unique();
+                $table->text('description')->nullable();
+                $table->boolean('status')->default(true); // true = activo, false = inactivo
+                $table->timestamps();
+                $table->index(['slug', 'status']);
+            });
+        }
     }
 
     public function down(): void

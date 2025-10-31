@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pruebas', function (Blueprint $table) {
-
-            $table->id(); // Columna ID primaria autoincremental
-            $table->string('nombre'); // Columna de texto para el nombre
-            $table->text('descripcion')->nullable(); // Columna de texto largo para descripción (opcional)
-            $table->timestamps(); // Columnas created_at y updated_at
-        });
+        if (!Schema::hasTable('pruebas')) {
+            Schema::create('pruebas', function (Blueprint $table) {
+                $table->id(); // Columna ID primaria autoincremental
+                $table->string('nombre'); // Columna de texto para el nombre
+                $table->text('descripcion')->nullable(); // Columna de texto largo para descripción (opcional)
+                $table->timestamps(); // Columnas created_at y updated_at
+            });
+        }
     }
 
     /**

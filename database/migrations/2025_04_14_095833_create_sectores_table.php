@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sectores', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre'); // Ej. Tecnología, Salud, Construcción
-            $table->timestamps();
-            $table->softDeletes(); // Agrega la columna deleted_at
-        });
+        if (!Schema::hasTable('sectores')) {
+            Schema::create('sectores', function (Blueprint $table) {
+                $table->id();
+                $table->string('nombre'); // Ej. Tecnología, Salud, Construcción
+                $table->timestamps();
+                $table->softDeletes(); // Agrega la columna deleted_at
+            });
+        }
     }
 
     /**

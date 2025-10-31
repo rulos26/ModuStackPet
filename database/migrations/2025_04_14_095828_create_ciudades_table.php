@@ -11,21 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ciudades', function (Blueprint $table) {
-            $table->id('id_municipio');
-            $table->string('municipio', 100);
-            $table->unsignedBigInteger('departamento_id');
-            $table->tinyInteger('estado')->default(1);
-            $table->timestamps();
-            $table->softDeletes();
+        if (!Schema::hasTable('ciudades')) {
+            Schema::create('ciudades', function (Blueprint $table) {
+                $table->id('id_municipio');
+                $table->string('municipio', 100);
+                $table->unsignedBigInteger('departamento_id');
+                $table->tinyInteger('estado')->default(1);
+                $table->timestamps();
+                $table->softDeletes();
+            });
 
-            // Clave foránea para departamento
-            $table->foreign('departamento_id')
-                  ->references('id_departamento')
-                  ->on('departamentos')
-                  ->onDelete('restrict')
-                  ->onUpdate('cascade');
-        });
+            // Agregar foreign key después de crear la tabla si departamentos existe
+            if (Schema::hasTable('departamentos')) {
+                try {
+                    Schema::table('ciudades', function (Blueprint $table) {
+                        $table->foreign('departamento_id')
+                              ->references('id_departamento')
+                              ->on('departamentos')
+                              ->onDelete('restrict')
+                              ->onUpdate('cascade');
+                    });
+                } catch (\Exception $e) {
+                    // Foreign key ya existe, ignorar
+                }
+            }
+        }
     }
 
     /**

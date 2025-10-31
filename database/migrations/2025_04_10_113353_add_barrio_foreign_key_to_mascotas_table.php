@@ -11,12 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('mascotas', function (Blueprint $table) {
-            $table->foreign('barrio_id')
-                  ->references('id')
-                  ->on('barrios')
-                  ->onDelete('set null');
-        });
+        if (Schema::hasTable('mascotas') && Schema::hasTable('barrios')) {
+            try {
+                Schema::table('mascotas', function (Blueprint $table) {
+                    $table->foreign('barrio_id')
+                          ->references('id')
+                          ->on('barrios')
+                          ->onDelete('set null');
+                });
+            } catch (\Exception $e) {
+                // La foreign key ya existe o hay un error, ignorar
+                // Esto puede pasar si la migración ya se ejecutó parcialmente
+            }
+        }
     }
 
     /**

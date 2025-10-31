@@ -11,14 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('paths_documentos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('nombre_path');
-            $table->boolean('estado')->default(true);
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        if (!Schema::hasTable('paths_documentos')) {
+            $hasUsers = Schema::hasTable('users');
+            Schema::create('paths_documentos', function (Blueprint $table) use ($hasUsers) {
+                $table->id();
+                if ($hasUsers) {
+                    $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                } else {
+                    $table->unsignedBigInteger('user_id');
+                }
+                $table->string('nombre_path');
+                $table->boolean('estado')->default(true);
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
     }
 
     /**

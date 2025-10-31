@@ -11,15 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-        });
+        if (!Schema::hasTable('sessions')) {
+            $hasUsers = Schema::hasTable('users');
+            Schema::create('sessions', function (Blueprint $table) use ($hasUsers) {
+                $table->string('id')->primary();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->string('ip_address', 45)->nullable();
+                $table->text('user_agent')->nullable();
+                $table->longText('payload');
+                $table->integer('last_activity');
+            });
+            
+            // Agregar foreign key después si users existe
+            if ($hasUsers) {
+                try {
+                    Schema::table('sessions', function (Blueprint $table) {
+                        $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+                    });
+                } catch (\Exception $e) {
+                    // Foreign key ya existe
+                }
+            }
+        }
     }
 
     /**

@@ -24,16 +24,19 @@ return new class extends Migration
             throw new \Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
         }
 
-        Schema::create($tableNames['permissions'], function (Blueprint $table) {
-            $table->bigIncrements('id'); // permission id
-            $table->string('name');       // For MySQL 8.0 use string('name', 125);
-            $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
-            $table->timestamps();
+        if (!Schema::hasTable($tableNames['permissions'])) {
+            Schema::create($tableNames['permissions'], function (Blueprint $table) {
+                $table->bigIncrements('id'); // permission id
+                $table->string('name');       // For MySQL 8.0 use string('name', 125);
+                $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
+                $table->timestamps();
 
-            $table->unique(['name', 'guard_name']);
-        });
+                $table->unique(['name', 'guard_name']);
+            });
+        }
 
-        Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
+        if (!Schema::hasTable($tableNames['roles'])) {
+            Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
             $table->bigIncrements('id'); // role id
             if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
                 $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
@@ -49,7 +52,8 @@ return new class extends Migration
             }
         });
 
-        Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
+        if (!Schema::hasTable($tableNames['model_has_permissions'])) {
+            Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
             $table->unsignedBigInteger($pivotPermission);
 
             $table->string('model_type');
@@ -71,9 +75,11 @@ return new class extends Migration
                     'model_has_permissions_permission_model_type_primary');
             }
 
-        });
+            });
+        }
 
-        Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+        if (!Schema::hasTable($tableNames['model_has_roles'])) {
+            Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
             $table->unsignedBigInteger($pivotRole);
 
             $table->string('model_type');
@@ -94,16 +100,19 @@ return new class extends Migration
                 $table->primary([$pivotRole, $columnNames['model_morph_key'], 'model_type'],
                     'model_has_roles_role_model_type_primary');
             }
-        });
+            });
+        }
 
-        Schema::create('role_has_permissions', function (Blueprint $table) {
+        if (!Schema::hasTable('role_has_permissions')) {
+            Schema::create('role_has_permissions', function (Blueprint $table) {
             $table->bigInteger('role_id')->unsigned();
             $table->bigInteger('permission_id')->unsigned();
             $table->primary(['role_id', 'permission_id']);
 
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
-            $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
-        });
+                $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+                $table->foreign('permission_id')->references('id')->on('permissions')->onDelete('cascade');
+            });
+        }
 
         app('cache')
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)

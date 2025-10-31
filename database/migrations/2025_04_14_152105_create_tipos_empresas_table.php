@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipos_empresas', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombre'); // S.A., S.A.S., LTDA, etc.
-            $table->timestamps();
-            $table->softDeletes(); // Agrega la columna deleted_at
-        });
+        if (!Schema::hasTable('tipos_empresas')) {
+            Schema::create('tipos_empresas', function (Blueprint $table) {
+                $table->id();
+                $table->string('nombre'); // S.A., S.A.S., LTDA, etc.
+                $table->timestamps();
+                $table->softDeletes(); // Agrega la columna deleted_at
+            });
+        }
     }
 
     /**

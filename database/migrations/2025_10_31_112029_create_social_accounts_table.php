@@ -11,18 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('social_accounts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('provider'); // google, facebook, github, etc.
-            $table->string('provider_id'); // ID del usuario en el provider
-            $table->string('avatar_url')->nullable();
-            $table->timestamps();
-            
-            // Índice único para evitar duplicados
-            $table->unique(['provider', 'provider_id']);
-            $table->index('user_id');
-        });
+        if (!Schema::hasTable('social_accounts')) {
+            Schema::create('social_accounts', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->string('provider'); // google, facebook, github, etc.
+                $table->string('provider_id'); // ID del usuario en el provider
+                $table->string('avatar_url')->nullable();
+                $table->timestamps();
+                
+                // Índice único para evitar duplicados
+                $table->unique(['provider', 'provider_id']);
+                $table->index('user_id');
+            });
+        }
     }
 
     /**

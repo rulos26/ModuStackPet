@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mensaje_de_bienvenidas', function (Blueprint $table) {
-            $table->id(); // Campo ID autoincremental
-            $table->string('titulo'); // Campo para el título
-            $table->text('descripcion'); // Campo para la descripción
-            $table->string('logo')->nullable(); // Campo para la ruta del logo (puede ser nulo)
-            $table->string('rol'); // Campo para el rol asociado
-            $table->timestamps(); // Campos created_at y updated_at
-        });
+        if (!Schema::hasTable('mensaje_de_bienvenidas')) {
+            Schema::create('mensaje_de_bienvenidas', function (Blueprint $table) {
+                $table->id(); // Campo ID autoincremental
+                $table->string('titulo'); // Campo para el título
+                $table->text('descripcion'); // Campo para la descripción
+                $table->string('logo')->nullable(); // Campo para la ruta del logo (puede ser nulo)
+                $table->string('rol'); // Campo para el rol asociado
+                $table->timestamps(); // Campos created_at y updated_at
+            });
+        }
     }
 
     /**

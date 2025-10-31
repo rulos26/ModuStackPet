@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('departamentos', function (Blueprint $table) {
-            $table->id('id_departamento');
-            $table->string('nombre', 100);
-            $table->tinyInteger('estado')->default(1);
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        if (!Schema::hasTable('departamentos')) {
+            Schema::create('departamentos', function (Blueprint $table) {
+                $table->id('id_departamento');
+                $table->string('nombre', 100);
+                $table->tinyInteger('estado')->default(1);
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
     }
 
     /**

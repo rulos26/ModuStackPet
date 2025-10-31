@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('razas', function (Blueprint $table) {
-            $table->id();
-            $table->string('tipo_mascota')->default('Perro'); // Valor predeterminado: Perro
-            $table->string('nombre');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('razas')) {
+            Schema::create('razas', function (Blueprint $table) {
+                $table->id();
+                $table->string('tipo_mascota')->default('Perro'); // Valor predeterminado: Perro
+                $table->string('nombre');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

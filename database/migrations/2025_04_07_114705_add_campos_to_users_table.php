@@ -11,15 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('tipo_documento')->nullable();
-            $table->string('cedula')->nullable()->unique();
-            $table->string('avatar')->nullable();
-            $table->boolean('activo')->default(true);
-            $table->string('telefono')->nullable();
-            $table->string('whatsapp')->nullable();
-            $table->date('fecha_nacimiento')->nullable(); // Paseador
-        });
+        if (Schema::hasTable('users')) {
+            Schema::table('users', function (Blueprint $table) {
+                if (!Schema::hasColumn('users', 'tipo_documento')) {
+                    $table->string('tipo_documento')->nullable();
+                }
+                if (!Schema::hasColumn('users', 'cedula')) {
+                    $table->string('cedula')->nullable()->unique();
+                }
+                if (!Schema::hasColumn('users', 'avatar')) {
+                    $table->string('avatar')->nullable();
+                }
+                if (!Schema::hasColumn('users', 'activo')) {
+                    $table->boolean('activo')->default(true);
+                }
+                if (!Schema::hasColumn('users', 'telefono')) {
+                    $table->string('telefono')->nullable();
+                }
+                if (!Schema::hasColumn('users', 'whatsapp')) {
+                    $table->string('whatsapp')->nullable();
+                }
+                if (!Schema::hasColumn('users', 'fecha_nacimiento')) {
+                    $table->date('fecha_nacimiento')->nullable(); // Paseador
+                }
+            });
+        }
     }
 
     /**
