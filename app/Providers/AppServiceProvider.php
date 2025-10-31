@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\Paginator;
 use App\Models\Module;
 use App\Observers\ModuleObserver;
 
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Usar plantillas de paginación Bootstrap 5 (AdminLTE está basado en Bootstrap)
+        Paginator::useBootstrapFive();
+
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $roles = Auth::user()->roles->pluck('name');

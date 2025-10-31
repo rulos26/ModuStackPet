@@ -100,8 +100,18 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            <div class="mt-3">
-                                {{ $modules->links() }}
+                            <div class="mt-3 d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    @php
+                                        $from = $modules->firstItem();
+                                        $to = $modules->lastItem();
+                                        $total = $modules->total();
+                                    @endphp
+                                    Mostrando {{ $from }} a {{ $to }} de {{ $total }} resultados
+                                </div>
+                                <div>
+                                    {{ $modules->onEachSide(1)->withQueryString()->links() }}
+                                </div>
                             </div>
                         </div>
                     </div>
