@@ -52,8 +52,44 @@ class ModulesMenu extends Component
             'clean' => 'superadmin.clean.index',
             'seeders' => 'superadmin.seeders.index',
             'modulos' => 'superadmin.modules.index',
+            'bienvenida' => 'mensaje-de-bienvenidas.index',
+            'departamentos' => 'departamentos.index',
+            'ciudades' => 'ciudades.index',
+            'sectores' => 'sectores.index',
+            'tipos-empresas' => 'tipos-empresas.index',
+            'tipo-documentos' => 'tipo-documentos.index',
+            'paths-documentos' => 'paths-documentos.index',
+            'razas' => 'razas.index',
+            'barrios' => 'barrios.index',
         ];
-        return $map[$slug] ?? '#';
+        
+        // Si está en el mapa, usar la ruta específica
+        if (isset($map[$slug])) {
+            return $map[$slug];
+        }
+        
+        // Para módulos nuevos auto-creados, intentar generar rutas automáticamente
+        // Patrón: {slug}.index o {slug}.dashboard
+        $possibleRoutes = [
+            $slug . '.index',
+            $slug . '.dashboard',
+            str_replace('-', '_', $slug) . '.index',
+            'superadmin.' . $slug . '.index',
+        ];
+        
+        // Verificar si alguna ruta existe usando route_exists helper
+        foreach ($possibleRoutes as $route) {
+            try {
+                if (\Illuminate\Support\Facades\Route::has($route)) {
+                    return $route;
+                }
+            } catch (\Exception $e) {
+                // Continuar con el siguiente
+            }
+        }
+        
+        // Si no se encuentra, retornar '#' (sin enlace) para evitar errores
+        return '#';
     }
 
     public function render()
