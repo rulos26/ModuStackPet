@@ -3034,4 +3034,51 @@ Mรณdulo creado para ejecutar comandos de limpieza de Laravel desde la interfaz w
   
  * L o g   g e n e r a d o   a u t o m ร ก t i c a m e n t e   -   M o d u S t a c k P e t   S i s t e m a   d e   D o c u m e n t a c i ร ณ n *  
   
+  
+ - - -  
+  
+ # #   ๐ xaจ   E r r o r :   M e t h o d   a u t h o r i z e S u p e r a d m i n   d o e s   n o t   e x i s t  
+  
+ # # #   D e s c r i p c i ร ณ n   d e l   E r r o r  
+ ` ` `  
+ M e t h o d   A p p \ H t t p \ C o n t r o l l e r s \ M o d u l e C o n t r o l l e r : : a u t h o r i z e S u p e r a d m i n   d o e s   n o t   e x i s t .  
+ ` ` `  
+  
+ # # #   C a u s a   R a ร ญ z  
+ -   E l   m ร ฉ t o d o   ` a u t h o r i z e S u p e r a d m i n ( ) `   f u e   e l i m i n a d o   d e l   ` M o d u l e C o n t r o l l e r `   c u a n d o   s e   m i g r ร ณ   a   p o l ร ญ t i c a s   ( M o d u l e P o l i c y ) .  
+ -   Q u e d a r o n   3   l l a m a d a s   s i n   a c t u a l i z a r   e n   l o s   m ร ฉ t o d o s :  
+     -   ` s h o w V e r i f i c a t i o n F o r m ( ) `   ( l ร ญ n e a   1 8 4 )  
+     -   ` s h o w L o g s ( ) `   ( l ร ญ n e a   1 9 1 )  
+     -   ` s h o w A l l L o g s ( ) `   ( l ร ญ n e a   2 0 0 )  
+  
+ # # #   S o l u c i ร ณ n   I m p l e m e n t a d a   โ S&  
+ ` ` ` p h p  
+ / /   โ  R  A N T E S   ( m ร ฉ t o d o   n o   e x i s t e )  
+ $ t h i s - > a u t h o r i z e S u p e r a d m i n ( ) ;  
+  
+ / /   โ S&   D E S P U ร 0 S   ( u s a n d o   M o d u l e P o l i c y )  
+ $ t h i s - > a u t h o r i z e ( ' v i e w A n y ' ,   M o d u l e : : c l a s s ) ;  
+ ` ` `  
+  
+ * * C a m b i o s   r e a l i z a d o s : * *  
+ -   โ S&   R e e m p l a z a d a s   3   l l a m a d a s   a   ` a u t h o r i z e S u p e r a d m i n ( ) `   c o n   ` a u t h o r i z e ( ' v i e w A n y ' ,   M o d u l e : : c l a s s ) `  
+ -   โ S&   T o d a s   l a s   a u t o r i z a c i o n e s   a h o r a   u s a n   ` M o d u l e P o l i c y `   d e   f o r m a   c o n s i s t e n t e  
+  
+ # # #   A r c h i v o s   M o d i f i c a d o s  
+ 1 .   โ S&   ` a p p / H t t p / C o n t r o l l e r s / M o d u l e C o n t r o l l e r . p h p `   -   A c t u a l i z a d o   m ร ฉ t o d o s   p a r a   u s a r   M o d u l e P o l i c y  
+  
+ # # #   V e r i f i c a c i ร ณ n  
+ -   ` s h o w V e r i f i c a t i o n F o r m ( ) ` :   โ S&   A u t o r i z a   u s a n d o   M o d u l e P o l i c y  
+ -   ` s h o w L o g s ( ) ` :   โ S&   A u t o r i z a   u s a n d o   M o d u l e P o l i c y  
+ -   ` s h o w A l l L o g s ( ) ` :   โ S&   A u t o r i z a   u s a n d o   M o d u l e P o l i c y  
+  
+ # # #   E s t a d o  
+ -   * * F e c h a   d e   R e s o l u c i ร ณ n : * *   2 0 2 5 - 0 1 - 2 9  
+ -   * * E s t a d o : * *   โ S&   * * R E S U E L T O * *  
+ -   * * S e v e r i d a d : * *   A l t a   ( i m p e d ร ญ a   e l   a c c e s o   a   r u t a s   d e   m ร ณ d u l o s )  
+  
+ - - -  
+  
+ * L o g   g e n e r a d o   a u t o m ร ก t i c a m e n t e   -   M o d u S t a c k P e t   S i s t e m a   d e   D o c u m e n t a c i ร ณ n *  
+  
  

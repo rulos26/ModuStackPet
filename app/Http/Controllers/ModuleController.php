@@ -181,14 +181,14 @@ class ModuleController extends Controller
 
     public function showVerificationForm(Module $module)
     {
-        $this->authorizeSuperadmin();
+        $this->authorize('viewAny', Module::class);
 
         return view('modules.verification', compact('module'));
     }
 
     public function showLogs(Module $module)
     {
-        $this->authorizeSuperadmin();
+        $this->authorize('viewAny', Module::class);
 
         $logs = ModuleLog::getModuleLogs($module->id, 50);
 
@@ -197,7 +197,7 @@ class ModuleController extends Controller
 
     public function showAllLogs()
     {
-        $this->authorizeSuperadmin();
+        $this->authorize('viewAny', Module::class);
 
         $logs = ModuleLog::getRecentLogs(100);
         $accessDeniedLogs = ModuleLog::getAccessDeniedLogs(20);
