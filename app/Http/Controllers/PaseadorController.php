@@ -29,7 +29,7 @@ class PaseadorController extends Controller
         $user = Auth::user();
 
         // Verificar si el usuario tiene el rol de paseador
-        if (!$user->hasRole('paseador')) {
+        if (!$user->hasRole('Paseador')) {
             Auth::logout();
             session()->invalidate();
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);

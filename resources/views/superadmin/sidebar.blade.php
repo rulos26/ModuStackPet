@@ -49,6 +49,26 @@
                 </p>
             </a>
             <ul class="nav nav-treeview">
+                {{-- Lista de Usuarios --}}
+                @role('Superadmin')
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.usuarios.index') }}" class="nav-link {{ request()->routeIs('superadmin.usuarios.index') ? 'active' : '' }}">
+                        <i class="fas fa-list nav-icon"></i>
+                        <p>Lista de Usuarios</p>
+                    </a>
+                </li>
+                @endrole
+
+                {{-- Crear Paseador (Solo Superadmin) --}}
+                @role('Superadmin')
+                <li class="nav-item">
+                    <a href="{{ route('superadmin.usuarios.create') }}" class="nav-link {{ request()->routeIs('superadmin.usuarios.create') ? 'active' : '' }}">
+                        <i class="fas fa-user-plus nav-icon"></i>
+                        <p>Crear Paseador</p>
+                    </a>
+                </li>
+                @endrole
+
                 {{-- Opción visible solo para Superadmin --}}
                 @role('Superadmin')
                 <li class="nav-item">

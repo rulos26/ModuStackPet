@@ -27,7 +27,7 @@ class ClienteController extends Controller
         $user = Auth::user();
 
         // Verificar si el usuario tiene el rol de cliente
-        if (!$user->hasRole('cliente')) {
+        if (!$user->hasRole('Cliente')) {
             Auth::logout();
             session()->invalidate();
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
