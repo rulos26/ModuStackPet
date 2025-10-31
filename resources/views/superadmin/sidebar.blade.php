@@ -1,4 +1,12 @@
 
+@php
+    // Cargar todos los módulos activos una sola vez al inicio para optimizar consultas
+    $modulesCache = \App\Models\Module::where('status', true)->pluck('status', 'slug')->toArray();
+    $isModuleActive = function($slug) use ($modulesCache) {
+        return isset($modulesCache[$slug]);
+    };
+@endphp
+
 <nav class="mt-2">
     {{-- Lista principal de navegación con soporte para árbol de menús --}}
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
@@ -22,12 +30,14 @@
         </li>
 
         {{-- Gestión de Empresas --}}
+        @if($isModuleActive('empresas'))
         <li class="nav-item">
             <a href="{{ route('empresas.index') }}" class="nav-link {{ request()->routeIs('empresas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-building"></i>
                 <p>Empresas</p>
             </a>
         </li>
+        @endif
 
         {{-- Menú desplegable de Usuarios con control de roles --}}
         <li class="nav-item has-treeview {{ request()->routeIs('usuarios.*') ? 'menu-open' : '' }}">
@@ -170,52 +180,66 @@
         </li>
 
         {{-- Mensaje de Bienvenida --}}
+        @if($isModuleActive('bienvenida'))
         <li class="nav-item">
             <a href="{{ route('mensaje-de-bienvenidas.index') }}" class="nav-link {{ request()->routeIs('mensaje-de-bienvenidas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-comments"></i>
                 <p>Bienvenida</p>
             </a>
         </li>
+        @endif
 
         {{-- Gestión Geográfica --}}
+        @if($isModuleActive('departamentos'))
         <li class="nav-item">
             <a href="{{ route('departamentos.index') }}" class="nav-link {{ request()->routeIs('departamentos.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-map-marker-alt"></i>
                 <p>Departamentos</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('ciudades'))
         <li class="nav-item">
             <a href="{{ route('ciudades.index') }}" class="nav-link {{ request()->routeIs('ciudades.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-city"></i>
                 <p>Ciudades</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('sectores'))
         <li class="nav-item">
             <a href="{{ route('sectores.index') }}" class="nav-link {{ request()->routeIs('sectores.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-industry"></i>
                 <p>Sectores</p>
             </a>
         </li>
+        @endif
 
         {{-- Configuraciones de Empresa y Documentos --}}
+        @if($isModuleActive('tipos-empresas'))
         <li class="nav-item">
             <a href="{{ route('tipos-empresas.index') }}" class="nav-link {{ request()->routeIs('tipos-empresas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-building"></i>
                 <p>Tipos de Empresas</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('tipo-documentos'))
         <li class="nav-item">
             <a href="{{ route('tipo-documentos.index') }}" class="nav-link {{ request()->routeIs('tipo-documentos.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-user-tag"></i>
                 <p>Tipo Documentos</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('paths-documentos'))
         <li class="nav-item">
             <a href="{{ route('paths-documentos.index') }}" class="nav-link {{ request()->routeIs('paths-documentos.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-folder-open"></i>
                 <p>Rutas de Documentos</p>
             </a>
         </li>
+        @endif
         @endrole
 
         {{-- Dashboard Paseador - Visible para Superadmin y Paseador --}}
@@ -223,30 +247,38 @@
         <li class="nav-header text-info mt-2">
             <i class="fas fa-walking"></i> Dashboard Paseador
         </li>
+        @if($isModuleActive('mascotas'))
         <li class="nav-item">
             <a href="{{ route('mascotas.index') }}" class="nav-link {{ request()->routeIs('mascotas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-dog"></i>
                 <p>Mascotas</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('razas'))
         <li class="nav-item">
             <a href="{{ route('razas.index') }}" class="nav-link {{ request()->routeIs('razas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-paw"></i>
                 <p>Razas</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('barrios'))
         <li class="nav-item">
             <a href="{{ route('barrios.index') }}" class="nav-link {{ request()->routeIs('barrios.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-map-marker-alt"></i>
                 <p>Barrios</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('certificados'))
         <li class="nav-item">
             <a href="{{ route('vacunas_certificaciones.index') }}" class="nav-link {{ request()->routeIs('vacunas_certificaciones.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-syringe"></i>
                 <p>Vacunas y Certificaciones</p>
             </a>
         </li>
+        @endif
         @endrole
 
         {{-- Dashboard Cliente - Visible para Superadmin y Cliente --}}
@@ -254,21 +286,26 @@
         <li class="nav-header text-info mt-2">
             <i class="fas fa-user"></i> Dashboard Cliente
         </li>
+        @if($isModuleActive('mascotas'))
         <li class="nav-item">
             <a href="{{ route('mascotas.index') }}" class="nav-link {{ request()->routeIs('mascotas.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-dog"></i>
                 <p>Mis Mascotas</p>
             </a>
         </li>
+        @endif
+        @if($isModuleActive('certificados'))
         <li class="nav-item">
             <a href="{{ route('vacunas_certificaciones.index') }}" class="nav-link {{ request()->routeIs('vacunas_certificaciones.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-syringe"></i>
                 <p>Vacunas y Certificaciones</p>
             </a>
         </li>
+        @endif
         @endrole
 
         {{-- Utilidades Comunes - Visibles para todos los usuarios --}}
+        @if($isModuleActive('reportes'))
         <li class="nav-header text-secondary mt-2">
             <i class="fas fa-file-pdf"></i> Utilidades
         </li>
@@ -284,5 +321,6 @@
                 <p>PDF Mascota</p>
             </a>
         </li>
+        @endif
     </ul>
 </nav>

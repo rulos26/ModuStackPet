@@ -94,7 +94,9 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home');
 
 // Rutas para Cliente
 
-Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':bienvenida'])->group(function () {
+    Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
+});
 Route::get('/logout', function () {
     Auth::logout();
     session()->invalidate();
@@ -130,7 +132,9 @@ Route::post('/notificaciones/leidas', function () {
     return back();
 })->name('notificaciones.marcar.leidas');
 Route::resource('users', UserController::class);
-Route::resource('tipo-documentos', TipoDocumentoController::class);
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
+    Route::resource('tipo-documentos', TipoDocumentoController::class);
+});
 Route::middleware(['auth'])->group(function () {
 Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name('usuarios.roles.index');
 Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
@@ -139,8 +143,12 @@ Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignar
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () {
     Route::resource('mascotas', MascotaController::class);
 });
-Route::resource('razas', RazaController::class);
-Route::resource('barrios', BarrioController::class);
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':razas'])->group(function () {
+    Route::resource('razas', RazaController::class);
+});
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':barrios'])->group(function () {
+    Route::resource('barrios', BarrioController::class);
+});
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':reportes'])->group(function () {
     Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
     Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
@@ -150,10 +158,16 @@ Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':certificado
 });
 
 
-Route::resource('departamentos', DepartamentoController::class);
-Route::resource('ciudades', CiudadController::class);
-Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
-Route::resource('sectores', SectoreController::class);
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':departamentos'])->group(function () {
+    Route::resource('departamentos', DepartamentoController::class);
+});
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':ciudades'])->group(function () {
+    Route::resource('ciudades', CiudadController::class);
+    Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
+});
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':sectores'])->group(function () {
+    Route::resource('sectores', SectoreController::class);
+});
 
 
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
@@ -200,11 +214,13 @@ Route::get('ciudades-api', function() {
 Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 
 
-Route::resource('paths-documentos', PathDocumentoController::class);
-Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
-Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
-Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');
-Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
+Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':paths-documentos'])->group(function () {
+    Route::resource('paths-documentos', PathDocumentoController::class);
+    Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
+    Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');
+    Route::post('/paths-documentos', [PathDocumentoController::class, 'store'])->name('paths-documentos.store');
+    Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
+});
 
 // Rutas para administradores
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

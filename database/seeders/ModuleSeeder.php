@@ -87,6 +87,62 @@ class ModuleSeeder extends Seeder
                 'description' => 'Administración de usuarios, roles y permisos',
                 'status' => true,
             ],
+			// Submódulos independientes solicitados
+			[
+				'name' => 'Bienvenida',
+				'slug' => 'bienvenida',
+				'description' => 'Módulo para gestionar el mensaje de bienvenida por rol',
+				'status' => true,
+			],
+			[
+				'name' => 'Departamentos',
+				'slug' => 'departamentos',
+				'description' => 'Gestión geográfica: departamentos',
+				'status' => true,
+			],
+			[
+				'name' => 'Ciudades',
+				'slug' => 'ciudades',
+				'description' => 'Gestión geográfica: ciudades',
+				'status' => true,
+			],
+			[
+				'name' => 'Sectores',
+				'slug' => 'sectores',
+				'description' => 'Gestión de sectores industriales o económicos',
+				'status' => true,
+			],
+			[
+				'name' => 'Tipos de Empresas',
+				'slug' => 'tipos-empresas',
+				'description' => 'Administración de tipos de empresas',
+				'status' => true,
+			],
+			[
+				'name' => 'Tipo Documentos',
+				'slug' => 'tipo-documentos',
+				'description' => 'Administración de tipos de documentos',
+				'status' => true,
+			],
+			[
+				'name' => 'Rutas de Documentos',
+				'slug' => 'paths-documentos',
+				'description' => 'Configuración de rutas de almacenamiento de documentos',
+				'status' => true,
+			],
+			// Módulos de gestión de mascotas (independientes)
+			[
+				'name' => 'Razas',
+				'slug' => 'razas',
+				'description' => 'Gestión de razas de mascotas',
+				'status' => true,
+			],
+			[
+				'name' => 'Barrios',
+				'slug' => 'barrios',
+				'description' => 'Gestión de barrios por ciudad',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {
