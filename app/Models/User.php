@@ -101,4 +101,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasRole('Paseador');
     }
+
+    /**
+     * Enviar la notificación de verificación de email personalizada en español
+     */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new \App\Notifications\VerifyEmailNotification());
+    }
 }
