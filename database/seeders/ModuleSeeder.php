@@ -150,6 +150,20 @@ class ModuleSeeder extends Seeder
 				'description' => 'Gestión de proveedores OAuth para autenticación con redes sociales (Google, Facebook, GitHub, etc.)',
 				'status' => true,
 			],
+			// Módulo de Configuración de Base de Datos
+			[
+				'name' => 'Configuración de Base de Datos',
+				'slug' => 'database-config',
+				'description' => 'Gestión y configuración de conexiones a bases de datos con test visual de conexión',
+				'status' => true,
+			],
+			// Módulo de Configuración de Correo Electrónico
+			[
+				'name' => 'Configuración de Correo Electrónico',
+				'slug' => 'email-config',
+				'description' => 'Configuración de servidor SMTP y envío de correos electrónicos con test de envío',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {

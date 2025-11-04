@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ExecuteSqlSeeder::class);
         $this->call(ModuleSeeder::class);
         $this->call(OAuthProviderSeeder::class);
+        $this->call(DatabaseConfigSeeder::class);
+        $this->call(EmailConfigSeeder::class);
 
     }
 }

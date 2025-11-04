@@ -120,12 +120,34 @@
         </li>
 
         {{-- Gestión de Proveedores OAuth --}}
+        @if($isModuleActive('oauth-providers'))
         <li class="nav-item">
             <a href="{{ route('superadmin.oauth-providers.index') }}" class="nav-link {{ request()->routeIs('superadmin.oauth-providers.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-key"></i>
                 <p>Proveedores OAuth</p>
             </a>
         </li>
+        @endif
+
+        {{-- Configuración de Base de Datos --}}
+        @if($isModuleActive('database-config'))
+        <li class="nav-item">
+            <a href="{{ route('superadmin.database-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.database-configs.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-database"></i>
+                <p>Configuración BD</p>
+            </a>
+        </li>
+        @endif
+
+        {{-- Configuración de Correo Electrónico --}}
+        @if($isModuleActive('email-config'))
+        <li class="nav-item">
+            <a href="{{ route('superadmin.email-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.email-configs.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-envelope"></i>
+                <p>Configuración Email</p>
+            </a>
+        </li>
+        @endif
 
         {{-- Menú desplegable de Avisos Legales --}}
         <li class="nav-item has-treeview">

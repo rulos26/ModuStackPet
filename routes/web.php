@@ -287,6 +287,20 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
         Route::post('/configuraciones/session-timeout', [ConfiguracionController::class, 'updateSessionTimeout'])->name('configuraciones.update-session-timeout');
     });
 
+    // Rutas para configuración de Base de Datos
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':database-config'])->group(function () {
+        Route::resource('database-configs', \App\Http\Controllers\Superadmin\DatabaseConfigController::class);
+        Route::patch('/database-configs/{databaseConfig}/toggle-status', [\App\Http\Controllers\Superadmin\DatabaseConfigController::class, 'toggleStatus'])->name('database-configs.toggle-status');
+        Route::get('/database-configs/{databaseConfig}/test', [\App\Http\Controllers\Superadmin\DatabaseConfigController::class, 'test'])->name('database-configs.test');
+    });
+
+    // Rutas para configuración de Correo Electrónico
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':email-config'])->group(function () {
+        Route::resource('email-configs', \App\Http\Controllers\Superadmin\EmailConfigController::class);
+        Route::patch('/email-configs/{emailConfig}/toggle-status', [\App\Http\Controllers\Superadmin\EmailConfigController::class, 'toggleStatus'])->name('email-configs.toggle-status');
+        Route::post('/email-configs/{emailConfig}/test', [\App\Http\Controllers\Superadmin\EmailConfigController::class, 'test'])->name('email-configs.test');
+    });
+
     // Rutas para gestión de migraciones (acceso directo como seeders)
     Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
     Route::post('/migrations/execute', [MigrationController::class, 'execute'])
