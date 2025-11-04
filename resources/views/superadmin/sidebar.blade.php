@@ -149,6 +149,16 @@
         </li>
         @endif
 
+        {{-- Backup de Base de Datos --}}
+        @if($isModuleActive('backup-config'))
+        <li class="nav-item">
+            <a href="{{ route('superadmin.backup-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.backup-configs.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-database"></i>
+                <p>Backup BD</p>
+            </a>
+        </li>
+        @endif
+
         {{-- Menú desplegable de Avisos Legales --}}
         <li class="nav-item has-treeview">
             <a href="#" class="nav-link">

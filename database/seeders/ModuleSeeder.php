@@ -164,6 +164,13 @@ class ModuleSeeder extends Seeder
 				'description' => 'Configuración de servidor SMTP y envío de correos electrónicos con test de envío',
 				'status' => true,
 			],
+			// Módulo de Backup de Base de Datos
+			[
+				'name' => 'Backup de Base de Datos',
+				'slug' => 'backup-config',
+				'description' => 'Configuración y ejecución de copias de seguridad completas de la base de datos de producción',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {

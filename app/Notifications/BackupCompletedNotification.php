@@ -4,11 +4,10 @@ namespace App\Notifications;
 
 use App\Models\BackupLog;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BackupCompletedNotification extends Notification implements ShouldQueue
+class BackupCompletedNotification extends Notification
 {
     use Queueable;
 

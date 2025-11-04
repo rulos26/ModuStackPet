@@ -301,6 +301,13 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
         Route::post('/email-configs/{emailConfig}/test', [\App\Http\Controllers\Superadmin\EmailConfigController::class, 'test'])->name('email-configs.test');
     });
 
+    // Rutas para configuración de Backup de Base de Datos
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':backup-config'])->group(function () {
+        Route::resource('backup-configs', \App\Http\Controllers\Superadmin\BackupConfigController::class);
+        Route::post('/backup-configs/{backupConfig}/execute', [\App\Http\Controllers\Superadmin\BackupConfigController::class, 'execute'])->name('backup-configs.execute');
+        Route::get('/backup-configs/{backupConfig}/logs', [\App\Http\Controllers\Superadmin\BackupConfigController::class, 'logs'])->name('backup-configs.logs');
+    });
+
     // Rutas para gestión de migraciones (acceso directo como seeders)
     Route::get('/migrations', [MigrationController::class, 'index'])->name('migrations.index');
     Route::post('/migrations/execute', [MigrationController::class, 'execute'])
