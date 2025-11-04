@@ -109,4 +109,24 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new \App\Notifications\VerifyEmailNotification());
     }
+
+    /**
+     * Verificar si el usuario se registró por OAuth (Google, Facebook, etc.)
+     */
+    public function hasSocialAccounts(): bool
+    {
+        return $this->socialAccounts()->exists();
+    }
+
+    /**
+     * Verificar si el usuario solo tiene cuenta OAuth (registrado por redes sociales)
+     * Los usuarios registrados por OAuth tienen password generado automáticamente,
+     * pero la lógica es: si tiene cuentas sociales, se registró por OAuth
+     */
+    public function isOAuthOnly(): bool
+    {
+        // Si tiene cuentas sociales, se registró por OAuth
+        // (aunque tenga password generado automáticamente)
+        return $this->hasSocialAccounts();
+    }
 }

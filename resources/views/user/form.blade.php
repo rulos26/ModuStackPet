@@ -93,23 +93,72 @@
 </div>
 
 <!-- Sección: Datos de Cuenta -->
+@php
+    // Verificar si el usuario tiene cuentas sociales vinculadas
+    $hasSocialAccounts = isset($user) && $user->hasSocialAccounts();
+    $isOAuthOnly = isset($user) && $user->isOAuthOnly();
+    // Mostrar sección de contraseña:
+    // 1. Si es un usuario nuevo (registro normal) - SIEMPRE mostrar
+    // 2. Si es un usuario existente que NO se registró por OAuth - mostrar normalmente
+    // 3. Si es un usuario existente que SÍ se registró por OAuth - mostrar como OPCIONAL para agregar contraseña local
+    $showPasswordSection = true; // Siempre mostrar, pero hacer opcional si es OAuth
+@endphp
+
+@if($showPasswordSection)
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="card-title mb-0">{{ __('Datos de Cuenta') }}</h5>
+        <h5 class="card-title mb-0">
+            {{ __('Datos de Cuenta') }}
+            @if($isOAuthOnly)
+                <small class="text-muted">({{ __('Opcional: Agregar contraseña local') }})</small>
+            @endif
+        </h5>
     </div>
     <div class="card-body">
+        @if($isOAuthOnly)
+            <div class="alert alert-info mb-3">
+                <i class="fas fa-info-circle"></i> 
+                <strong>{{ __('Registro por Redes Sociales') }}</strong>
+                <p class="mb-0 mt-2">
+                    {{ __('Te registraste usando una cuenta de red social (Google, Facebook, etc.).') }}
+                    <br>
+                    <strong>{{ __('Importante:') }}</strong> {{ __('Tu contraseña de Google/Facebook NO funciona aquí. La aplicación generó una contraseña automática que no puedes usar directamente.') }}
+                    <br>
+                    {{ __('Si deseas iniciar sesión también con email y contraseña (además del botón de Google), puedes crear una contraseña local aquí.') }}
+                </p>
+            </div>
+        @elseif($hasSocialAccounts)
+            <div class="alert alert-info mb-3">
+                <i class="fas fa-info-circle"></i> 
+                {{ __('Tienes una cuenta vinculada con redes sociales. Puedes cambiar tu contraseña local aquí.') }}
+            </div>
+        @endif
+        
         <div class="row">
             <div class="col-md-6">
                 <!-- Contraseña -->
                 <div class="form-group mb-3">
-                    <label for="password" class="form-label">{{ __('Contraseña') }}</label>
+                    <label for="password" class="form-label">
+                        {{ __('Contraseña') }}
+                        @if($isOAuthOnly)
+                            <span class="text-muted">({{ __('Opcional') }})</span>
+                        @elseif(isset($user))
+                            <span class="text-muted">({{ __('Deja en blanco para no cambiar') }})</span>
+                        @else
+                            <span class="text-danger">*</span>
+                        @endif
+                    </label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
                         </div>
-                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="{{ __('Ingrese una contraseña') }}">
+                        <input type="password" name="password" 
+                               class="form-control @error('password') is-invalid @enderror" 
+                               id="password" 
+                               placeholder="{{ $isOAuthOnly ? __('Opcional: Ingrese una contraseña local') : __('Ingrese una contraseña') }}"
+                               @if($isOAuthOnly || isset($user)) @else required @endif>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password">
                                 <i class="fas fa-eye"></i>
@@ -117,20 +166,38 @@
                         </div>
                     </div>
                     {!! $errors->first('password', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                    @if($isOAuthOnly)
+                        <small class="form-text text-muted">{{ __('Opcional: Agrega una contraseña para iniciar sesión con email y contraseña') }}</small>
+                    @elseif(isset($user))
+                        <small class="form-text text-muted">{{ __('Deja en blanco si no deseas cambiar la contraseña') }}</small>
+                    @endif
                 </div>
             </div>
 
             <div class="col-md-6">
                 <!-- Confirmar Contraseña -->
                 <div class="form-group mb-3">
-                    <label for="password_confirmation" class="form-label">{{ __('Confirmar Contraseña') }}</label>
+                    <label for="password_confirmation" class="form-label">
+                        {{ __('Confirmar Contraseña') }}
+                        @if($isOAuthOnly)
+                            <span class="text-muted">({{ __('Opcional') }})</span>
+                        @elseif(isset($user))
+                            <span class="text-muted">({{ __('Solo si cambias la contraseña') }})</span>
+                        @else
+                            <span class="text-danger">*</span>
+                        @endif
+                    </label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
                         </div>
-                        <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" placeholder="{{ __('Confirme la contraseña') }}">
+                        <input type="password" name="password_confirmation" 
+                               class="form-control @error('password_confirmation') is-invalid @enderror" 
+                               id="password_confirmation" 
+                               placeholder="{{ __('Confirme la contraseña') }}"
+                               @if($isOAuthOnly || isset($user)) @else required @endif>
                         <div class="input-group-append">
                             <button type="button" class="btn btn-outline-secondary toggle-password" data-target="#password_confirmation">
                                 <i class="fas fa-eye"></i>
@@ -143,6 +210,7 @@
         </div>
     </div>
 </div>
+@endif
 
 <!-- Sección: Otros -->
 <div class="card mb-4">
