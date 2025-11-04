@@ -54,6 +54,16 @@ class EmailConfigController extends Controller
 
         $config = EmailConfig::create($validated);
 
+        // Si está activa, actualizar el .env
+        if ($config->is_active && $config->isConfigured()) {
+            $envUpdated = $config->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente', ['config_id' => $config->id]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', ['config_id' => $config->id]);
+            }
+        }
+
         Log::info('Configuración de Email creada', [
             'id' => $config->id,
             'host' => $config->host,
@@ -96,11 +106,25 @@ class EmailConfigController extends Controller
         }
 
         // Si se marca como activo, desactivar los demás
+        $wasActive = $emailConfig->is_active;
         if ($request->has('is_active') && $request->is_active) {
             EmailConfig::where('id', '!=', $emailConfig->id)->update(['is_active' => false]);
         }
 
         $emailConfig->update($validated);
+        
+        // Refrescar el modelo para obtener los valores actualizados
+        $emailConfig->refresh();
+
+        // Si está activa o se acaba de activar, actualizar el .env
+        if ($emailConfig->is_active && $emailConfig->isConfigured()) {
+            $envUpdated = $emailConfig->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente', ['config_id' => $emailConfig->id]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', ['config_id' => $emailConfig->id]);
+            }
+        }
 
         Log::info('Configuración de Email actualizada', [
             'id' => $emailConfig->id,
@@ -140,11 +164,29 @@ class EmailConfigController extends Controller
     public function toggleStatus(Request $request, EmailConfig $emailConfig): RedirectResponse
     {
         // Si se activa, desactivar los demás
-        if (!$emailConfig->is_active) {
+        $willBeActive = !$emailConfig->is_active;
+        if ($willBeActive) {
             EmailConfig::where('id', '!=', $emailConfig->id)->update(['is_active' => false]);
         }
 
-        $emailConfig->update(['is_active' => !$emailConfig->is_active]);
+        $emailConfig->update(['is_active' => $willBeActive]);
+        
+        // Refrescar el modelo
+        $emailConfig->refresh();
+
+        // Si se activó y está configurada, actualizar el .env
+        if ($willBeActive && $emailConfig->isConfigured()) {
+            $envUpdated = $emailConfig->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente al activar configuración', [
+                    'config_id' => $emailConfig->id,
+                ]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', [
+                    'config_id' => $emailConfig->id,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('superadmin.email-configs.index')
