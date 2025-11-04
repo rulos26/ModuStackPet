@@ -14,41 +14,76 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Usuario root con acceso completo
-        User::Create([
-            'name' => 'root',
-            'email' => 'root@modustackpet.com',
-            'password' => bcrypt('root'),
-            'email_verified_at' => now(),
-            'activo' => true,
-        ])->assignRole('Superadmin');
+        $root = User::firstOrCreate(
+            ['email' => 'root@modustackpet.com'],
+            [
+                'name' => 'root',
+                'password' => bcrypt('root'),
+                'email_verified_at' => now(),
+                'activo' => true,
+            ]
+        );
+        if (!$root->hasRole('Superadmin')) {
+            $root->assignRole('Superadmin');
+        }
 
-        User::Create([
-            'name' => 'Juan Carlos Diaz Lara',
-            'email' => 'rulos26@gmail.com',
-            'password' => bcrypt('12345678'),
-        ])->assignRole('Superadmin');
-        User::Create([
-            'name' => 'Juan Manuel Diaz Lara',
-            'email' => 'rulos25@gmail.com',
-            'password' => bcrypt('12345678'),
-        ])->assignRole('Admin');
+        // Usuario Superadmin
+        $superadmin = User::firstOrCreate(
+            ['email' => 'rulos26@gmail.com'],
+            [
+                'name' => 'Juan Carlos Diaz Lara',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+        if (!$superadmin->hasRole('Superadmin')) {
+            $superadmin->assignRole('Superadmin');
+        }
 
-        User::Create([
-            'name' => 'Juan Jose Diaz Betacourth',
-            'email' => 'rulos24@gmail.com',
-            'password' => bcrypt('12345678'),
-        ])->assignRole('Cliente');
+        // Usuario Admin
+        $admin = User::firstOrCreate(
+            ['email' => 'rulos25@gmail.com'],
+            [
+                'name' => 'Juan Manuel Diaz Lara',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+        if (!$admin->hasRole('Admin')) {
+            $admin->assignRole('Admin');
+        }
 
-        User::Create([
-            'name' => 'Jose Antonio Aguilar',
-            'email' => 'rulos23@gmail.com',
-            'password' => bcrypt('12345678'),
-        ])->assignRole('Paseador');
-        // User::factory(10)->create();
-        $roles = ['Superadmin', 'Admin', 'Cliente', 'Paseador'];
+        // Usuario Cliente
+        $cliente = User::firstOrCreate(
+            ['email' => 'rulos24@gmail.com'],
+            [
+                'name' => 'Juan Jose Diaz Betacourth',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+        if (!$cliente->hasRole('Cliente')) {
+            $cliente->assignRole('Cliente');
+        }
 
-        User::factory(10)->create()->each(function ($user) use ($roles) {
-            $user->assignRole($roles[array_rand($roles)]);
-        });
+        // Usuario Paseador
+        $paseador = User::firstOrCreate(
+            ['email' => 'rulos23@gmail.com'],
+            [
+                'name' => 'Jose Antonio Aguilar',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+        if (!$paseador->hasRole('Paseador')) {
+            $paseador->assignRole('Paseador');
+        }
+
+        // Crear usuarios de prueba solo si no existen muchos usuarios
+        $existingUsersCount = User::count();
+        if ($existingUsersCount < 15) {
+            $roles = ['Superadmin', 'Admin', 'Cliente', 'Paseador'];
+            $usersToCreate = 15 - $existingUsersCount;
+            
+            User::factory($usersToCreate)->create()->each(function ($user) use ($roles) {
+                $user->assignRole($roles[array_rand($roles)]);
+            });
+        }
     }
 }
