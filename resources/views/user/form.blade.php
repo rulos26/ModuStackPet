@@ -84,13 +84,113 @@
                 <!-- WhatsApp -->
                 <div class="form-group mb-3">
                     <label for="whatsapp" class="form-label">{{ __('WhatsApp') }}</label>
-                    <input type="tel" name="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" value="{{ old('whatsapp', $user?->whatsapp) }}" id="whatsapp" placeholder="WhatsApp">
+                    <input type="tel" name="whatsapp" class="form-control @error('whatsapp') is-invalid @enderror" value="{{ old('whatsapp', $user?->whatsapp ?? $user?->cliente?->whatsapp) }}" id="whatsapp" placeholder="WhatsApp">
                     {!! $errors->first('whatsapp', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Sección: Datos de Ubicación -->
+@php
+    $ciudades = \App\Models\Ciudade::orderBy('municipio')->get();
+    // Los barrios se cargarán dinámicamente vía JavaScript
+    $barrios = collect();
+    if (isset($user) && $user->cliente && $user->cliente->barrio_id) {
+        // Si hay un barrio seleccionado, cargarlo para mostrar
+        $barrioSeleccionado = \App\Models\Barrio::find($user->cliente->barrio_id);
+        if ($barrioSeleccionado) {
+            $barrios = collect([$barrioSeleccionado]);
+        }
+    }
+@endphp
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">{{ __('Datos de Ubicación') }}</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Dirección -->
+                <div class="form-group mb-3">
+                    <label for="direccion" class="form-label">{{ __('Dirección') }}</label>
+                    <input type="text" name="direccion" class="form-control @error('direccion') is-invalid @enderror" 
+                           value="{{ old('direccion', $user?->cliente?->direccion) }}" 
+                           id="direccion" placeholder="{{ __('Ingrese su dirección completa') }}">
+                    {!! $errors->first('direccion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Ciudad -->
+                <div class="form-group mb-3">
+                    <label for="ciudad_id" class="form-label">{{ __('Ciudad') }}</label>
+                    <select name="ciudad_id" class="form-select @error('ciudad_id') is-invalid @enderror" id="ciudad_id">
+                        <option value="">{{ __('Seleccione una ciudad') }}</option>
+                        @foreach($ciudades as $ciudad)
+                            <option value="{{ $ciudad->id_municipio }}" 
+                                {{ old('ciudad_id', $user?->cliente?->ciudad_id) == $ciudad->id_municipio ? 'selected' : '' }}>
+                                {{ $ciudad->municipio }}
+                            </option>
+                        @endforeach
+                    </select>
+                    {!! $errors->first('ciudad_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Barrio -->
+                <div class="form-group mb-3">
+                    <label for="barrio_id" class="form-label">{{ __('Barrio') }}</label>
+                    <select name="barrio_id" class="form-select @error('barrio_id') is-invalid @enderror" id="barrio_id">
+                        <option value="">{{ __('Seleccione un barrio') }}</option>
+                        @foreach($barrios as $barrio)
+                            <option value="{{ $barrio->id }}" 
+                                {{ old('barrio_id', $user?->cliente?->barrio_id) == $barrio->id ? 'selected' : '' }}>
+                                {{ $barrio->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                    {!! $errors->first('barrio_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                    <small class="form-text text-muted">{{ __('Primero selecciona una ciudad para ver los barrios disponibles') }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Cargar barrios dinámicamente cuando se selecciona una ciudad
+    document.addEventListener('DOMContentLoaded', function() {
+        const ciudadSelect = document.getElementById('ciudad_id');
+        const barrioSelect = document.getElementById('barrio_id');
+        
+        if (ciudadSelect) {
+            ciudadSelect.addEventListener('change', function() {
+                const ciudadId = this.value;
+                barrioSelect.innerHTML = '<option value="">{{ __('Seleccione un barrio') }}</option>';
+                
+                if (ciudadId) {
+                    fetch(`/api/barrios/${ciudadId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(barrio => {
+                                const option = document.createElement('option');
+                                option.value = barrio.id;
+                                option.textContent = barrio.nombre;
+                                barrioSelect.appendChild(option);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error al cargar barrios:', error);
+                        });
+                }
+            });
+        }
+    });
+</script>
 
 <!-- Sección: Datos de Cuenta -->
 @php

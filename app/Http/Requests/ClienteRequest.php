@@ -24,9 +24,17 @@ class ClienteRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $this->user?->id,
+            'tipo_documento' => 'nullable|exists:tipo_documentos,id',
+            'cedula' => 'nullable|numeric|digits_between:6,12',
+            'telefono' => 'nullable|string|max:15',
+            'whatsapp' => 'nullable|string|max:15',
+            'fecha_nacimiento' => 'nullable|date',
+            'direccion' => 'nullable|string|max:255',
+            'ciudad_id' => 'nullable|exists:ciudades,id_municipio',
+            'barrio_id' => 'nullable|exists:barrios,id',
             'password' => 'nullable|string|min:8|confirmed',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'active' => 'boolean'
+            'activo' => 'nullable|boolean'
         ];
     }
 

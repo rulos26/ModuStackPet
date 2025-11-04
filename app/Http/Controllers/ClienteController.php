@@ -119,10 +119,16 @@ class ClienteController extends Controller
                 ->with('error', 'No tienes permiso para actualizar este perfil.');
         }
 
+        // Actualizar datos del usuario
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'active' => $request->active ?? $user->active
+            'tipo_documento' => $request->tipo_documento,
+            'cedula' => $request->cedula,
+            'telefono' => $request->telefono,
+            'whatsapp' => $request->whatsapp,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'activo' => $request->activo ?? $user->activo
         ]);
 
         if ($request->filled('password')) {
@@ -140,6 +146,32 @@ class ClienteController extends Controller
             $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
             $user->avatar = $avatarPath;
             $user->save();
+        }
+
+        // Actualizar o crear perfil de cliente
+        $cliente = $user->cliente;
+        if (!$cliente) {
+            $cliente = \App\Models\Cliente::create([
+                'user_id' => $user->id,
+                'nombre' => $request->name,
+            ]);
+        }
+
+        $cliente->update([
+            'nombre' => $request->name,
+            'tipo_documento_id' => $request->tipo_documento,
+            'cedula' => $request->cedula,
+            'telefono' => $request->telefono,
+            'whatsapp' => $request->whatsapp,
+            'fecha_nacimiento' => $request->fecha_nacimiento,
+            'direccion' => $request->direccion,
+            'ciudad_id' => $request->ciudad_id,
+            'barrio_id' => $request->barrio_id,
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $cliente->avatar = $user->avatar;
+            $cliente->save();
         }
 
         return redirect()->route('cliente.dashboard')

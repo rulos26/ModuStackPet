@@ -32,7 +32,24 @@ use App\Http\Controllers\CleanController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Barrio;
 
+
+// Ruta API para obtener barrios por ciudad
+Route::get('/api/barrios/{ciudadId}', function ($ciudadId) {
+    // Si la tabla barrios tiene ciudad_id, filtrar por eso
+    // Si no, devolver todos los barrios (ya que no hay relación ciudad-barrio definida)
+    if (\Schema::hasColumn('barrios', 'ciudad_id')) {
+        $barrios = Barrio::where('ciudad_id', $ciudadId)
+            ->orderBy('nombre')
+            ->get(['id', 'nombre']);
+    } else {
+        // Si no hay relación, devolver todos los barrios
+        $barrios = Barrio::orderBy('nombre')
+            ->get(['id', 'nombre']);
+    }
+    return response()->json($barrios);
+})->name('api.barrios.by-ciudad');
 
 Route::get('/', function () {
     // Si el usuario está autenticado, redirigir según su rol
