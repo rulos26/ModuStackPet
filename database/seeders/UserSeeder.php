@@ -13,6 +13,15 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Usuario root con acceso completo
+        User::Create([
+            'name' => 'root',
+            'email' => 'root@modustackpet.com',
+            'password' => bcrypt('root'),
+            'email_verified_at' => now(),
+            'activo' => true,
+        ])->assignRole('Superadmin');
+
         User::Create([
             'name' => 'Juan Carlos Diaz Lara',
             'email' => 'rulos26@gmail.com',
