@@ -419,13 +419,20 @@
                     @if($user?->avatar)
                         <div class="mt-3">
                             @php
-                                // Intentar diferentes rutas para la imagen
+                                // La imagen se guarda en public/storage/img/avatar/filename.png
+                                // La ruta en BD es: storage/img/avatar/filename.png
                                 $avatarPath = null;
-                                if (file_exists(public_path('storage/' . $user->avatar))) {
+                                if (strpos($user->avatar, 'storage/img/avatar/') === 0) {
+                                    // Ruta nueva: storage/img/avatar/filename.png
+                                    $avatarPath = asset($user->avatar);
+                                } elseif (file_exists(public_path('storage/' . $user->avatar))) {
+                                    // Ruta antigua en storage
                                     $avatarPath = asset('storage/' . $user->avatar);
                                 } elseif (file_exists(public_path($user->avatar))) {
+                                    // Ruta absoluta
                                     $avatarPath = asset('public/' . $user->avatar);
                                 } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                                    // Ruta en storage disk
                                     $avatarPath = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
                                 }
                             @endphp

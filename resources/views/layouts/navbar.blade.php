@@ -50,12 +50,19 @@
                     $profileUrl = asset('storage/img/default.png');
                     
                     if ($currentUser && $currentUser->avatar) {
-                        // Intentar diferentes rutas para la imagen
-                        if (file_exists(public_path('storage/' . $currentUser->avatar))) {
+                        // La imagen se guarda en public/storage/img/avatar/filename.png
+                        // La ruta en BD es: storage/img/avatar/filename.png
+                        if (strpos($currentUser->avatar, 'storage/img/avatar/') === 0) {
+                            // Ruta nueva: storage/img/avatar/filename.png
+                            $profileUrl = asset($currentUser->avatar);
+                        } elseif (file_exists(public_path('storage/' . $currentUser->avatar))) {
+                            // Ruta antigua en storage
                             $profileUrl = asset('storage/' . $currentUser->avatar);
                         } elseif (file_exists(public_path($currentUser->avatar))) {
+                            // Ruta absoluta
                             $profileUrl = asset('public/' . $currentUser->avatar);
                         } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($currentUser->avatar)) {
+                            // Ruta en storage disk
                             $profileUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($currentUser->avatar);
                         }
                     }

@@ -13,11 +13,19 @@
                         $user = auth()->user();
                         $avatarUrl = asset('storage/img/default.png');
                         if ($user && $user->avatar) {
-                            if (file_exists(public_path('storage/' . $user->avatar))) {
+                            // La imagen se guarda en public/storage/img/avatar/filename.png
+                            // La ruta en BD es: storage/img/avatar/filename.png
+                            if (strpos($user->avatar, 'storage/img/avatar/') === 0) {
+                                // Ruta nueva: storage/img/avatar/filename.png
+                                $avatarUrl = asset($user->avatar);
+                            } elseif (file_exists(public_path('storage/' . $user->avatar))) {
+                                // Ruta antigua en storage
                                 $avatarUrl = asset('storage/' . $user->avatar);
                             } elseif (file_exists(public_path($user->avatar))) {
+                                // Ruta absoluta
                                 $avatarUrl = asset('public/' . $user->avatar);
                             } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                                // Ruta en storage disk
                                 $avatarUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
                             }
                         }

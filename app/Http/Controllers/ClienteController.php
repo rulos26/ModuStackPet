@@ -142,11 +142,31 @@ class ClienteController extends Controller
         if ($request->hasFile('avatar')) {
             // Eliminar avatar anterior si existe
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                $oldPath = public_path('storage/img/avatar/' . basename($user->avatar));
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+                // También intentar eliminar si está en storage
+                if (Storage::disk('public')->exists($user->avatar)) {
+                    Storage::disk('public')->delete($user->avatar);
+                }
             }
 
-            $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
-            $user->avatar = $avatarPath;
+            // Crear directorio si no existe
+            $avatarDir = public_path('storage/img/avatar');
+            if (!file_exists($avatarDir)) {
+                mkdir($avatarDir, 0755, true);
+            }
+
+            // Generar nombre único para el archivo
+            $extension = $request->file('avatar')->getClientOriginalExtension();
+            $fileName = $user->id . '_' . time() . '_' . uniqid() . '.' . $extension;
+            
+            // Mover el archivo a public/storage/img/avatar/
+            $request->file('avatar')->move($avatarDir, $fileName);
+            
+            // Guardar ruta en BD: storage/img/avatar/filename.png
+            $user->avatar = 'storage/img/avatar/' . $fileName;
             $user->save();
         }
 
@@ -227,25 +247,9 @@ class ClienteController extends Controller
             }
         }
 
-        // Manejar avatar del cliente
-        if ($request->hasFile('avatar')) {
-            // Eliminar avatar anterior del cliente si existe
-            if ($cliente->avatar && $cliente->avatar !== $user->avatar) {
-                // Solo eliminar si es diferente al del usuario
-                if (file_exists(public_path('storage/' . $cliente->avatar))) {
-                    Storage::disk('public')->delete($cliente->avatar);
-                } elseif (file_exists(public_path($cliente->avatar))) {
-                    @unlink(public_path($cliente->avatar));
-                }
-            }
-
-            // Usar el mismo avatar que el usuario (ya se guardó arriba)
-            $datosCliente['avatar'] = $user->avatar;
-        } elseif ($cliente->avatar && !$user->avatar) {
-            // Si el usuario no tiene avatar pero el cliente sí, mantener el del cliente
-            // No hacer nada, mantener el avatar actual del cliente
-        } elseif ($user->avatar) {
-            // Si el usuario tiene avatar, sincronizar con el cliente
+        // Sincronizar avatar del cliente con el usuario
+        // El avatar ya se guardó arriba en el usuario con la ruta: storage/img/avatar/filename.png
+        if ($user->avatar) {
             $datosCliente['avatar'] = $user->avatar;
         }
 
