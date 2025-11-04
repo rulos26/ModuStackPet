@@ -131,41 +131,52 @@ class BackupService
     protected function createOrVerifyDatabase(): void
     {
         $config = $this->backupConfig->toConfigArray();
-        
-        // Usar la base de datos del sistema 'mysql' temporalmente para crear la conexión
-        // Esto es necesario porque Laravel requiere la clave 'database' en la configuración
-        $tempConfig = $config;
-        $tempConfig['database'] = 'mysql'; // Base de datos del sistema que siempre existe
-        
-        Config::set("database.connections.{$this->tempConnectionName}_no_db", $tempConfig);
-        DB::purge($this->tempConnectionName . '_no_db');
-        
+        $databaseName = $this->backupConfig->database;
+
+        // Usar PDO directamente para crear la conexión sin especificar base de datos
+        // Esto evita problemas de permisos con bases de datos del sistema
         try {
-            $connection = DB::connection($this->tempConnectionName . '_no_db');
-            
+            $dsn = sprintf(
+                'mysql:host=%s;port=%s',
+                $config['host'],
+                $config['port']
+            );
+
+            $pdo = new \PDO(
+                $dsn,
+                $config['username'],
+                $config['password'],
+                [
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                ]
+            );
+
             // Verificar si la base de datos existe
-            $databaseName = $this->backupConfig->database;
-            $databaseExists = $connection->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$databaseName]);
-            
-            if (empty($databaseExists)) {
+            $stmt = $pdo->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?");
+            $stmt->execute([$databaseName]);
+            $databaseExists = $stmt->fetch();
+
+            if (!$databaseExists) {
                 // Crear base de datos
                 $charset = $config['charset'] ?? 'utf8mb4';
                 $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
-                
-                $connection->statement("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$charset} COLLATE {$collation}");
-                
+
+                $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$charset} COLLATE {$collation}");
+
                 Log::info('Base de datos creada', ['database' => $databaseName]);
             } else {
                 Log::info('Base de datos ya existe', ['database' => $databaseName]);
             }
-        } catch (\Exception $e) {
+
+            $pdo = null; // Cerrar conexión
+
+        } catch (\PDOException $e) {
             Log::error('Error al crear o verificar base de datos', [
-                'database' => $this->backupConfig->database,
+                'database' => $databaseName,
                 'error' => $e->getMessage(),
             ]);
-            throw $e;
-        } finally {
-            DB::purge($this->tempConnectionName . '_no_db');
+            throw new Exception('Error al crear o verificar base de datos: ' . $e->getMessage());
         }
     }
 
@@ -177,7 +188,7 @@ class BackupService
         $config = $this->backupConfig->toConfigArray();
         Config::set("database.connections.{$this->tempConnectionName}", $config);
         DB::purge($this->tempConnectionName);
-        
+
         // Verificar conexión
         DB::connection($this->tempConnectionName)->getPdo();
     }
@@ -188,20 +199,20 @@ class BackupService
     protected function runMigrations(): void
     {
         Log::info('Ejecutando migraciones en BD destino');
-        
+
         // Guardar configuración actual
         $originalConnection = config('database.default');
-        
+
         // Cambiar temporalmente la conexión por defecto
         Config::set('database.default', $this->tempConnectionName);
-        
+
         try {
             // Ejecutar migraciones
             Artisan::call('migrate', [
                 '--force' => true,
                 '--database' => $this->tempConnectionName,
             ]);
-            
+
             Log::info('Migraciones ejecutadas exitosamente');
         } finally {
             // Restaurar configuración original
@@ -216,23 +227,23 @@ class BackupService
     {
         try {
             $defaultConnection = config('database.default');
-            
+
             if (empty($defaultConnection)) {
                 throw new Exception('No se pudo obtener la conexión por defecto');
             }
-            
+
             $connectionConfig = config("database.connections.{$defaultConnection}");
-            
+
             if (!is_array($connectionConfig)) {
                 throw new Exception('La configuración de conexión no es válida');
             }
-            
+
             $sourceDb = $connectionConfig['database'] ?? null;
-            
+
             if (empty($sourceDb)) {
                 throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
             }
-            
+
             return $sourceDb;
         } catch (\Exception $e) {
             Log::error('Error al obtener nombre de BD de origen', [
@@ -249,16 +260,16 @@ class BackupService
     {
         $connection = DB::connection();
         $tables = $connection->select("SHOW TABLES");
-        
+
         $sourceDb = $this->getSourceDatabaseName();
         $tableKey = 'Tables_in_' . $sourceDb;
-        
+
         foreach ($tables as $table) {
             $tableName = $table->$tableKey;
             // Incluir todas las tablas, incluyendo migrations
             $this->tablesToBackup[] = $tableName;
         }
-        
+
         Log::info('Tablas identificadas para backup', [
             'count' => count($this->tablesToBackup),
             'tables' => $this->tablesToBackup,
@@ -272,37 +283,37 @@ class BackupService
     {
         $sourceConnection = DB::connection();
         $targetConnection = DB::connection($this->tempConnectionName);
-        
+
         $sourceDb = $this->getSourceDatabaseName();
         $tableKey = 'Tables_in_' . $sourceDb;
-        
+
         foreach ($this->tablesToBackup as $tableName) {
             try {
                 // Obtener estructura de la tabla
                 $createTable = $sourceConnection->select("SHOW CREATE TABLE `{$tableName}`")[0];
                 $createTableSql = $createTable->{'Create Table'};
-                
+
                 // Reemplazar nombre de BD si existe en el CREATE TABLE
                 $createTableSql = str_replace("CREATE TABLE `{$tableName}`", "CREATE TABLE IF NOT EXISTS `{$tableName}`", $createTableSql);
-                
+
                 // Ejecutar CREATE TABLE en destino
                 $targetConnection->statement($createTableSql);
-                
+
                 // Obtener datos en lotes para evitar problemas de memoria
                 $totalRecords = $sourceConnection->table($tableName)->count();
                 $batchSize = 1000;
-                
+
                 if ($totalRecords > 0) {
                     // Desactivar temporalmente foreign keys
                     $targetConnection->statement('SET FOREIGN_KEY_CHECKS=0');
-                    
+
                     // Limpiar tabla destino antes de insertar
                     $targetConnection->statement("TRUNCATE TABLE `{$tableName}`");
-                    
+
                     // Obtener columnas de la tabla
                     $columns = $sourceConnection->getSchemaBuilder()->getColumnListing($tableName);
                     $columnsStr = '`' . implode('`,`', $columns) . '`';
-                    
+
                     // Insertar datos en lotes
                     $offset = 0;
                     while ($offset < $totalRecords) {
@@ -310,11 +321,11 @@ class BackupService
                             ->offset($offset)
                             ->limit($batchSize)
                             ->get();
-                        
+
                         if ($records->isEmpty()) {
                             break;
                         }
-                        
+
                         $values = [];
                         foreach ($records as $record) {
                             $recordArray = (array) $record;
@@ -329,32 +340,32 @@ class BackupService
                             }
                             $values[] = '(' . implode(',', $rowValues) . ')';
                         }
-                        
+
                         if (!empty($values)) {
                             $sql = "INSERT INTO `{$tableName}` ({$columnsStr}) VALUES " . implode(',', $values);
                             $targetConnection->statement($sql);
                         }
-                        
+
                         $offset += $batchSize;
                     }
-                    
+
                     // Reactivar foreign keys
                     $targetConnection->statement('SET FOREIGN_KEY_CHECKS=1');
-                    
+
                     $this->recordsBackedUp += $totalRecords;
                 }
-                
+
                 Log::info("Tabla {$tableName} respaldada", [
                     'records' => $totalRecords,
                 ]);
-                
+
                 // Actualizar progreso
                 $currentIndex = array_search($tableName, $this->tablesToBackup);
                 $this->backupLog->update([
                     'tables_backed_up' => $currentIndex !== false ? $currentIndex + 1 : count($this->tablesToBackup),
                     'records_backed_up' => $this->recordsBackedUp,
                 ]);
-                
+
             } catch (Exception $e) {
                 Log::warning("Error al respaldar tabla {$tableName}", [
                     'error' => $e->getMessage(),
@@ -370,20 +381,20 @@ class BackupService
     protected function runSeeders(): void
     {
         Log::info('Ejecutando seeders en BD destino');
-        
+
         // Guardar configuración actual
         $originalConnection = config('database.default');
-        
+
         // Cambiar temporalmente la conexión por defecto
         Config::set('database.default', $this->tempConnectionName);
-        
+
         try {
             // Ejecutar seeders
             Artisan::call('db:seed', [
                 '--force' => true,
                 '--database' => $this->tempConnectionName,
             ]);
-            
+
             Log::info('Seeders ejecutados exitosamente');
         } catch (Exception $e) {
             Log::warning('Error al ejecutar seeders', [
