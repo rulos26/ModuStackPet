@@ -75,14 +75,37 @@ class BackupConfig extends Model
     }
 
     /**
+     * Obtener el nombre de la base de datos de producción de forma segura
+     */
+    public static function getProductionDatabaseName(): ?string
+    {
+        try {
+            $defaultConnection = config('database.default');
+            
+            if (empty($defaultConnection)) {
+                return null;
+            }
+            
+            $connectionConfig = config("database.connections.{$defaultConnection}");
+            
+            if (!is_array($connectionConfig)) {
+                return null;
+            }
+            
+            return $connectionConfig['database'] ?? null;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
      * Verificar que la BD destino no sea la de producción
      */
     public function isProductionDatabase(): bool
     {
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = static::getProductionDatabaseName();
         
-        if ($productionDb === null) {
+        if ($productionDb === null || empty($productionDb)) {
             return false; // Si no se puede obtener la BD de producción, permitir el backup
         }
         

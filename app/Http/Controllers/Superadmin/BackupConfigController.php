@@ -32,8 +32,7 @@ class BackupConfigController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = BackupConfig::getProductionDatabaseName();
         
         return view('superadmin.backup-configs.index', compact('configs', 'productionDb'));
     }
@@ -44,8 +43,7 @@ class BackupConfigController extends Controller
     public function create(): View
     {
         $config = new BackupConfig();
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = BackupConfig::getProductionDatabaseName();
         
         return view('superadmin.backup-configs.create', compact('config', 'productionDb'));
     }
@@ -68,8 +66,7 @@ class BackupConfigController extends Controller
         ]);
 
         // Validar que no sea la BD de producción
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = BackupConfig::getProductionDatabaseName();
         if ($productionDb !== null && $validated['database'] === $productionDb) {
             return redirect()
                 ->back()
@@ -95,8 +92,7 @@ class BackupConfigController extends Controller
      */
     public function edit(BackupConfig $backupConfig): View
     {
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = BackupConfig::getProductionDatabaseName();
         
         return view('superadmin.backup-configs.edit', compact('backupConfig', 'productionDb'));
     }
@@ -124,8 +120,7 @@ class BackupConfigController extends Controller
         }
 
         // Validar que no sea la BD de producción
-        $defaultConnection = config('database.default');
-        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        $productionDb = BackupConfig::getProductionDatabaseName();
         if ($productionDb !== null && $validated['database'] === $productionDb) {
             return redirect()
                 ->back()

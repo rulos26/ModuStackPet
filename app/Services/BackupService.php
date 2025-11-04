@@ -199,6 +199,39 @@ class BackupService
     }
 
     /**
+     * Obtener el nombre de la base de datos de origen de forma segura
+     */
+    protected function getSourceDatabaseName(): string
+    {
+        try {
+            $defaultConnection = config('database.default');
+            
+            if (empty($defaultConnection)) {
+                throw new Exception('No se pudo obtener la conexión por defecto');
+            }
+            
+            $connectionConfig = config("database.connections.{$defaultConnection}");
+            
+            if (!is_array($connectionConfig)) {
+                throw new Exception('La configuración de conexión no es válida');
+            }
+            
+            $sourceDb = $connectionConfig['database'] ?? null;
+            
+            if (empty($sourceDb)) {
+                throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
+            }
+            
+            return $sourceDb;
+        } catch (\Exception $e) {
+            Log::error('Error al obtener nombre de BD de origen', [
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
      * Obtener lista de tablas a respaldar
      */
     protected function getTablesList(): void
@@ -206,13 +239,7 @@ class BackupService
         $connection = DB::connection();
         $tables = $connection->select("SHOW TABLES");
         
-        $defaultConnection = config('database.default');
-        $sourceDb = config("database.connections.{$defaultConnection}.database", null);
-        
-        if ($sourceDb === null) {
-            throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
-        }
-        
+        $sourceDb = $this->getSourceDatabaseName();
         $tableKey = 'Tables_in_' . $sourceDb;
         
         foreach ($tables as $table) {
@@ -235,13 +262,7 @@ class BackupService
         $sourceConnection = DB::connection();
         $targetConnection = DB::connection($this->tempConnectionName);
         
-        $defaultConnection = config('database.default');
-        $sourceDb = config("database.connections.{$defaultConnection}.database", null);
-        
-        if ($sourceDb === null) {
-            throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
-        }
-        
+        $sourceDb = $this->getSourceDatabaseName();
         $tableKey = 'Tables_in_' . $sourceDb;
         
         foreach ($this->tablesToBackup as $tableName) {
