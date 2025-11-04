@@ -13,7 +13,7 @@
         @endif
 
         @if(auth()->user()?->hasRole('Cliente'))
-          {{-- @include('cliente.sidebar') --}}
+            @include('cliente.sidebar')
         @endif
 
         @if(auth()->user()?->hasRole('Superadmin'))
