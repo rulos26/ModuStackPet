@@ -21,8 +21,14 @@ class SeederController extends Controller
         'Database\\Seeders\\RoleSeeder',
         'Database\\Seeders\\TokenSeeder',
         'Database\\Seeders\\DepartamentoSqlSeeder',
+        'Database\\Seeders\\DatabaseConfigSeeder',
+        'Database\\Seeders\\EmailConfigSeeder',
+        'Database\\Seeders\\OAuthProviderSeeder',
         // Variantes tolerantes por si el proyecto define clases con casing distinto
         'Database\\Seeders\\roleSeeder',
+        'Database\\Seeders\\databaseConfigSeeder',
+        'Database\\Seeders\\emailConfigSeeder',
+        'Database\\Seeders\\oauthProviderSeeder',
     ];
 
     public function __construct()
