@@ -45,9 +45,10 @@
         <!-- Información del usuario -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                @php($currentUser = auth()->user())
                 @php
+                    $currentUser = auth()->user();
                     $profileUrl = asset('storage/img/default.png');
+                    
                     if ($currentUser && $currentUser->avatar) {
                         // Intentar diferentes rutas para la imagen
                         if (file_exists(public_path('storage/' . $currentUser->avatar))) {
