@@ -165,9 +165,27 @@ class ClienteController extends Controller
             // Mover el archivo a public/storage/img/avatar/
             $request->file('avatar')->move($avatarDir, $fileName);
             
+            // Verificar que el archivo se guardó correctamente
+            $fullPath = $avatarDir . '/' . $fileName;
+            if (!file_exists($fullPath)) {
+                Log::error('Error: El archivo no se guardó correctamente', [
+                    'ruta_intentada' => $fullPath,
+                    'directorio' => $avatarDir,
+                    'archivo' => $fileName,
+                ]);
+                throw new \Exception('Error al guardar la imagen de perfil');
+            }
+            
             // Guardar ruta en BD: storage/img/avatar/filename.png
             $user->avatar = 'storage/img/avatar/' . $fileName;
             $user->save();
+            
+            Log::info('Avatar guardado correctamente', [
+                'user_id' => $user->id,
+                'ruta_bd' => $user->avatar,
+                'ruta_fisica' => $fullPath,
+                'existe' => file_exists($fullPath),
+            ]);
         }
 
         // Actualizar o crear perfil de cliente

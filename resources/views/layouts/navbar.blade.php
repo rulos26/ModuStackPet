@@ -53,8 +53,22 @@
                         // La imagen se guarda en public/storage/img/avatar/filename.png
                         // La ruta en BD es: storage/img/avatar/filename.png
                         if (strpos($currentUser->avatar, 'storage/img/avatar/') === 0) {
-                            // Ruta nueva: storage/img/avatar/filename.png
-                            $profileUrl = asset($currentUser->avatar);
+                            // Verificar si el archivo existe físicamente
+                            $filePath = public_path($currentUser->avatar);
+                            if (file_exists($filePath)) {
+                                // Ruta nueva: storage/img/avatar/filename.png
+                                // asset() busca en public/, así que solo necesitamos la ruta relativa
+                                $profileUrl = asset($currentUser->avatar);
+                            } else {
+                                // Si no existe, intentar con ruta completa
+                                $altPath = public_path('storage/img/avatar/' . basename($currentUser->avatar));
+                                if (file_exists($altPath)) {
+                                    $profileUrl = asset('storage/img/avatar/' . basename($currentUser->avatar));
+                                } else {
+                                    // Si no existe, usar imagen por defecto
+                                    $profileUrl = asset('storage/img/default.png');
+                                }
+                            }
                         } elseif (file_exists(public_path('storage/' . $currentUser->avatar))) {
                             // Ruta antigua en storage
                             $profileUrl = asset('storage/' . $currentUser->avatar);

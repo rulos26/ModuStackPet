@@ -423,8 +423,19 @@
                                 // La ruta en BD es: storage/img/avatar/filename.png
                                 $avatarPath = null;
                                 if (strpos($user->avatar, 'storage/img/avatar/') === 0) {
-                                    // Ruta nueva: storage/img/avatar/filename.png
-                                    $avatarPath = asset($user->avatar);
+                                    // Verificar si el archivo existe físicamente
+                                    $filePath = public_path($user->avatar);
+                                    if (file_exists($filePath)) {
+                                        // Ruta nueva: storage/img/avatar/filename.png
+                                        $avatarPath = asset($user->avatar);
+                                    } else {
+                                        // Intentar con solo el nombre del archivo
+                                        $fileName = basename($user->avatar);
+                                        $altPath = public_path('storage/img/avatar/' . $fileName);
+                                        if (file_exists($altPath)) {
+                                            $avatarPath = asset('storage/img/avatar/' . $fileName);
+                                        }
+                                    }
                                 } elseif (file_exists(public_path('storage/' . $user->avatar))) {
                                     // Ruta antigua en storage
                                     $avatarPath = asset('storage/' . $user->avatar);
