@@ -79,7 +79,13 @@ class BackupConfig extends Model
      */
     public function isProductionDatabase(): bool
     {
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        
+        if ($productionDb === null) {
+            return false; // Si no se puede obtener la BD de producción, permitir el backup
+        }
+        
         return $this->database === $productionDb;
     }
 }

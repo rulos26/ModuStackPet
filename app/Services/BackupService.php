@@ -206,7 +206,14 @@ class BackupService
         $connection = DB::connection();
         $tables = $connection->select("SHOW TABLES");
         
-        $tableKey = 'Tables_in_' . config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $sourceDb = config("database.connections.{$defaultConnection}.database", null);
+        
+        if ($sourceDb === null) {
+            throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
+        }
+        
+        $tableKey = 'Tables_in_' . $sourceDb;
         
         foreach ($tables as $table) {
             $tableName = $table->$tableKey;
@@ -228,7 +235,13 @@ class BackupService
         $sourceConnection = DB::connection();
         $targetConnection = DB::connection($this->tempConnectionName);
         
-        $sourceDb = config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $sourceDb = config("database.connections.{$defaultConnection}.database", null);
+        
+        if ($sourceDb === null) {
+            throw new Exception('No se pudo obtener el nombre de la base de datos de origen');
+        }
+        
         $tableKey = 'Tables_in_' . $sourceDb;
         
         foreach ($this->tablesToBackup as $tableName) {

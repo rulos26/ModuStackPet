@@ -32,7 +32,8 @@ class BackupConfigController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
         
         return view('superadmin.backup-configs.index', compact('configs', 'productionDb'));
     }
@@ -43,7 +44,8 @@ class BackupConfigController extends Controller
     public function create(): View
     {
         $config = new BackupConfig();
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
         
         return view('superadmin.backup-configs.create', compact('config', 'productionDb'));
     }
@@ -66,8 +68,9 @@ class BackupConfigController extends Controller
         ]);
 
         // Validar que no sea la BD de producción
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
-        if ($validated['database'] === $productionDb) {
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        if ($productionDb !== null && $validated['database'] === $productionDb) {
             return redirect()
                 ->back()
                 ->withInput()
@@ -92,7 +95,8 @@ class BackupConfigController extends Controller
      */
     public function edit(BackupConfig $backupConfig): View
     {
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
         
         return view('superadmin.backup-configs.edit', compact('backupConfig', 'productionDb'));
     }
@@ -120,8 +124,9 @@ class BackupConfigController extends Controller
         }
 
         // Validar que no sea la BD de producción
-        $productionDb = config('database.connections.' . config('database.default') . '.database');
-        if ($validated['database'] === $productionDb) {
+        $defaultConnection = config('database.default');
+        $productionDb = config("database.connections.{$defaultConnection}.database", null);
+        if ($productionDb !== null && $validated['database'] === $productionDb) {
             return redirect()
                 ->back()
                 ->withInput()
