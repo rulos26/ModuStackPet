@@ -45,12 +45,17 @@ class DatabaseConfig extends Model
     public function toConfigArray(): array
     {
         return [
-            'connection' => $this->connection,
+            'driver' => $this->connection, // Laravel usa 'driver' en lugar de 'connection'
             'host' => $this->host,
             'port' => $this->port,
             'database' => $this->database,
             'username' => $this->username,
             'password' => $this->password,
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
         ];
     }
 

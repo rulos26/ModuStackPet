@@ -160,6 +160,7 @@ class DatabaseConfigController extends Controller
             config(["database.connections.{$tempConnection}" => $config]);
 
             // Intentar conectar
+            DB::purge($tempConnection); // Limpiar conexión previa si existe
             DB::connection($tempConnection)->getPdo();
 
             $result = [
