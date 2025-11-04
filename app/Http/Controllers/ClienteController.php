@@ -160,31 +160,28 @@ class ClienteController extends Controller
         }
 
         // Datos base para actualizar
+        // Convertir strings vacíos a null para evitar problemas con la base de datos
         $datosCliente = [
             'nombre' => $request->name,
-            'tipo_documento_id' => $request->tipo_documento,
-            'cedula' => $request->cedula,
-            'telefono' => $request->telefono,
-            'whatsapp' => $request->whatsapp,
-            'fecha_nacimiento' => $request->fecha_nacimiento,
-            'direccion' => $request->direccion,
-            'ciudad_id' => $request->ciudad_id,
-            'barrio_id' => $request->barrio_id,
+            'tipo_documento_id' => !empty($request->tipo_documento) ? $request->tipo_documento : null,
+            'cedula' => !empty($request->cedula) ? $request->cedula : null,
+            'telefono' => !empty($request->telefono) ? $request->telefono : null,
+            'whatsapp' => !empty($request->whatsapp) ? $request->whatsapp : null,
+            'fecha_nacimiento' => !empty($request->fecha_nacimiento) ? $request->fecha_nacimiento : null,
+            'direccion' => !empty($request->direccion) ? $request->direccion : null,
+            'ciudad_id' => !empty($request->ciudad_id) ? $request->ciudad_id : null,
+            'barrio_id' => !empty($request->barrio_id) ? $request->barrio_id : null,
         ];
 
-        // Geocodificar dirección si se proporcionó
-        if ($request->filled('direccion')) {
+        // Verificar si la dirección cambió para geocodificar nuevamente
+        $direccionCambio = $request->filled('direccion') && 
+                          ($cliente->direccion !== $request->direccion || 
+                           !$cliente->latitud || !$cliente->longitud);
+
+        // Geocodificar dirección si cambió o si no tiene coordenadas
+        if ($direccionCambio) {
             try {
                 $geocodingService = new GeocodingService();
-                
-                // Obtener nombre de la ciudad si está disponible
-                $ciudadNombre = null;
-                if ($request->ciudad_id) {
-                    $ciudad = \App\Models\Ciudade::find($request->ciudad_id);
-                    if ($ciudad) {
-                        $ciudadNombre = $ciudad->municipio;
-                    }
-                }
 
                 // Geocodificar dirección (específica para Engativá, Bogotá)
                 $coordenadas = $geocodingService->geocodeEngativa($request->direccion);
@@ -204,6 +201,11 @@ class ClienteController extends Controller
                         'user_id' => $user->id,
                         'direccion' => $request->direccion,
                     ]);
+                    // Si no se puede geocodificar y no hay coordenadas previas, mantener null
+                    if (!$cliente->latitud && !$cliente->longitud) {
+                        $datosCliente['latitud'] = null;
+                        $datosCliente['longitud'] = null;
+                    }
                 }
             } catch (\Exception $e) {
                 Log::error('Error al geocodificar dirección', [
@@ -211,17 +213,61 @@ class ClienteController extends Controller
                     'direccion' => $request->direccion,
                     'error' => $e->getMessage(),
                 ]);
-                // Continuar sin coordenadas si falla la geocodificación
+                // Si hay error y no hay coordenadas previas, mantener null
+                if (!$cliente->latitud && !$cliente->longitud) {
+                    $datosCliente['latitud'] = null;
+                    $datosCliente['longitud'] = null;
+                }
+            }
+        } else {
+            // Si no cambió la dirección, mantener las coordenadas existentes
+            if ($cliente->latitud && $cliente->longitud) {
+                $datosCliente['latitud'] = $cliente->latitud;
+                $datosCliente['longitud'] = $cliente->longitud;
             }
         }
 
-        $cliente->update($datosCliente);
-
+        // Manejar avatar del cliente
         if ($request->hasFile('avatar')) {
-            $cliente->avatar = $user->avatar;
-            $cliente->save();
+            // Eliminar avatar anterior del cliente si existe
+            if ($cliente->avatar && $cliente->avatar !== $user->avatar) {
+                // Solo eliminar si es diferente al del usuario
+                if (file_exists(public_path('storage/' . $cliente->avatar))) {
+                    Storage::disk('public')->delete($cliente->avatar);
+                } elseif (file_exists(public_path($cliente->avatar))) {
+                    @unlink(public_path($cliente->avatar));
+                }
+            }
+
+            // Usar el mismo avatar que el usuario (ya se guardó arriba)
+            $datosCliente['avatar'] = $user->avatar;
+        } elseif ($cliente->avatar && !$user->avatar) {
+            // Si el usuario no tiene avatar pero el cliente sí, mantener el del cliente
+            // No hacer nada, mantener el avatar actual del cliente
+        } elseif ($user->avatar) {
+            // Si el usuario tiene avatar, sincronizar con el cliente
+            $datosCliente['avatar'] = $user->avatar;
         }
 
+        // Actualizar el cliente con todos los datos
+        $cliente->update($datosCliente);
+
+        // Log para debugging
+        Log::info('Datos del cliente actualizados', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id,
+            'datos_guardados' => [
+                'barrio_id' => $datosCliente['barrio_id'],
+                'ciudad_id' => $datosCliente['ciudad_id'],
+                'latitud' => $datosCliente['latitud'] ?? 'no establecida',
+                'longitud' => $datosCliente['longitud'] ?? 'no establecida',
+                'direccion' => $datosCliente['direccion'],
+            ],
+        ]);
+
+        // Verificar que se guardaron correctamente
+        $cliente->refresh();
+        
         return redirect()->route('cliente.dashboard')
             ->with('success', 'Perfil actualizado exitosamente.');
     }

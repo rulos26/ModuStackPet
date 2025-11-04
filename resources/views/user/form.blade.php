@@ -409,17 +409,33 @@
                 <div class="form-group mb-3">
                     <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>
                     <div class="input-group">
-                        <div class="custom-file">
-                            <input type="file" name="avatar" class="custom-file-input @error('avatar') is-invalid @enderror" id="avatar" accept="image/*">
-                            <label class="custom-file-label" for="avatar">{{ __('Seleccionar Imagen') }}</label>
-                        </div>
+                        <input type="file" name="avatar" class="form-control @error('avatar') is-invalid @enderror" id="avatar" accept="image/*" onchange="previewImage(this)">
+                        <label class="input-group-text" for="avatar">
+                            <i class="fas fa-image"></i> {{ __('Seleccionar Imagen') }}
+                        </label>
                     </div>
+                    <div id="imagePreview" class="mt-3"></div>
                     {!! $errors->first('avatar', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                     @if($user?->avatar)
                         <div class="mt-3">
-                            <img src="{{ asset('public/' . $user->avatar) }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px;">
+                            @php
+                                // Intentar diferentes rutas para la imagen
+                                $avatarPath = null;
+                                if (file_exists(public_path('storage/' . $user->avatar))) {
+                                    $avatarPath = asset('storage/' . $user->avatar);
+                                } elseif (file_exists(public_path($user->avatar))) {
+                                    $avatarPath = asset('public/' . $user->avatar);
+                                } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                                    $avatarPath = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
+                                }
+                            @endphp
+                            @if($avatarPath)
+                                <img src="{{ $avatarPath }}" alt="Foto de Perfil" class="img-thumbnail" style="max-width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                                <p class="text-muted small mt-2">{{ __('Foto actual') }}</p>
+                            @endif
                         </div>
                     @endif
+                    <small class="form-text text-muted">{{ __('Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB') }}</small>
                 </div>
             </div>
         </div>
@@ -437,6 +453,27 @@
 </div>
 
 <script>
+    // Función para previsualizar la imagen seleccionada
+    function previewImage(input) {
+        const preview = document.getElementById('imagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `
+                    <div class="text-center">
+                        <img src="${e.target.result}" alt="Vista previa" 
+                             class="img-thumbnail" 
+                             style="max-width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                        <p class="text-muted small mt-2">{{ __('Vista previa de la nueva imagen') }}</p>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.innerHTML = '';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const togglePasswordButtons = document.querySelectorAll('.toggle-password');
 

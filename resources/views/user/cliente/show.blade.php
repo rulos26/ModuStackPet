@@ -15,17 +15,22 @@
                     </div>
                     <div class="card-body text-center">
                         <!-- Foto de Perfil -->
-                        @if($user->avatar && file_exists(public_path($user->avatar)))
-                            <img class="profile-user-img img-fluid img-circle"
-                                 style="border: 5px solid #007bff;" 
-                                 src="{{ asset('public/' . $user->avatar) }}"
-                                 alt="Foto de Perfil">
-                        @else
-                            <img class="profile-user-img img-fluid img-circle"
-                                 style="border: 5px solid #007bff;" 
-                                 src="{{ asset('default-avatar.png') }}" 
-                                 alt="Foto de Perfil">
-                        @endif
+                        @php
+                            $avatarUrl = asset('storage/img/default.png');
+                            if ($user->avatar) {
+                                if (file_exists(public_path('storage/' . $user->avatar))) {
+                                    $avatarUrl = asset('storage/' . $user->avatar);
+                                } elseif (file_exists(public_path($user->avatar))) {
+                                    $avatarUrl = asset('public/' . $user->avatar);
+                                } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
+                                    $avatarUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
+                                }
+                            }
+                        @endphp
+                        <img class="profile-user-img img-fluid img-circle"
+                             style="border: 5px solid #007bff; width: 150px; height: 150px; object-fit: cover;" 
+                             src="{{ $avatarUrl }}"
+                             alt="Foto de Perfil">
 
                         <h3 class="profile-username mt-3">{{ $user->name }}</h3>
                         <p class="text-muted">{{ __('Usuario Activo') }}</p>

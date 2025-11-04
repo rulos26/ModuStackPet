@@ -46,7 +46,19 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 @php($currentUser = auth()->user())
-                @php($profileUrl = $currentUser && $currentUser->profile_picture_url ? asset('storage/' . $currentUser->profile_picture_url) : asset('public/storage/img/desfault.png'))
+                @php
+                    $profileUrl = asset('storage/img/default.png');
+                    if ($currentUser && $currentUser->avatar) {
+                        // Intentar diferentes rutas para la imagen
+                        if (file_exists(public_path('storage/' . $currentUser->avatar))) {
+                            $profileUrl = asset('storage/' . $currentUser->avatar);
+                        } elseif (file_exists(public_path($currentUser->avatar))) {
+                            $profileUrl = asset('public/' . $currentUser->avatar);
+                        } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($currentUser->avatar)) {
+                            $profileUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($currentUser->avatar);
+                        }
+                    }
+                @endphp
                 <img src="{{ $profileUrl }}"
                     alt="Imagen del usuario" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                 <span class="ms-2">{{ $currentUser?->name ?? 'Invitado' }}</span>
