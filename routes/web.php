@@ -35,28 +35,36 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Barrio;
 
 
-// Ruta API para obtener barrios de Engativá (solo Engativá)
-Route::get('/api/barrios-engativa', function () {
-    $barrios = Barrio::where('localidad', 'Engativá')
-        ->orWhere('localidad', 'like', '%Engativá%')
-        ->orWhere('localidad', 'like', '%Engativa%')
-        ->orderBy('nombre')
-        ->get(['id', 'nombre', 'localidad']);
-    
-    return response()->json($barrios);
-})->name('api.barrios.engativa');
+// Rutas API para barrios (sin prefijo /api para evitar problemas de routing)
+Route::get('/barrios-engativa', function () {
+    try {
+        $barrios = Barrio::where('localidad', 'Engativá')
+            ->orWhere('localidad', 'like', '%Engativá%')
+            ->orWhere('localidad', 'like', '%Engativa%')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'localidad']);
+        
+        return response()->json($barrios, 200, [], JSON_UNESCAPED_UNICODE);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al cargar barrios', 'message' => $e->getMessage()], 500);
+    }
+})->name('barrios.engativa');
 
-// Ruta API para obtener barrios por ciudad (mantener para compatibilidad)
-Route::get('/api/barrios/{ciudadId}', function ($ciudadId) {
-    // Solo devolver barrios de Engativá independientemente de la ciudad
-    $barrios = Barrio::where('localidad', 'Engativá')
-        ->orWhere('localidad', 'like', '%Engativá%')
-        ->orWhere('localidad', 'like', '%Engativa%')
-        ->orderBy('nombre')
-        ->get(['id', 'nombre', 'localidad']);
-    
-    return response()->json($barrios);
-})->name('api.barrios.by-ciudad');
+// Ruta para obtener barrios por ciudad (mantener para compatibilidad)
+Route::get('/barrios-por-ciudad/{ciudadId}', function ($ciudadId) {
+    try {
+        // Solo devolver barrios de Engativá independientemente de la ciudad
+        $barrios = Barrio::where('localidad', 'Engativá')
+            ->orWhere('localidad', 'like', '%Engativá%')
+            ->orWhere('localidad', 'like', '%Engativa%')
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'localidad']);
+        
+        return response()->json($barrios, 200, [], JSON_UNESCAPED_UNICODE);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al cargar barrios', 'message' => $e->getMessage()], 500);
+    }
+})->name('barrios.by-ciudad');
 
 Route::get('/', function () {
     // Si el usuario está autenticado, redirigir según su rol

@@ -188,10 +188,25 @@
             barrioSelect.innerHTML = '<option value="">{{ __('Seleccione un barrio') }}</option>';
             
             // Cargar solo barrios de Engativá desde la API
-            fetch('/api/barrios-engativa')
-                .then(response => response.json())
+            const url = '{{ route("barrios.engativa") }}';
+            
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data && data.length > 0) {
+                    if (data && Array.isArray(data) && data.length > 0) {
                         data.forEach(barrio => {
                             const option = document.createElement('option');
                             option.value = barrio.id;
@@ -206,10 +221,14 @@
                             
                             barrioSelect.appendChild(option);
                         });
+                    } else {
+                        console.warn('No se encontraron barrios de Engativá');
+                        barrioSelect.innerHTML = '<option value="">{{ __('No hay barrios disponibles') }}</option>';
                     }
                 })
                 .catch(error => {
                     console.error('Error al cargar barrios de Engativá:', error);
+                    barrioSelect.innerHTML = '<option value="">{{ __('Error al cargar barrios') }}</option>';
                 });
         }
         
