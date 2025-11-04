@@ -145,18 +145,20 @@ class DatabaseConfig extends Model
         // Escapar valores que contengan espacios o caracteres especiales
         $escapedValue = $this->escapeEnvValue($value);
 
-        // Patrón para buscar la variable (puede estar comentada o no)
-        $pattern = '/^' . preg_quote($key, '/') . '=.*$/m';
+        // Patrón para buscar la variable (puede estar comentada o no, con o sin espacios)
+        // Busca: # DB_HOST=xxx  o  DB_HOST=xxx  o  DB_HOST = xxx
+        $pattern = '/^(\s*#?\s*)' . preg_quote($key, '/') . '(\s*=\s*)(.*)$/m';
 
-        // Nueva línea con el valor actualizado
+        // Nueva línea con el valor actualizado (sin comentario)
         $replacement = $key . '=' . $escapedValue;
 
-        // Si la variable existe, reemplazarla
+        // Si la variable existe (comentada o no), reemplazarla
         if (preg_match($pattern, $content)) {
             $content = preg_replace($pattern, $replacement, $content);
         } else {
-            // Si no existe, agregarla al final
-            $content .= "\n" . $replacement;
+            // Si no existe, agregarla al final (después de la última línea)
+            // Asegurarse de que termina con nueva línea
+            $content = rtrim($content) . "\n" . $replacement;
         }
 
         return $content;
