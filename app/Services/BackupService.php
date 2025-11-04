@@ -132,30 +132,41 @@ class BackupService
     {
         $config = $this->backupConfig->toConfigArray();
         
-        // Conectar sin especificar base de datos
+        // Usar la base de datos del sistema 'mysql' temporalmente para crear la conexión
+        // Esto es necesario porque Laravel requiere la clave 'database' en la configuración
         $tempConfig = $config;
-        unset($tempConfig['database']);
+        $tempConfig['database'] = 'mysql'; // Base de datos del sistema que siempre existe
         
         Config::set("database.connections.{$this->tempConnectionName}_no_db", $tempConfig);
         DB::purge($this->tempConnectionName . '_no_db');
         
-        $connection = DB::connection($this->tempConnectionName . '_no_db');
-        
-        // Verificar si la base de datos existe
-        $databaseName = $this->backupConfig->database;
-        $databaseExists = $connection->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$databaseName]);
-        
-        if (empty($databaseExists)) {
-            // Crear base de datos
-            $charset = $config['charset'] ?? 'utf8mb4';
-            $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
+        try {
+            $connection = DB::connection($this->tempConnectionName . '_no_db');
             
-            $connection->statement("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$charset} COLLATE {$collation}");
+            // Verificar si la base de datos existe
+            $databaseName = $this->backupConfig->database;
+            $databaseExists = $connection->select("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", [$databaseName]);
             
-            Log::info('Base de datos creada', ['database' => $databaseName]);
+            if (empty($databaseExists)) {
+                // Crear base de datos
+                $charset = $config['charset'] ?? 'utf8mb4';
+                $collation = $config['collation'] ?? 'utf8mb4_unicode_ci';
+                
+                $connection->statement("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$charset} COLLATE {$collation}");
+                
+                Log::info('Base de datos creada', ['database' => $databaseName]);
+            } else {
+                Log::info('Base de datos ya existe', ['database' => $databaseName]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error al crear o verificar base de datos', [
+                'database' => $this->backupConfig->database,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        } finally {
+            DB::purge($this->tempConnectionName . '_no_db');
         }
-        
-        DB::purge($this->tempConnectionName . '_no_db');
     }
 
     /**
