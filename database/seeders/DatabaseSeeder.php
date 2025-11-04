@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(TokenSeeder::class);
         $this->call(ExecuteSqlSeeder::class);
         $this->call(ModuleSeeder::class);
+        $this->call(OAuthProviderSeeder::class);
 
     }
 }

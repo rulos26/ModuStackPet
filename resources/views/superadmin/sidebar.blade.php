@@ -119,6 +119,14 @@
             </a>
         </li>
 
+        {{-- Gestión de Proveedores OAuth --}}
+        <li class="nav-item">
+            <a href="{{ route('superadmin.oauth-providers.index') }}" class="nav-link {{ request()->routeIs('superadmin.oauth-providers.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-key"></i>
+                <p>Proveedores OAuth</p>
+            </a>
+        </li>
+
         {{-- Menú desplegable de Avisos Legales --}}
         <li class="nav-item has-treeview">
             <a href="#" class="nav-link">

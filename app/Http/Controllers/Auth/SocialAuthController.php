@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\OAuthProvider;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -20,6 +21,7 @@ class SocialAuthController extends Controller
     public function redirect(string $provider): RedirectResponse
     {
         $this->validateProvider($provider);
+        $this->configureProvider($provider);
 
         return Socialite::driver($provider)->redirect();
     }
@@ -30,6 +32,7 @@ class SocialAuthController extends Controller
     public function callback(string $provider): RedirectResponse
     {
         $this->validateProvider($provider);
+        $this->configureProvider($provider);
 
         try {
             $socialUser = Socialite::driver($provider)->user();
@@ -110,14 +113,41 @@ class SocialAuthController extends Controller
     }
 
     /**
-     * Validate that the provider is allowed
+     * Validate that the provider is allowed and active
      */
     protected function validateProvider(string $provider): void
     {
-        $allowedProviders = ['google', 'facebook'];
+        $oauthProvider = OAuthProvider::where('provider', $provider)->first();
 
-        if (!in_array($provider, $allowedProviders)) {
-            abort(404, 'Provider no permitido');
+        if (!$oauthProvider) {
+            abort(404, 'Proveedor OAuth no encontrado. Por favor, configúralo primero en el panel de administración.');
+        }
+
+        if (!$oauthProvider->is_active) {
+            abort(403, 'Este proveedor OAuth está desactivado.');
+        }
+
+        if (!$oauthProvider->isConfigured()) {
+            abort(403, 'Este proveedor OAuth no está completamente configurado. Faltan credenciales.');
+        }
+    }
+
+    /**
+     * Configure Socialite driver with credentials from database
+     */
+    protected function configureProvider(string $provider): void
+    {
+        $oauthProvider = OAuthProvider::where('provider', $provider)
+            ->where('is_active', true)
+            ->first();
+
+        if ($oauthProvider && $oauthProvider->isConfigured()) {
+            // Configurar Socialite dinámicamente
+            config([
+                "services.{$provider}.client_id" => $oauthProvider->client_id,
+                "services.{$provider}.client_secret" => $oauthProvider->client_secret,
+                "services.{$provider}.redirect" => $oauthProvider->redirect_uri,
+            ]);
         }
     }
 
