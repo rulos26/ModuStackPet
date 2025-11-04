@@ -143,6 +143,13 @@ class ModuleSeeder extends Seeder
 				'description' => 'Gestión de barrios por ciudad',
 				'status' => true,
 			],
+			// Módulo de Proveedores OAuth
+			[
+				'name' => 'Proveedores OAuth',
+				'slug' => 'oauth-providers',
+				'description' => 'Gestión de proveedores OAuth para autenticación con redes sociales (Google, Facebook, GitHub, etc.)',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {

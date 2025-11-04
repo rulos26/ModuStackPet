@@ -270,8 +270,10 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
     Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
     // Rutas para gestión de Proveedores OAuth
-    Route::resource('oauth-providers', \App\Http\Controllers\Superadmin\OAuthProviderController::class);
-    Route::patch('/oauth-providers/{oauthProvider}/toggle-status', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'toggleStatus'])->name('oauth-providers.toggle-status');
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':oauth-providers'])->group(function () {
+        Route::resource('oauth-providers', \App\Http\Controllers\Superadmin\OAuthProviderController::class);
+        Route::patch('/oauth-providers/{oauthProvider}/toggle-status', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'toggleStatus'])->name('oauth-providers.toggle-status');
+    });
 
     // Rutas para configuraciones del sistema
     Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':configuracion'])->group(function () {
