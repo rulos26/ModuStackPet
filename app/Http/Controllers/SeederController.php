@@ -26,9 +26,6 @@ class SeederController extends Controller
         'Database\\Seeders\\OAuthProviderSeeder',
         // Variantes tolerantes por si el proyecto define clases con casing distinto
         'Database\\Seeders\\roleSeeder',
-        'Database\\Seeders\\databaseConfigSeeder',
-        'Database\\Seeders\\emailConfigSeeder',
-        'Database\\Seeders\\oauthProviderSeeder',
     ];
 
     public function __construct()
@@ -68,13 +65,42 @@ class SeederController extends Controller
 
         // Normalizar comparación: aceptar por FQCN exacto o por nombre base (case-insensitive)
         $allowedByClass = in_array($seederClass, $this->allowedSeeders, true);
-        $allowedBaseNames = array_map(function ($fqcn) { return strtolower(class_basename($fqcn)); }, $this->allowedSeeders);
+
+        // Buscar coincidencia case-insensitive en el array completo
+        $allowedByCaseInsensitive = false;
+        foreach ($this->allowedSeeders as $allowedSeeder) {
+            if (strcasecmp($seederClass, $allowedSeeder) === 0) {
+                $allowedByCaseInsensitive = true;
+                // Si hay diferencia de case, usar el nombre correcto del whitelist
+                if ($seederClass !== $allowedSeeder) {
+                    $seederClass = $allowedSeeder;
+                }
+                break;
+            }
+        }
+
+        // También verificar por nombre base (case-insensitive)
+        $allowedBaseNames = array_map(function ($fqcn) {
+            return strtolower(class_basename($fqcn));
+        }, $this->allowedSeeders);
         $allowedByBase = in_array(strtolower(class_basename($seederClass)), $allowedBaseNames, true);
 
-        if (!$allowedByClass && !$allowedByBase) {
+        // Si coincide por base name pero no por FQCN, encontrar el FQCN correcto
+        if ($allowedByBase && !$allowedByClass && !$allowedByCaseInsensitive) {
+            foreach ($this->allowedSeeders as $allowedSeeder) {
+                if (strcasecmp(class_basename($seederClass), class_basename($allowedSeeder)) === 0) {
+                    $seederClass = $allowedSeeder;
+                    $allowedByCaseInsensitive = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$allowedByClass && !$allowedByCaseInsensitive && !$allowedByBase) {
             Log::warning('Seeder rechazado', [
                 'seeder_class' => $seederClass,
                 'allowed_by_class' => $allowedByClass,
+                'allowed_by_case_insensitive' => $allowedByCaseInsensitive,
                 'allowed_by_base' => $allowedByBase,
                 'user_id' => Auth::id()
             ]);
