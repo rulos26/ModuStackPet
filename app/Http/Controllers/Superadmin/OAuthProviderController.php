@@ -140,4 +140,129 @@ class OAuthProviderController extends Controller
             ->route('superadmin.oauth-providers.index')
             ->with('success', "Proveedor OAuth '{$oauthProvider->name}' {$status} exitosamente.");
     }
+
+    /**
+     * Test OAuth provider configuration
+     */
+    public function test(OAuthProvider $oauthProvider)
+    {
+        $results = [
+            'provider' => $oauthProvider->name,
+            'tests' => [],
+            'all_passed' => true,
+        ];
+
+        // Test 1: Verificar si está activo
+        $results['tests'][] = [
+            'name' => 'Provider Activo',
+            'status' => $oauthProvider->is_active,
+            'message' => $oauthProvider->is_active 
+                ? 'El provider está activo' 
+                : 'El provider está desactivado',
+        ];
+        if (!$oauthProvider->is_active) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 2: Verificar Client ID
+        $results['tests'][] = [
+            'name' => 'Client ID Configurado',
+            'status' => !empty($oauthProvider->client_id),
+            'message' => !empty($oauthProvider->client_id)
+                ? 'Client ID está configurado correctamente'
+                : 'Client ID no está configurado',
+        ];
+        if (empty($oauthProvider->client_id)) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 3: Verificar Client Secret
+        $results['tests'][] = [
+            'name' => 'Client Secret Configurado',
+            'status' => !empty($oauthProvider->client_secret),
+            'message' => !empty($oauthProvider->client_secret)
+                ? 'Client Secret está configurado correctamente'
+                : 'Client Secret no está configurado',
+        ];
+        if (empty($oauthProvider->client_secret)) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 4: Verificar Redirect URI
+        $results['tests'][] = [
+            'name' => 'Redirect URI Configurado',
+            'status' => !empty($oauthProvider->redirect_uri),
+            'message' => !empty($oauthProvider->redirect_uri)
+                ? 'Redirect URI está configurado: ' . $oauthProvider->redirect_uri
+                : 'Redirect URI no está configurado',
+        ];
+        if (empty($oauthProvider->redirect_uri)) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 5: Validar formato de Redirect URI
+        $redirectUriValid = filter_var($oauthProvider->redirect_uri, FILTER_VALIDATE_URL) !== false;
+        $results['tests'][] = [
+            'name' => 'Formato de Redirect URI Válido',
+            'status' => $redirectUriValid,
+            'message' => $redirectUriValid
+                ? 'El formato de Redirect URI es válido'
+                : 'El formato de Redirect URI no es válido',
+        ];
+        if (!$redirectUriValid) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 6: Verificar que el provider está completamente configurado
+        $isConfigured = $oauthProvider->isConfigured();
+        $results['tests'][] = [
+            'name' => 'Configuración Completa',
+            'status' => $isConfigured,
+            'message' => $isConfigured
+                ? 'El provider está completamente configurado y listo para usar'
+                : 'Faltan credenciales para completar la configuración',
+        ];
+        if (!$isConfigured) {
+            $results['all_passed'] = false;
+        }
+
+        // Test 7: Intentar configurar Socialite (sin autenticar)
+        try {
+            if ($isConfigured && $oauthProvider->is_active) {
+                config([
+                    "services.{$oauthProvider->provider}.client_id" => $oauthProvider->client_id,
+                    "services.{$oauthProvider->provider}.client_secret" => $oauthProvider->client_secret,
+                    "services.{$oauthProvider->provider}.redirect" => $oauthProvider->redirect_uri,
+                ]);
+                
+                $results['tests'][] = [
+                    'name' => 'Configuración de Socialite',
+                    'status' => true,
+                    'message' => 'Configuración de Socialite aplicada correctamente',
+                ];
+            } else {
+                $results['tests'][] = [
+                    'name' => 'Configuración de Socialite',
+                    'status' => false,
+                    'message' => 'No se puede probar Socialite sin configuración completa',
+                ];
+                $results['all_passed'] = false;
+            }
+        } catch (\Exception $e) {
+            $results['tests'][] = [
+                'name' => 'Configuración de Socialite',
+                'status' => false,
+                'message' => 'Error al configurar Socialite: ' . $e->getMessage(),
+            ];
+            $results['all_passed'] = false;
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json($results);
+        }
+
+        return redirect()
+            ->route('superadmin.oauth-providers.index')
+            ->with('test_results', $results);
+    }
 }

@@ -108,6 +108,14 @@
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-info test-provider-btn" 
+                                                            data-provider-id="{{ $provider->id }}"
+                                                            data-provider-name="{{ $provider->name }}"
+                                                            title="Probar Configuración">
+                                                        <i class="fas fa-vial"></i>
+                                                    </button>
+                                                    
                                                     <form action="{{ route('superadmin.oauth-providers.toggle-status', $provider) }}" 
                                                           method="POST" 
                                                           style="display: inline;">
@@ -153,5 +161,119 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal para mostrar resultados de prueba -->
+    <div class="modal fade" id="testProviderModal" tabindex="-1" aria-labelledby="testProviderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="testProviderModalLabel">
+                        <i class="fas fa-vial"></i> Resultados de Prueba: <span id="test-provider-name"></span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="test-results-container">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Ejecutando pruebas...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const testButtons = document.querySelectorAll('.test-provider-btn');
+            const modal = new bootstrap.Modal(document.getElementById('testProviderModal'));
+            const testResultsContainer = document.getElementById('test-results-container');
+            const testProviderName = document.getElementById('test-provider-name');
+
+            testButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const providerId = this.dataset.providerId;
+                    const providerName = this.dataset.providerName;
+                    
+                    testProviderName.textContent = providerName;
+                    testResultsContainer.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2">Ejecutando pruebas...</p>
+                        </div>
+                    `;
+                    
+                    modal.show();
+                    
+                    // Hacer petición AJAX
+                    fetch(`{{ route('superadmin.oauth-providers.test', ['oauthProvider' => ':id']) }}`.replace(':id', providerId), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        
+                        if (data.all_passed) {
+                            html += `
+                                <div class="alert alert-success">
+                                    <h5><i class="fas fa-check-circle"></i> ¡Todas las pruebas pasaron!</h5>
+                                    <p class="mb-0">El proveedor <strong>${data.provider}</strong> está correctamente configurado y listo para usar.</p>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="alert alert-warning">
+                                    <h5><i class="fas fa-exclamation-triangle"></i> Algunas pruebas fallaron</h5>
+                                    <p class="mb-0">El proveedor <strong>${data.provider}</strong> necesita ajustes en su configuración.</p>
+                                </div>
+                            `;
+                        }
+                        
+                        html += '<div class="list-group mt-3">';
+                        data.tests.forEach(test => {
+                            const icon = test.status ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                            const badge = test.status ? 'bg-success' : 'bg-danger';
+                            html += `
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas ${icon} me-2"></i>
+                                            <strong>${test.name}</strong>
+                                            <p class="mb-0 small text-muted">${test.message}</p>
+                                        </div>
+                                        <span class="badge ${badge}">${test.status ? 'OK' : 'Error'}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        
+                        testResultsContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        testResultsContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h5><i class="fas fa-exclamation-circle"></i> Error al ejecutar pruebas</h5>
+                                <p class="mb-0">${error.message}</p>
+                            </div>
+                        `;
+                    });
+                });
+            });
+        });
+    </script>
 @endsection
 
