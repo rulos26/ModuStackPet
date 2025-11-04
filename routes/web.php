@@ -35,19 +35,26 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Barrio;
 
 
-// Ruta API para obtener barrios por ciudad
+// Ruta API para obtener barrios de Engativá (solo Engativá)
+Route::get('/api/barrios-engativa', function () {
+    $barrios = Barrio::where('localidad', 'Engativá')
+        ->orWhere('localidad', 'like', '%Engativá%')
+        ->orWhere('localidad', 'like', '%Engativa%')
+        ->orderBy('nombre')
+        ->get(['id', 'nombre', 'localidad']);
+    
+    return response()->json($barrios);
+})->name('api.barrios.engativa');
+
+// Ruta API para obtener barrios por ciudad (mantener para compatibilidad)
 Route::get('/api/barrios/{ciudadId}', function ($ciudadId) {
-    // Si la tabla barrios tiene ciudad_id, filtrar por eso
-    // Si no, devolver todos los barrios (ya que no hay relación ciudad-barrio definida)
-    if (\Schema::hasColumn('barrios', 'ciudad_id')) {
-        $barrios = Barrio::where('ciudad_id', $ciudadId)
-            ->orderBy('nombre')
-            ->get(['id', 'nombre']);
-    } else {
-        // Si no hay relación, devolver todos los barrios
-        $barrios = Barrio::orderBy('nombre')
-            ->get(['id', 'nombre']);
-    }
+    // Solo devolver barrios de Engativá independientemente de la ciudad
+    $barrios = Barrio::where('localidad', 'Engativá')
+        ->orWhere('localidad', 'like', '%Engativá%')
+        ->orWhere('localidad', 'like', '%Engativa%')
+        ->orderBy('nombre')
+        ->get(['id', 'nombre', 'localidad']);
+    
     return response()->json($barrios);
 })->name('api.barrios.by-ciudad');
 

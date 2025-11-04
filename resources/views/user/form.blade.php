@@ -95,13 +95,28 @@
 <!-- Sección: Datos de Ubicación -->
 @php
     $ciudades = \App\Models\Ciudade::orderBy('municipio')->get();
-    // Los barrios se cargarán dinámicamente vía JavaScript
-    $barrios = collect();
+    
+    // Buscar Bogotá como ciudad por defecto
+    $bogota = \App\Models\Ciudade::where('municipio', 'LIKE', '%Bogotá%')
+        ->orWhere('municipio', 'LIKE', '%Bogota%')
+        ->first();
+    
+    $ciudadDefault = $bogota ? $bogota->id_municipio : null;
+    
+    // Si el usuario tiene una ciudad seleccionada, usar esa; si no, usar Bogotá por defecto
+    $ciudadSeleccionada = old('ciudad_id', $user?->cliente?->ciudad_id ?? $ciudadDefault);
+    
+    // Cargar solo barrios de Engativá
+    $barrios = \App\Models\Barrio::where('localidad', 'Engativá')
+        ->orWhere('localidad', 'like', '%Engativá%')
+        ->orderBy('nombre')
+        ->get();
+    
+    // Si el usuario tiene un barrio seleccionado, asegurarse de que esté en la lista
     if (isset($user) && $user->cliente && $user->cliente->barrio_id) {
-        // Si hay un barrio seleccionado, cargarlo para mostrar
         $barrioSeleccionado = \App\Models\Barrio::find($user->cliente->barrio_id);
-        if ($barrioSeleccionado) {
-            $barrios = collect([$barrioSeleccionado]);
+        if ($barrioSeleccionado && !$barrios->contains('id', $barrioSeleccionado->id)) {
+            $barrios->push($barrioSeleccionado);
         }
     }
 @endphp
@@ -131,7 +146,7 @@
                         <option value="">{{ __('Seleccione una ciudad') }}</option>
                         @foreach($ciudades as $ciudad)
                             <option value="{{ $ciudad->id_municipio }}" 
-                                {{ old('ciudad_id', $user?->cliente?->ciudad_id) == $ciudad->id_municipio ? 'selected' : '' }}>
+                                {{ $ciudadSeleccionada == $ciudad->id_municipio ? 'selected' : '' }}>
                                 {{ $ciudad->municipio }}
                             </option>
                         @endforeach
@@ -154,7 +169,7 @@
                         @endforeach
                     </select>
                     {!! $errors->first('barrio_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                    <small class="form-text text-muted">{{ __('Primero selecciona una ciudad para ver los barrios disponibles') }}</small>
+                    <small class="form-text text-muted">{{ __('Solo se muestran barrios de la localidad de Engativá, Bogotá') }}</small>
                 </div>
             </div>
         </div>
@@ -163,31 +178,67 @@
 
 <script>
     // Cargar barrios dinámicamente cuando se selecciona una ciudad
+    // Solo mostrar barrios de Engativá
     document.addEventListener('DOMContentLoaded', function() {
         const ciudadSelect = document.getElementById('ciudad_id');
         const barrioSelect = document.getElementById('barrio_id');
         
+        // Función para cargar barrios de Engativá
+        function cargarBarriosEngativa() {
+            barrioSelect.innerHTML = '<option value="">{{ __('Seleccione un barrio') }}</option>';
+            
+            // Cargar solo barrios de Engativá desde la API
+            fetch('/api/barrios-engativa')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        data.forEach(barrio => {
+                            const option = document.createElement('option');
+                            option.value = barrio.id;
+                            option.textContent = barrio.nombre;
+                            
+                            // Si hay un barrio seleccionado previamente, marcarlo
+                            @if(isset($user) && $user->cliente && $user->cliente->barrio_id)
+                                if (barrio.id == {{ $user->cliente->barrio_id }}) {
+                                    option.selected = true;
+                                }
+                            @endif
+                            
+                            barrioSelect.appendChild(option);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar barrios de Engativá:', error);
+                });
+        }
+        
+        // Cargar barrios al cambiar la ciudad (solo si es Bogotá)
         if (ciudadSelect) {
             ciudadSelect.addEventListener('change', function() {
                 const ciudadId = this.value;
-                barrioSelect.innerHTML = '<option value="">{{ __('Seleccione un barrio') }}</option>';
+                const ciudadNombre = this.options[this.selectedIndex].text;
                 
-                if (ciudadId) {
-                    fetch(`/api/barrios/${ciudadId}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            data.forEach(barrio => {
-                                const option = document.createElement('option');
-                                option.value = barrio.id;
-                                option.textContent = barrio.nombre;
-                                barrioSelect.appendChild(option);
-                            });
-                        })
-                        .catch(error => {
-                            console.error('Error al cargar barrios:', error);
-                        });
+                // Solo cargar barrios si es Bogotá o está vacío
+                if (!ciudadId || ciudadNombre.toLowerCase().includes('bogotá') || ciudadNombre.toLowerCase().includes('bogota')) {
+                    cargarBarriosEngativa();
+                } else {
+                    // Si no es Bogotá, limpiar barrios
+                    barrioSelect.innerHTML = '<option value="">{{ __('Seleccione un barrio') }}</option>';
+                    barrioSelect.innerHTML += '<option value="" disabled>{{ __('Solo se muestran barrios de Engativá, Bogotá') }}</option>';
                 }
             });
+            
+            // Cargar barrios al inicio si Bogotá está seleccionada por defecto
+            const ciudadSeleccionada = ciudadSelect.value;
+            const ciudadNombre = ciudadSelect.options[ciudadSelect.selectedIndex]?.text || '';
+            
+            if (ciudadSeleccionada && (ciudadNombre.toLowerCase().includes('bogotá') || ciudadNombre.toLowerCase().includes('bogota'))) {
+                cargarBarriosEngativa();
+            } else if (ciudadSeleccionada) {
+                // Si hay una ciudad seleccionada pero no es Bogotá, cargar barrios de todos modos
+                cargarBarriosEngativa();
+            }
         }
     });
 </script>
