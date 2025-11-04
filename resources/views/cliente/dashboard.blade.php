@@ -11,7 +11,7 @@
                 <div class="text-center mb-4">
                     @php
                         $user = auth()->user();
-                        $avatarUrl = asset('storage/img/default.png');
+                        $avatarUrl = asset('public/storage/img/default.png');
                         if ($user && $user->avatar) {
                             // La imagen se guarda en public/storage/img/avatar/filename.png
                             // La ruta en BD es: storage/img/avatar/filename.png
@@ -19,14 +19,14 @@
                                 // Verificar si el archivo existe físicamente
                                 $filePath = public_path($user->avatar);
                                 if (file_exists($filePath)) {
-                                    // Ruta nueva: storage/img/avatar/filename.png
-                                    $avatarUrl = asset($user->avatar);
+                                    // Ruta nueva: public/storage/img/avatar/filename.png
+                                    $avatarUrl = asset('public/' . $user->avatar);
                                 } else {
                                     // Intentar con solo el nombre del archivo
                                     $fileName = basename($user->avatar);
                                     $altPath = public_path('storage/img/avatar/' . $fileName);
                                     if (file_exists($altPath)) {
-                                        $avatarUrl = asset('storage/img/avatar/' . $fileName);
+                                        $avatarUrl = asset('public/storage/img/avatar/' . $fileName);
                                     }
                                 }
                             } elseif (file_exists(public_path('storage/' . $user->avatar))) {
