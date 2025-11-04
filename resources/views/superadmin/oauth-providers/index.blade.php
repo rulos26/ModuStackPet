@@ -222,8 +222,18 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        // Validar que data tiene la estructura esperada
+                        if (!data || !data.tests || !Array.isArray(data.tests)) {
+                            throw new Error('Respuesta inválida del servidor');
+                        }
+                        
                         let html = '';
                         
                         if (data.all_passed) {
@@ -264,10 +274,12 @@
                         testResultsContainer.innerHTML = html;
                     })
                     .catch(error => {
+                        console.error('Error:', error);
                         testResultsContainer.innerHTML = `
                             <div class="alert alert-danger">
                                 <h5><i class="fas fa-exclamation-circle"></i> Error al ejecutar pruebas</h5>
-                                <p class="mb-0">${error.message}</p>
+                                <p class="mb-0"><strong>Error:</strong> ${error.message}</p>
+                                <p class="mb-0 small mt-2">Por favor, verifica la consola del navegador para más detalles.</p>
                             </div>
                         `;
                     });

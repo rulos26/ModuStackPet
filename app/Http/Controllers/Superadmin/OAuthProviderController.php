@@ -144,7 +144,7 @@ class OAuthProviderController extends Controller
     /**
      * Test OAuth provider configuration
      */
-    public function test(OAuthProvider $oauthProvider)
+    public function test(Request $request, OAuthProvider $oauthProvider)
     {
         $results = [
             'provider' => $oauthProvider->name,
@@ -257,10 +257,12 @@ class OAuthProviderController extends Controller
             $results['all_passed'] = false;
         }
 
-        if ($request->expectsJson() || $request->ajax()) {
+        // Siempre devolver JSON para peticiones AJAX
+        if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
             return response()->json($results);
         }
 
+        // Si no es AJAX, redirigir con resultados en sesión
         return redirect()
             ->route('superadmin.oauth-providers.index')
             ->with('test_results', $results);
