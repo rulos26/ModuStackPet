@@ -15,6 +15,8 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use App\Services\ClienteDataVerificationService;
+use App\Services\GeocodingService;
+use Illuminate\Support\Facades\Log;
 
 class ClienteController extends Controller
 {
@@ -157,7 +159,8 @@ class ClienteController extends Controller
             ]);
         }
 
-        $cliente->update([
+        // Datos base para actualizar
+        $datosCliente = [
             'nombre' => $request->name,
             'tipo_documento_id' => $request->tipo_documento,
             'cedula' => $request->cedula,
@@ -167,7 +170,52 @@ class ClienteController extends Controller
             'direccion' => $request->direccion,
             'ciudad_id' => $request->ciudad_id,
             'barrio_id' => $request->barrio_id,
-        ]);
+        ];
+
+        // Geocodificar dirección si se proporcionó
+        if ($request->filled('direccion')) {
+            try {
+                $geocodingService = new GeocodingService();
+                
+                // Obtener nombre de la ciudad si está disponible
+                $ciudadNombre = null;
+                if ($request->ciudad_id) {
+                    $ciudad = \App\Models\Ciudade::find($request->ciudad_id);
+                    if ($ciudad) {
+                        $ciudadNombre = $ciudad->municipio;
+                    }
+                }
+
+                // Geocodificar dirección (específica para Engativá, Bogotá)
+                $coordenadas = $geocodingService->geocodeEngativa($request->direccion);
+                
+                if ($coordenadas) {
+                    $datosCliente['latitud'] = $coordenadas['latitud'];
+                    $datosCliente['longitud'] = $coordenadas['longitud'];
+                    
+                    Log::info('Dirección geocodificada exitosamente', [
+                        'user_id' => $user->id,
+                        'direccion' => $request->direccion,
+                        'latitud' => $coordenadas['latitud'],
+                        'longitud' => $coordenadas['longitud'],
+                    ]);
+                } else {
+                    Log::warning('No se pudo geocodificar la dirección', [
+                        'user_id' => $user->id,
+                        'direccion' => $request->direccion,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Error al geocodificar dirección', [
+                    'user_id' => $user->id,
+                    'direccion' => $request->direccion,
+                    'error' => $e->getMessage(),
+                ]);
+                // Continuar sin coordenadas si falla la geocodificación
+            }
+        }
+
+        $cliente->update($datosCliente);
 
         if ($request->hasFile('avatar')) {
             $cliente->avatar = $user->avatar;

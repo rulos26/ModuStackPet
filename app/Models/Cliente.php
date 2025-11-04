@@ -25,6 +25,8 @@ class Cliente extends Model
         'ciudad_id',
         'barrio_id',
         'avatar',
+        'latitud',
+        'longitud',
     ];
 
     /**
@@ -36,6 +38,8 @@ class Cliente extends Model
     {
         return [
             'fecha_nacimiento' => 'date',
+            'latitud' => 'decimal:8',
+            'longitud' => 'decimal:8',
         ];
     }
 
