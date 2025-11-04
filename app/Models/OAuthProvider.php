@@ -58,4 +58,12 @@ class OAuthProvider extends Model
             ->whereNotNull('redirect_uri')
             ->get();
     }
+
+    /**
+     * Relación con logs de prueba
+     */
+    public function testLogs()
+    {
+        return $this->hasMany(OAuthTestLog::class);
+    }
 }

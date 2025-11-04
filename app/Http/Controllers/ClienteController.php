@@ -33,7 +33,26 @@ class ClienteController extends Controller
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
         }
 
-        return view('cliente.dashboard', compact('user'));
+        // Buscar el mensaje de bienvenida para el rol Cliente
+        $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Cliente')->first();
+
+        // Si no se encuentra un mensaje de bienvenida, usar valores por defecto
+        if (!$mensajeDeBienvenida) {
+            return view('cliente.dashboard', [
+                'user' => $user,
+                'titulo' => 'Bienvenido a ModuStackPet',
+                'descripcion' => 'Gestiona tus mascotas de manera fácil y rápida.',
+                'logo' => 'storage/img/logo.jpg',
+            ]);
+        }
+
+        // Retornar la vista del dashboard con el mensaje de bienvenida
+        return view('cliente.dashboard', [
+            'user' => $user,
+            'titulo' => $mensajeDeBienvenida->titulo,
+            'descripcion' => $mensajeDeBienvenida->descripcion,
+            'logo' => $mensajeDeBienvenida->logo ?? 'storage/img/logo.jpg',
+        ]);
     }
 
     public function index()

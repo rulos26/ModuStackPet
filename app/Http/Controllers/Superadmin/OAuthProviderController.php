@@ -267,4 +267,159 @@ class OAuthProviderController extends Controller
             ->route('superadmin.oauth-providers.index')
             ->with('test_results', $results);
     }
+
+    /**
+     * Simular conexión OAuth completa (generar URL de autorización)
+     */
+    public function simulateConnection(Request $request, OAuthProvider $oauthProvider)
+    {
+        try {
+            // Verificar que el provider esté configurado
+            if (!$oauthProvider->isConfigured()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El proveedor no está completamente configurado. Faltan credenciales.',
+                    'authorization_url' => null,
+                ], 400);
+            }
+
+            if (!$oauthProvider->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El proveedor está desactivado. Actívalo primero.',
+                    'authorization_url' => null,
+                ], 400);
+            }
+
+            // Configurar Socialite con las credenciales del provider
+            config([
+                "services.{$oauthProvider->provider}.client_id" => $oauthProvider->client_id,
+                "services.{$oauthProvider->provider}.client_secret" => $oauthProvider->client_secret,
+                "services.{$oauthProvider->provider}.redirect" => $oauthProvider->redirect_uri,
+            ]);
+
+            // Generar la URL de autorización
+            $driver = \Laravel\Socialite\Facades\Socialite::driver($oauthProvider->provider);
+            
+            // Configurar scopes según el provider
+            $scopes = ['email', 'profile'];
+            if ($oauthProvider->provider === 'google') {
+                $scopes = ['openid', 'profile', 'email'];
+            } elseif ($oauthProvider->provider === 'facebook') {
+                $scopes = ['email', 'public_profile'];
+            }
+            
+            $driver->scopes($scopes);
+            
+            // Generar URL de autorización (sin redirigir)
+            $authorizationUrl = $driver->getTargetUrl();
+            
+            // Verificar que la URL es válida
+            if (empty($authorizationUrl) || !filter_var($authorizationUrl, FILTER_VALIDATE_URL)) {
+                throw new \Exception('No se pudo generar la URL de autorización válida');
+            }
+
+            // Generar ID único para esta prueba
+            $testSessionId = \Illuminate\Support\Str::uuid()->toString();
+            
+            // Registrar inicio de prueba en BD
+            try {
+                \App\Models\OAuthTestLog::create([
+                    'oauth_provider_id' => $oauthProvider->id,
+                    'test_session_id' => $testSessionId,
+                    'step' => 'redirect_generated',
+                    'step_data' => json_encode([
+                        'provider' => $oauthProvider->provider,
+                        'redirect_uri' => $oauthProvider->redirect_uri,
+                        'timestamp' => now()->toDateTimeString(),
+                    ]),
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            } catch (\Exception $e) {
+                // Si la tabla no existe, continuar sin registrar
+                \Log::warning('No se pudo registrar log de prueba OAuth', ['error' => $e->getMessage()]);
+            }
+            
+            // Agregar parámetro state para identificar la prueba (mejor compatibilidad con OAuth)
+            $authorizationUrlWithTest = $authorizationUrl . (parse_url($authorizationUrl, PHP_URL_QUERY) ? '&' : '?') . 'state=test_' . $testSessionId;
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'URL de autorización generada correctamente',
+                'authorization_url' => $authorizationUrlWithTest,
+                'test_session_id' => $testSessionId,
+                'provider' => $oauthProvider->name,
+                'redirect_uri' => $oauthProvider->redirect_uri,
+                'instructions' => [
+                    '1. Haz clic en "Abrir en Nueva Pestaña" para iniciar la prueba',
+                    '2. Inicia sesión con tu cuenta de ' . $oauthProvider->name,
+                    '3. Autoriza el acceso a la aplicación',
+                    '4. Serás redirigido automáticamente al reporte de resultados',
+                    '5. El sistema registrará cada paso del flujo OAuth',
+                    '6. Verás un reporte completo con todos los pasos verificados',
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error al simular conexión OAuth', [
+                'provider' => $oauthProvider->provider,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al generar URL de autorización: ' . $e->getMessage(),
+                'authorization_url' => null,
+                'error_details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Mostrar simulador visual del flujo OAuth
+     */
+    public function visualSimulator(OAuthProvider $oauthProvider): View
+    {
+        return view('superadmin.oauth-providers.visual-simulator', compact('oauthProvider'));
+    }
+
+    /**
+     * Mostrar resultados de prueba de conexión OAuth
+     */
+    public function testResults(Request $request, string $sessionId): View
+    {
+        $logs = \App\Models\OAuthTestLog::where('test_session_id', $sessionId)
+            ->orderBy('created_at')
+            ->get();
+
+        if ($logs->isEmpty()) {
+            return redirect()
+                ->route('superadmin.oauth-providers.index')
+                ->with('error', 'No se encontraron resultados de prueba para esta sesión.');
+        }
+
+        $provider = $logs->first()->oauthProvider;
+        $user = $logs->whereNotNull('user_id')->first()?->user;
+        
+        // Determinar si la prueba fue exitosa
+        $completed = $logs->where('step', 'completed')->isNotEmpty();
+        $hasError = $logs->where('step', 'error')->isNotEmpty();
+        
+        // Contar pasos
+        $totalSteps = $logs->where('step', '!=', 'completed')->count();
+        $completedSteps = $logs->where('step', '!=', 'error')->where('step', '!=', 'completed')->count();
+
+        return view('superadmin.oauth-providers.test-results', compact(
+            'logs',
+            'provider',
+            'user',
+            'sessionId',
+            'completed',
+            'hasError',
+            'totalSteps',
+            'completedSteps'
+        ));
+    }
 }

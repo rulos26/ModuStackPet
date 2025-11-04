@@ -35,7 +35,26 @@ class PaseadorController extends Controller
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
         }
 
-        return view('paseador.dashboard', compact('user'));
+        // Buscar el mensaje de bienvenida para el rol Paseador
+        $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Paseador')->first();
+
+        // Si no se encuentra un mensaje de bienvenida, usar valores por defecto
+        if (!$mensajeDeBienvenida) {
+            return view('paseador.dashboard', [
+                'user' => $user,
+                'titulo' => 'Bienvenido a ModuStackPet',
+                'descripcion' => 'Gestiona tus paseos y servicios de manera profesional.',
+                'logo' => 'storage/img/logo.jpg',
+            ]);
+        }
+
+        // Retornar la vista del dashboard con el mensaje de bienvenida
+        return view('paseador.dashboard', [
+            'user' => $user,
+            'titulo' => $mensajeDeBienvenida->titulo,
+            'descripcion' => $mensajeDeBienvenida->descripcion,
+            'logo' => $mensajeDeBienvenida->logo ?? 'storage/img/logo.jpg',
+        ]);
     }
 
     /**

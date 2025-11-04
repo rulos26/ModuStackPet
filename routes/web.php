@@ -274,6 +274,9 @@ Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.'
         Route::resource('oauth-providers', \App\Http\Controllers\Superadmin\OAuthProviderController::class);
         Route::patch('/oauth-providers/{oauthProvider}/toggle-status', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'toggleStatus'])->name('oauth-providers.toggle-status');
         Route::get('/oauth-providers/{oauthProvider}/test', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'test'])->name('oauth-providers.test');
+        Route::get('/oauth-providers/{oauthProvider}/simulate', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'simulateConnection'])->name('oauth-providers.simulate');
+        Route::get('/oauth-providers/{oauthProvider}/visual-simulator', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'visualSimulator'])->name('oauth-providers.visual-simulator');
+        Route::get('/oauth-providers/test-results/{sessionId}', [\App\Http\Controllers\Superadmin\OAuthProviderController::class, 'testResults'])->name('oauth-providers.test-results');
     });
 
     // Rutas para configuraciones del sistema
