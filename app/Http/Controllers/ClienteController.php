@@ -107,7 +107,8 @@ class ClienteController extends Controller
                 ->with('error', 'No tienes permiso para editar este perfil.');
         }
 
-        return view('user.cliente.edit', compact('user'));
+        $tiposDocumento = TipoDocumento::all();
+        return view('user.cliente.edit', compact('user', 'tiposDocumento'));
     }
 
     public function update(ClienteRequest $request, User $user)

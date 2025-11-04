@@ -112,7 +112,8 @@ class SuperadminController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('user.superadmin.create', compact('roles'));
+        $tiposDocumento = TipoDocumento::all();
+        return view('user.superadmin.create', compact('roles', 'tiposDocumento'));
     }
 
     /**

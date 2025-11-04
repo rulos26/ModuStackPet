@@ -149,7 +149,8 @@ class PaseadorController extends Controller
                 ->with('error', 'No tienes permiso para editar este perfil.');
         }
 
-        return view('user.paseador.edit', compact('user'));
+        $tiposDocumento = TipoDocumento::all();
+        return view('user.paseador.edit', compact('user', 'tiposDocumento'));
     }
 
     /**

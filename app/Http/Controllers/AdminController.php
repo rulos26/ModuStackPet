@@ -68,7 +68,8 @@ class AdminController extends Controller
     public function create()
     {
         $roles = Role::whereIn('name', ['admin', 'cliente', 'paseador'])->get();
-        return view('user.admin.create', compact('roles'));
+        $tiposDocumento = TipoDocumento::all();
+        return view('user.admin.create', compact('roles', 'tiposDocumento'));
     }
 
     /**
@@ -109,7 +110,8 @@ class AdminController extends Controller
     public function edit(User $user)
     {
         $roles = Role::whereIn('name', ['admin', 'cliente', 'paseador'])->get();
-        return view('user.admin.edit', compact('user', 'roles'));
+        $tiposDocumento = TipoDocumento::all();
+        return view('user.admin.edit', compact('user', 'roles', 'tiposDocumento'));
     }
 
     /**
