@@ -52,6 +52,16 @@ class DatabaseConfigController extends Controller
 
         $config = DatabaseConfig::create($validated);
 
+        // Si está activa, actualizar el .env
+        if ($config->is_active && $config->isConfigured()) {
+            $envUpdated = $config->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente', ['config_id' => $config->id]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', ['config_id' => $config->id]);
+            }
+        }
+
         Log::info('Configuración de Base de Datos creada', [
             'id' => $config->id,
             'host' => $config->host,
@@ -92,11 +102,25 @@ class DatabaseConfigController extends Controller
         }
 
         // Si se marca como activo, desactivar los demás
+        $wasActive = $databaseConfig->is_active;
         if ($request->has('is_active') && $request->is_active) {
             DatabaseConfig::where('id', '!=', $databaseConfig->id)->update(['is_active' => false]);
         }
 
         $databaseConfig->update($validated);
+        
+        // Refrescar el modelo para obtener los valores actualizados
+        $databaseConfig->refresh();
+
+        // Si está activa o se acaba de activar, actualizar el .env
+        if ($databaseConfig->is_active && $databaseConfig->isConfigured()) {
+            $envUpdated = $databaseConfig->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente', ['config_id' => $databaseConfig->id]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', ['config_id' => $databaseConfig->id]);
+            }
+        }
 
         Log::info('Configuración de Base de Datos actualizada', [
             'id' => $databaseConfig->id,
@@ -136,11 +160,29 @@ class DatabaseConfigController extends Controller
     public function toggleStatus(Request $request, DatabaseConfig $databaseConfig): RedirectResponse
     {
         // Si se activa, desactivar los demás
-        if (!$databaseConfig->is_active) {
+        $willBeActive = !$databaseConfig->is_active;
+        if ($willBeActive) {
             DatabaseConfig::where('id', '!=', $databaseConfig->id)->update(['is_active' => false]);
         }
 
-        $databaseConfig->update(['is_active' => !$databaseConfig->is_active]);
+        $databaseConfig->update(['is_active' => $willBeActive]);
+        
+        // Refrescar el modelo
+        $databaseConfig->refresh();
+
+        // Si se activó y está configurada, actualizar el .env
+        if ($willBeActive && $databaseConfig->isConfigured()) {
+            $envUpdated = $databaseConfig->updateEnvFile();
+            if ($envUpdated) {
+                Log::info('.env actualizado automáticamente al activar configuración', [
+                    'config_id' => $databaseConfig->id,
+                ]);
+            } else {
+                Log::warning('No se pudo actualizar el .env automáticamente', [
+                    'config_id' => $databaseConfig->id,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('superadmin.database-configs.index')
