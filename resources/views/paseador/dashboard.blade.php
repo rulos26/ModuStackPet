@@ -9,19 +9,27 @@
             <div class="card-body">
                 <!-- Logo centrado y grande -->
                 <div class="text-center">
-                    <img src="{{ asset($logo) }}" alt="Logo Cliente" class="img-fluid" style="max-width: 200px; height: auto;">
+                    @if(isset($logo) && !empty($logo))
+                        <img src="{{ asset($logo) }}" alt="Logo Paseador" class="img-fluid" style="max-width: 200px; height: auto;">
+                    @else
+                        <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo Paseador" class="img-fluid" style="max-width: 200px; height: auto;">
+                    @endif
                 </div>
 
                 <!-- Título centrado -->
-                <h1 class="text-center mt-4">🐾 {{ $titulo }}</h1>
+                <h1 class="text-center mt-4">🐾 {{ $titulo ?? 'Bienvenido a ModuStackPet' }}</h1>
 
                 <!-- Descripción en formato de párrafos (alineada a la izquierda) -->
                 <div class="mt-4">
-                    @foreach (explode('.', $descripcion) as $oracion)
-                        @if (trim($oracion) !== '')
-                            <p>{{ trim($oracion) }}.</p>
-                        @endif
-                    @endforeach
+                    @if(isset($descripcion) && !empty($descripcion))
+                        @foreach (explode('.', $descripcion) as $oracion)
+                            @if (trim($oracion) !== '')
+                                <p>{{ trim($oracion) }}.</p>
+                            @endif
+                        @endforeach
+                    @else
+                        <p>Gestiona tus paseos y servicios de manera profesional.</p>
+                    @endif
                 </div>
             </div>
         </div>
