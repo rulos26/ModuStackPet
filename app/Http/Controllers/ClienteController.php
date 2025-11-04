@@ -14,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Services\ClienteDataVerificationService;
 
 class ClienteController extends Controller
 {
@@ -33,7 +34,33 @@ class ClienteController extends Controller
             return redirect()->route('logout')->withErrors(['message' => 'No tienes permisos para acceder.']);
         }
 
-        // Buscar el mensaje de bienvenida para el rol Cliente
+        // Verificar datos faltantes usando el servicio
+        $verificationService = new ClienteDataVerificationService();
+        $missingData = $verificationService->getMissingData($user);
+        $completionPercentage = $verificationService->getCompletionPercentage($user);
+        
+        // Si el email no está verificado, OBLIGAR a verificarlo
+        if (!$user->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')
+                ->with('warning', 'Debes verificar tu correo electrónico antes de continuar.');
+        }
+
+        // Si hay datos faltantes críticos, mostrar vista de verificación
+        if (!empty($missingData)) {
+            // Buscar el mensaje de bienvenida para el rol Cliente
+            $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Cliente')->first();
+            
+            return view('cliente.verificacion-datos', [
+                'user' => $user,
+                'missingData' => $missingData,
+                'completionPercentage' => $completionPercentage,
+                'titulo' => $mensajeDeBienvenida->titulo ?? 'Bienvenido a ModuStackPet',
+                'descripcion' => $mensajeDeBienvenida->descripcion ?? 'Gestiona tus mascotas de manera fácil y rápida.',
+                'logo' => $mensajeDeBienvenida->logo ?? 'storage/img/logo.jpg',
+            ]);
+        }
+
+        // Si todo está completo, mostrar dashboard normal
         $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Cliente')->first();
 
         // Si no se encuentra un mensaje de bienvenida, usar valores por defecto
