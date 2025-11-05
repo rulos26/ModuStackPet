@@ -227,6 +227,8 @@ class ClienteController extends Controller
             'whatsapp' => !empty($request->whatsapp) ? $request->whatsapp : null,
             'fecha_nacimiento' => !empty($request->fecha_nacimiento) ? $request->fecha_nacimiento : null,
             'direccion' => !empty($request->direccion) ? $request->direccion : null,
+            'nombre_conjunto_cerrado' => !empty($request->nombre_conjunto_cerrado) ? $request->nombre_conjunto_cerrado : null,
+            'interior_apartamento' => !empty($request->interior_apartamento) ? $request->interior_apartamento : null,
             'ciudad_id' => !empty($request->ciudad_id) ? $request->ciudad_id : null,
             'barrio_id' => !empty($request->barrio_id) ? $request->barrio_id : null,
             // Inicializar coordenadas como null para que siempre estén en el array

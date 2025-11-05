@@ -174,6 +174,34 @@
             </div>
 
             <div class="col-md-6">
+                <!-- Nombre del Conjunto/Cerrado -->
+                <div class="form-group mb-3">
+                    <label for="nombre_conjunto_cerrado" class="form-label">
+                        {{ __('Nombre del Conjunto/Cerrado') }}
+                        <small class="text-muted">({{ __('Opcional') }})</small>
+                    </label>
+                    <input type="text" name="nombre_conjunto_cerrado" class="form-control @error('nombre_conjunto_cerrado') is-invalid @enderror" 
+                           value="{{ old('nombre_conjunto_cerrado', $user?->cliente?->nombre_conjunto_cerrado) }}" 
+                           id="nombre_conjunto_cerrado" placeholder="{{ __('Ej: Conjunto Residencial Los Pinos') }}">
+                    {!! $errors->first('nombre_conjunto_cerrado', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Interior/Apartamento -->
+                <div class="form-group mb-3">
+                    <label for="interior_apartamento" class="form-label">
+                        {{ __('Interior/Apartamento') }}
+                        <small class="text-muted">({{ __('Opcional') }})</small>
+                    </label>
+                    <input type="text" name="interior_apartamento" class="form-control @error('interior_apartamento') is-invalid @enderror" 
+                           value="{{ old('interior_apartamento', $user?->cliente?->interior_apartamento) }}" 
+                           id="interior_apartamento" placeholder="{{ __('Ej: Apto 101, Interior 5, Torre 2') }}">
+                    {!! $errors->first('interior_apartamento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
                 <!-- Ciudad -->
                 <div class="form-group mb-3">
                     <label for="ciudad_id" class="form-label">{{ __('Ciudad') }}</label>

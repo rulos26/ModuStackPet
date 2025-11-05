@@ -30,6 +30,8 @@ class ClienteRequest extends FormRequest
             'whatsapp' => 'nullable|string|max:15',
             'fecha_nacimiento' => 'nullable|date',
             'direccion' => 'nullable|string|max:255',
+            'nombre_conjunto_cerrado' => 'nullable|string|max:255',
+            'interior_apartamento' => 'nullable|string|max:100',
             'ciudad_id' => 'nullable|exists:ciudades,id_municipio',
             'barrio_id' => 'nullable|exists:barrios,id',
             'password' => 'nullable|string|min:8|confirmed',

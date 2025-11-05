@@ -22,6 +22,8 @@ class Cliente extends Model
         'whatsapp',
         'fecha_nacimiento',
         'direccion',
+        'nombre_conjunto_cerrado',
+        'interior_apartamento',
         'ciudad_id',
         'barrio_id',
         'avatar',

@@ -87,43 +87,95 @@
 
             <!-- Tarjeta de Información Detallada -->
             <div class="col-lg-8 col-md-6 col-sm-12 mb-4">
-                <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="card-title mb-0">{{ __('Información del Usuario') }}</h5>
+                <!-- Información Personal -->
+                <div class="card shadow-lg mb-3" style="border: 2px solid #007bff; border-radius: 15px;">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0"><i class="fas fa-user"></i> {{ __('Información Personal') }}</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <strong>{{ __('Tipo de Documento:') }}</strong>
-                                    <p class="text-muted">{{ $user->tipo_documento }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-id-card text-primary"></i> {{ __('Tipo de Documento:') }}</strong>
+                                    <p class="text-muted mt-1">{{ $user->tipoDocumento->nombre ?? $user->tipo_documento ?? __('No especificado') }}</p>
                                 </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Cédula:') }}</strong>
-                                    <p class="text-muted">{{ $user->cedula }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-id-badge text-primary"></i> {{ __('Cédula:') }}</strong>
+                                    <p class="text-muted mt-1">{{ $user->cedula ?? __('No especificada') }}</p>
                                 </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Fecha de Nacimiento:') }}</strong>
-                                    <p class="text-muted">{{ $user->fecha_nacimiento }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-birthday-cake text-primary"></i> {{ __('Fecha de Nacimiento:') }}</strong>
+                                    <p class="text-muted mt-1">
+                                        @if($user->fecha_nacimiento)
+                                            {{ $user->fecha_nacimiento instanceof \Carbon\Carbon ? $user->fecha_nacimiento->format('d/m/Y') : $user->fecha_nacimiento }}
+                                        @else
+                                            {{ __('No especificada') }}
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <strong>{{ __('Activo:') }}</strong>
-                                    <p class="text-muted">{{ $user->activo ? __('Sí') : __('No') }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-check-circle text-{{ $user->activo ? 'success' : 'danger' }}"></i> {{ __('Estado:') }}</strong>
+                                    <p class="mt-1">
+                                        <span class="badge badge-{{ $user->activo ? 'success' : 'danger' }}">
+                                            {{ $user->activo ? __('Activo') : __('Inactivo') }}
+                                        </span>
+                                    </p>
                                 </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Creado el:') }}</strong>
-                                    <p class="text-muted">{{ $user->created_at->format('d/m/Y') }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-calendar-plus text-primary"></i> {{ __('Creado el:') }}</strong>
+                                    <p class="text-muted mt-1">{{ $user->created_at->format('d/m/Y H:i') }}</p>
                                 </div>
-                                <div class="form-group">
-                                    <strong>{{ __('Última Actualización:') }}</strong>
-                                    <p class="text-muted">{{ $user->updated_at->format('d/m/Y') }}</p>
+                                <div class="mb-3">
+                                    <strong><i class="fas fa-calendar-check text-primary"></i> {{ __('Última Actualización:') }}</strong>
+                                    <p class="text-muted mt-1">{{ $user->updated_at->format('d/m/Y H:i') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Información de Ubicación -->
+                @if($user->cliente)
+                <div class="card shadow-lg" style="border: 2px solid #28a745; border-radius: 15px;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0"><i class="fas fa-map-marker-alt"></i> {{ __('Información de Ubicación') }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <strong><i class="fas fa-map-pin text-success"></i> {{ __('Dirección:') }}</strong>
+                                <p class="text-muted mt-1">
+                                    {{ $user->cliente->direccion ?? __('No especificada') }}
+                                    @if($user->cliente->nombre_conjunto_cerrado)
+                                        <br><small class="text-info">{{ __('Conjunto/Cerrado:') }} {{ $user->cliente->nombre_conjunto_cerrado }}</small>
+                                    @endif
+                                    @if($user->cliente->interior_apartamento)
+                                        <br><small class="text-info">{{ __('Interior/Apto:') }} {{ $user->cliente->interior_apartamento }}</small>
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="fas fa-city text-success"></i> {{ __('Ciudad:') }}</strong>
+                                <p class="text-muted mt-1">{{ $user->cliente->ciudad->municipio ?? __('No especificada') }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <strong><i class="fas fa-map text-success"></i> {{ __('Barrio:') }}</strong>
+                                <p class="text-muted mt-1">{{ $user->cliente->barrio->nombre ?? __('No especificado') }}</p>
+                            </div>
+                            @if($user->cliente->latitud && $user->cliente->longitud)
+                            <div class="col-md-12 mb-3">
+                                <strong><i class="fas fa-globe text-success"></i> {{ __('Coordenadas:') }}</strong>
+                                <p class="text-muted mt-1">
+                                    <small>Lat: {{ $user->cliente->latitud }}, Long: {{ $user->cliente->longitud }}</small>
+                                </p>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </section>
