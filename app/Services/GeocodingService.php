@@ -23,21 +23,60 @@ class GeocodingService
     public function geocode(string $direccion, ?string $ciudad = null, ?string $pais = 'Colombia'): ?array
     {
         try {
-            // Construir la dirección completa
-            $direccionCompleta = $direccion;
-            if ($ciudad) {
-                $direccionCompleta .= ', ' . $ciudad;
+            // Normalizar y limpiar la dirección
+            $direccionLimpia = trim($direccion);
+            
+            // Intentar parsear la dirección colombiana (CRA, CALLE, AV, etc.)
+            $direccionParseada = $this->parsearDireccionColombiana($direccionLimpia);
+            
+            // Construir consulta estructurada si es posible
+            $params = [
+                'format' => 'json',
+                'limit' => 1,
+                'addressdetails' => 1,
+                'countrycodes' => 'co', // Solo Colombia
+                'extratags' => 1,
+                'namedetails' => 1,
+            ];
+            
+            // Si logramos parsear la dirección, usar formato estructurado
+            if ($direccionParseada && isset($direccionParseada['street'])) {
+                // Formato estructurado: mejor para Nominatim
+                $params['street'] = $direccionParseada['street'];
+                if (isset($direccionParseada['city'])) {
+                    $params['city'] = $direccionParseada['city'];
+                }
+                if (isset($direccionParseada['state'])) {
+                    $params['state'] = $direccionParseada['state'];
+                }
+                $params['country'] = $pais ?? 'Colombia';
+                
+                Log::info('DEBUG GeocodingService: Usando formato estructurado', [
+                    'params' => $params,
+                    'direccion_original' => $direccion,
+                ]);
+            } else {
+                // Formato libre: concatenar dirección completa
+                $direccionCompleta = $direccionLimpia;
+                if ($ciudad) {
+                    $direccionCompleta .= ', ' . $ciudad;
+                }
+                if ($pais) {
+                    $direccionCompleta .= ', ' . $pais;
+                }
+                $params['q'] = $direccionCompleta;
+                
+                Log::info('DEBUG GeocodingService: Usando formato libre', [
+                    'direccion_completa' => $direccionCompleta,
+                ]);
             }
-            if ($pais) {
-                $direccionCompleta .= ', ' . $pais;
-            }
-
+            
             // Construir URL completa para logging
-            $urlCompleta = self::NOMINATIM_API_URL . '?q=' . urlencode($direccionCompleta) . '&format=json&limit=1&addressdetails=1&countrycodes=co';
+            $urlCompleta = self::NOMINATIM_API_URL . '?' . http_build_query($params);
             
             Log::info('DEBUG GeocodingService: Realizando petición HTTP', [
                 'url' => $urlCompleta,
-                'direccion_completa' => $direccionCompleta,
+                'params' => $params,
             ]);
 
             // Realizar petición a Nominatim
@@ -46,13 +85,7 @@ class GeocodingService
                     'User-Agent' => 'ModuStackPet/1.0 (Contact: ' . config('app.email', 'info@modustackpet.com') . ')',
                     'Accept-Language' => 'es,en'
                 ])
-                ->get(self::NOMINATIM_API_URL, [
-                    'q' => $direccionCompleta,
-                    'format' => 'json',
-                    'limit' => 1,
-                    'addressdetails' => 1,
-                    'countrycodes' => 'co', // Solo Colombia
-                ]);
+                ->get(self::NOMINATIM_API_URL, $params);
 
             Log::info('DEBUG GeocodingService: Respuesta HTTP recibida', [
                 'status' => $response->status(),
@@ -74,29 +107,31 @@ class GeocodingService
             if (empty($data) || !isset($data[0])) {
                 Log::info('DEBUG GeocodingService: No se encontraron resultados, intentando variaciones', [
                     'direccion_original' => $direccion,
-                    'direccion_completa' => $direccionCompleta,
+                    'direccion_parseada' => $direccionParseada,
                 ]);
                 
-                // Intentar variaciones de la dirección
+                // Intentar variaciones de la dirección (formato libre)
                 $variaciones = $this->generarVariacionesDireccion($direccion, $ciudad, $pais);
                 
                 foreach ($variaciones as $variacion) {
-                    Log::info('DEBUG GeocodingService: Intentando variación', [
+                    Log::info('DEBUG GeocodingService: Intentando variación (formato libre)', [
                         'variacion' => $variacion,
                     ]);
+                    
+                    $paramsVariacion = [
+                        'q' => $variacion,
+                        'format' => 'json',
+                        'limit' => 1,
+                        'addressdetails' => 1,
+                        'countrycodes' => 'co',
+                    ];
                     
                     $responseVariacion = Http::timeout(10)
                         ->withHeaders([
                             'User-Agent' => 'ModuStackPet/1.0 (Contact: ' . config('app.email', 'info@modustackpet.com') . ')',
                             'Accept-Language' => 'es,en'
                         ])
-                        ->get(self::NOMINATIM_API_URL, [
-                            'q' => $variacion,
-                            'format' => 'json',
-                            'limit' => 1,
-                            'addressdetails' => 1,
-                            'countrycodes' => 'co',
-                        ]);
+                        ->get(self::NOMINATIM_API_URL, $paramsVariacion);
                     
                     if ($responseVariacion->successful()) {
                         $dataVariacion = $responseVariacion->json();
@@ -110,8 +145,46 @@ class GeocodingService
                         }
                     }
                     
-                    // Pequeña pausa entre intentos para no sobrecargar la API
-                    usleep(500000); // 0.5 segundos
+                    // Pequeña pausa entre intentos para no sobrecargar la API (máximo 1 request por segundo)
+                    usleep(1000000); // 1 segundo
+                }
+                
+                // Si aún no hay resultados, intentar con formato estructurado alternativo
+                if (empty($data) || !isset($data[0])) {
+                    Log::info('DEBUG GeocodingService: Intentando formato estructurado alternativo', [
+                        'direccion' => $direccion,
+                    ]);
+                    
+                    // Intentar con formato estructurado simple
+                    $paramsEstructurado = [
+                        'street' => $direccionLimpia,
+                        'city' => 'Bogotá',
+                        'country' => 'Colombia',
+                        'format' => 'json',
+                        'limit' => 1,
+                        'addressdetails' => 1,
+                        'countrycodes' => 'co',
+                    ];
+                    
+                    $responseEstructurado = Http::timeout(10)
+                        ->withHeaders([
+                            'User-Agent' => 'ModuStackPet/1.0 (Contact: ' . config('app.email', 'info@modustackpet.com') . ')',
+                            'Accept-Language' => 'es,en'
+                        ])
+                        ->get(self::NOMINATIM_API_URL, $paramsEstructurado);
+                    
+                    if ($responseEstructurado->successful()) {
+                        $dataEstructurado = $responseEstructurado->json();
+                        if (!empty($dataEstructurado) && isset($dataEstructurado[0])) {
+                            Log::info('DEBUG GeocodingService: Formato estructurado exitoso', [
+                                'params' => $paramsEstructurado,
+                                'resultado' => $dataEstructurado[0],
+                            ]);
+                            $data = $dataEstructurado;
+                        }
+                    }
+                    
+                    usleep(1000000); // 1 segundo
                 }
                 
                 // Si aún no hay resultados después de todas las variaciones
@@ -172,6 +245,60 @@ class GeocodingService
         ]);
         
         return $resultado;
+    }
+
+    /**
+     * Parsear dirección colombiana en componentes estructurados
+     * Ejemplo: "CRA 19 # 51-15" -> ['street' => 'Carrera 19 No 51-15', 'city' => 'Bogotá']
+     *
+     * @param string $direccion
+     * @return array|null
+     */
+    private function parsearDireccionColombiana(string $direccion): ?array
+    {
+        $direccion = trim($direccion);
+        if (empty($direccion)) {
+            return null;
+        }
+        
+        $resultado = [];
+        
+        // Normalizar abreviaciones comunes
+        $patrones = [
+            '/^CRA\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Carrera $1 No $2-$3',
+            '/^CARRERA\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Carrera $1 No $2-$3',
+            '/^CL\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Calle $1 No $2-$3',
+            '/^CALLE\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Calle $1 No $2-$3',
+            '/^AV\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Avenida $1 No $2-$3',
+            '/^AVENIDA\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Avenida $1 No $2-$3',
+            '/^KR\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Carrera $1 No $2-$3',
+            '/^KRA\s+(\d+)\s*#?\s*(\d+)[-\s]*(\d+)?/i' => 'Carrera $1 No $2-$3',
+        ];
+        
+        $streetFormateada = $direccion;
+        foreach ($patrones as $patron => $reemplazo) {
+            if (preg_match($patron, $direccion, $matches)) {
+                $streetFormateada = preg_replace($patron, $reemplazo, $direccion);
+                // Limpiar espacios extras
+                $streetFormateada = preg_replace('/\s+/', ' ', trim($streetFormateada));
+                break;
+            }
+        }
+        
+        $resultado['street'] = $streetFormateada;
+        
+        // Si la ciudad está en la dirección, extraerla
+        if (stripos($direccion, 'Bogotá') !== false || stripos($direccion, 'Bogota') !== false) {
+            $resultado['city'] = 'Bogotá';
+        }
+        
+        // Si menciona Engativá, agregarlo como distrito/localidad
+        if (stripos($direccion, 'Engativá') !== false || stripos($direccion, 'Engativa') !== false) {
+            $resultado['city'] = 'Bogotá';
+            $resultado['suburb'] = 'Engativá';
+        }
+        
+        return !empty($resultado) ? $resultado : null;
     }
 
     /**
