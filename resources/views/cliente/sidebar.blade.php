@@ -68,6 +68,19 @@
         </li>
         @endif
 
+        {{-- DOCUMENTOS DE MASCOTAS --}}
+        @if($isModuleActive('documentos-mascotas'))
+        <li class="nav-header text-danger mt-2">
+            <i class="fas fa-file-upload"></i> Documentos de Mascotas
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('mascota-documents.index') }}" class="nav-link {{ request()->routeIs('mascota-documents.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Mis Documentos</p>
+            </a>
+        </li>
+        @endif
+
         {{-- ÁRBOL GENEALÓGICO --}}
         @if($isModuleActive('arbol-genealogico'))
         <li class="nav-header text-primary mt-2">
