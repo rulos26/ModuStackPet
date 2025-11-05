@@ -15,13 +15,25 @@ class MascotaController extends Controller
 {
     /**
      * Muestra una lista de todas las mascotas.
+     * Solo los administradores (Superadmin y Admin) ven todas las mascotas.
+     * Los demás usuarios solo ven sus propias mascotas.
      *
      * @param Request $request
      * @return View
      */
     public function index(Request $request): View
     {
-        $mascotas = Mascota::with(['raza', 'user.cliente'])->paginate();
+        $user = auth()->user();
+        
+        // Si es administrador (Superadmin o Admin), mostrar todas las mascotas
+        if ($user->hasRole('Superadmin') || $user->hasRole('Admin')) {
+            $mascotas = Mascota::with(['raza', 'user.cliente'])->paginate();
+        } else {
+            // Si no es administrador, solo mostrar las mascotas del usuario autenticado
+            $mascotas = Mascota::where('user_id', $user->id)
+                ->with(['raza', 'user.cliente'])
+                ->paginate();
+        }
 
         return view('mascota.index', compact('mascotas'))
             ->with('i', ($request->input('page', 1) - 1) * $mascotas->perPage());
