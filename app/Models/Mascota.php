@@ -46,6 +46,18 @@ class Mascota extends Model
      */
     protected $fillable = ['user_id', 'avatar', 'nombre', 'edad', 'fecha_nacimiento', 'raza_id', 'genero', 'vacunas_completas', 'ultima_vacunacion', 'comportamiento', 'recomendaciones', 'esterilizado', 'enfermedades', 'ultimo_examen_medico'];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'fecha_nacimiento' => 'date',
+        'ultima_vacunacion' => 'date',
+        'ultimo_examen_medico' => 'date',
+        'vacunas_completas' => 'boolean',
+        'esterilizado' => 'boolean',
+    ];
 
     // Relación con barrio eliminada - la ubicación se obtiene del cliente
 

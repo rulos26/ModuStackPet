@@ -67,5 +67,18 @@
             </a>
         </li>
         @endif
+
+        {{-- ÁRBOL GENEALÓGICO --}}
+        @if($isModuleActive('arbol-genealogico'))
+        <li class="nav-header text-primary mt-2">
+            <i class="fas fa-sitemap"></i> Árbol Genealógico
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('cliente.arbol_genealogico') }}" class="nav-link {{ request()->routeIs('cliente.arbol_genealogico') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-project-diagram"></i>
+                <p>Mi Familia de Mascotas</p>
+            </a>
+        </li>
+        @endif
     </ul>
 </nav>

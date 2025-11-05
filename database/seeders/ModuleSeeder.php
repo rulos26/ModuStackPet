@@ -171,6 +171,13 @@ class ModuleSeeder extends Seeder
 				'description' => 'Configuración y ejecución de copias de seguridad completas de la base de datos de producción',
 				'status' => true,
 			],
+			// Módulo de Árbol Genealógico
+			[
+				'name' => 'Árbol Genealógico',
+				'slug' => 'arbol-genealogico',
+				'description' => 'Visualización interactiva del árbol genealógico de clientes con sus mascotas usando D3.js',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {

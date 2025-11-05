@@ -272,6 +272,11 @@ Route::middleware(['auth'])->prefix('cliente')->name('cliente.')->group(function
     Route::get('/perfil/{user}', [ClienteController::class, 'show'])->name('perfil.show');
     Route::get('/perfil/{user}/edit', [ClienteController::class, 'edit'])->name('perfil.edit');
     Route::put('/perfil/{user}', [ClienteController::class, 'update'])->name('perfil.update');
+    
+    // Árbol Genealógico
+    Route::middleware('module.active:arbol-genealogico')->group(function () {
+        Route::get('/arbol-genealogico', [\App\Http\Controllers\ArbolGenealogicoController::class, 'index'])->name('arbol_genealogico');
+    });
 });
 
 // Rutas para paseadores

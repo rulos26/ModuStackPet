@@ -122,7 +122,7 @@
                                 <small class="text-muted d-block">{{ __('Fecha de Nacimiento') }}</small>
                                 <strong class="text-dark">
                                     @if($mascota->fecha_nacimiento)
-                                        {{ $mascota->fecha_nacimiento instanceof \Carbon\Carbon ? $mascota->fecha_nacimiento->format('d/m/Y') : \Carbon\Carbon::parse($mascota->fecha_nacimiento)->format('d/m/Y') }}
+                                        {{ $mascota->fecha_nacimiento->format('d/m/Y') }}
                                     @else
                                         {{ __('No especificada') }}
                                     @endif
@@ -194,7 +194,7 @@
                                 <small class="text-muted d-block">{{ __('Última Vacunación') }}</small>
                                 <strong class="text-dark">
                                     @if($mascota->ultima_vacunacion)
-                                        {{ $mascota->ultima_vacunacion instanceof \Carbon\Carbon ? $mascota->ultima_vacunacion->format('d/m/Y') : \Carbon\Carbon::parse($mascota->ultima_vacunacion)->format('d/m/Y') }}
+                                        {{ $mascota->ultima_vacunacion->format('d/m/Y') }}
                                     @else
                                         {{ __('No especificada') }}
                                     @endif
@@ -230,7 +230,7 @@
                                 <small class="text-muted d-block">{{ __('Último Examen Médico') }}</small>
                                 <strong class="text-dark">
                                     @if($mascota->ultimo_examen_medico)
-                                        {{ $mascota->ultimo_examen_medico instanceof \Carbon\Carbon ? $mascota->ultimo_examen_medico->format('d/m/Y') : \Carbon\Carbon::parse($mascota->ultimo_examen_medico)->format('d/m/Y') }}
+                                        {{ $mascota->ultimo_examen_medico->format('d/m/Y') }}
                                     @else
                                         {{ __('No especificado') }}
                                     @endif
