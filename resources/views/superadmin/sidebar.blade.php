@@ -300,6 +300,24 @@
             </a>
         </li>
         @endif
+
+        {{-- Módulos de Documentos de Mascotas --}}
+        @if($isModuleActive('requisitos-documentales'))
+        <li class="nav-item">
+            <a href="{{ route('admin.document-requirements.index') }}" class="nav-link {{ request()->routeIs('admin.document-requirements.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-file-alt"></i>
+                <p>Requisitos Documentales</p>
+            </a>
+        </li>
+        @endif
+        @if($isModuleActive('documentos-mascotas'))
+        <li class="nav-item">
+            <a href="{{ route('mascota-documents.index') }}" class="nav-link {{ request()->routeIs('mascota-documents.*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-file-upload"></i>
+                <p>Documentos de Mascotas</p>
+            </a>
+        </li>
+        @endif
         @endrole
 
         {{-- Dashboard Paseador - Visible para Superadmin y Paseador --}}

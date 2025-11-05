@@ -61,6 +61,8 @@ class ModulesMenu extends Component
             'paths-documentos' => 'paths-documentos.index',
             'razas' => 'razas.index',
             'barrios' => 'barrios.index',
+            'requisitos-documentales' => 'admin.document-requirements.index',
+            'documentos-mascotas' => 'mascota-documents.index',
         ];
         
         // Si está en el mapa, usar la ruta específica
