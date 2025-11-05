@@ -210,6 +210,9 @@ class ClienteController extends Controller
             'direccion' => !empty($request->direccion) ? $request->direccion : null,
             'ciudad_id' => !empty($request->ciudad_id) ? $request->ciudad_id : null,
             'barrio_id' => !empty($request->barrio_id) ? $request->barrio_id : null,
+            // Inicializar coordenadas como null para que siempre estén en el array
+            'latitud' => null,
+            'longitud' => null,
         ];
 
         // DEBUG: Log inicial del estado
@@ -256,31 +259,54 @@ class ClienteController extends Controller
                     'coordenadas_no_null' => !is_null($coordenadas),
                 ]);
                 
-                if ($coordenadas && is_array($coordenadas)) {
-                    $datosCliente['latitud'] = $coordenadas['latitud'];
-                    $datosCliente['longitud'] = $coordenadas['longitud'];
+                if ($coordenadas && is_array($coordenadas) && isset($coordenadas['latitud']) && isset($coordenadas['longitud'])) {
+                    // Asegurar que sean números válidos
+                    $latitud = (float) $coordenadas['latitud'];
+                    $longitud = (float) $coordenadas['longitud'];
                     
-                    Log::info('DEBUG: Coordenadas asignadas a datosCliente', [
-                        'user_id' => $user->id,
-                        'latitud' => $datosCliente['latitud'],
-                        'longitud' => $datosCliente['longitud'],
-                        'datos_cliente_keys' => array_keys($datosCliente),
-                    ]);
-                    
-                    Log::info('Dirección geocodificada exitosamente', [
-                        'user_id' => $user->id,
-                        'direccion' => $request->direccion,
-                        'latitud' => $coordenadas['latitud'],
-                        'longitud' => $coordenadas['longitud'],
-                    ]);
+                    // Validar coordenadas
+                    if ($geocodingService->validarCoordenadas($latitud, $longitud)) {
+                        $datosCliente['latitud'] = $latitud;
+                        $datosCliente['longitud'] = $longitud;
+                        
+                        Log::info('DEBUG: Coordenadas asignadas a datosCliente', [
+                            'user_id' => $user->id,
+                            'latitud' => $datosCliente['latitud'],
+                            'longitud' => $datosCliente['longitud'],
+                            'datos_cliente_keys' => array_keys($datosCliente),
+                            'latitud_en_datos' => isset($datosCliente['latitud']) ? 'SÍ' : 'NO',
+                            'longitud_en_datos' => isset($datosCliente['longitud']) ? 'SÍ' : 'NO',
+                        ]);
+                        
+                        Log::info('Dirección geocodificada exitosamente', [
+                            'user_id' => $user->id,
+                            'direccion' => $request->direccion,
+                            'latitud' => $coordenadas['latitud'],
+                            'longitud' => $coordenadas['longitud'],
+                        ]);
+                    } else {
+                        Log::warning('DEBUG: Coordenadas no válidas para Colombia', [
+                            'user_id' => $user->id,
+                            'latitud' => $latitud,
+                            'longitud' => $longitud,
+                        ]);
+                        // Si las coordenadas no son válidas, no guardarlas
+                        if (!$cliente->latitud && !$cliente->longitud) {
+                            $datosCliente['latitud'] = null;
+                            $datosCliente['longitud'] = null;
+                        }
+                    }
                 } else {
                     Log::warning('DEBUG: No se pudo geocodificar la dirección', [
                         'user_id' => $user->id,
                         'direccion' => $request->direccion,
                         'coordenadas_retornadas' => $coordenadas,
                         'tipo_coordenadas' => gettype($coordenadas),
+                        'es_array' => is_array($coordenadas),
+                        'tiene_latitud' => isset($coordenadas['latitud'] ?? null),
+                        'tiene_longitud' => isset($coordenadas['longitud'] ?? null),
                     ]);
-                    // Si no se puede geocodificar y no hay coordenadas previas, mantener null
+                    // Si no se puede geocodificar y no hay coordenadas previas, establecer null explícitamente
                     if (!$cliente->latitud && !$cliente->longitud) {
                         $datosCliente['latitud'] = null;
                         $datosCliente['longitud'] = null;
@@ -340,8 +366,26 @@ class ClienteController extends Controller
             'cliente_fillable' => $cliente->getFillable(),
         ]);
 
+        // DEBUG: Verificar que latitud y longitud estén en datosCliente antes de actualizar
+        if (!isset($datosCliente['latitud'])) {
+            Log::warning('DEBUG: latitud NO está en datosCliente antes de update', [
+                'user_id' => $user->id,
+                'cliente_id' => $cliente->id,
+                'keys_en_datos' => array_keys($datosCliente),
+            ]);
+        }
+        if (!isset($datosCliente['longitud'])) {
+            Log::warning('DEBUG: longitud NO está en datosCliente antes de update', [
+                'user_id' => $user->id,
+                'cliente_id' => $cliente->id,
+                'keys_en_datos' => array_keys($datosCliente),
+            ]);
+        }
+
         // Actualizar el cliente con todos los datos
-        $resultadoUpdate = $cliente->update($datosCliente);
+        // Usar fill() y save() para asegurar que se guarden todos los campos
+        $cliente->fill($datosCliente);
+        $resultadoUpdate = $cliente->save();
 
         // DEBUG: Log después de actualizar
         Log::info('DEBUG: Después de actualizar cliente', [

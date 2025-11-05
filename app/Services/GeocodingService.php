@@ -70,11 +70,58 @@ class GeocodingService
 
             $data = $response->json();
 
+            // Si no hay resultados, intentar variaciones de la dirección
             if (empty($data) || !isset($data[0])) {
-                Log::warning('Error en geocodificación: No se encontraron resultados', [
-                    'direccion' => $direccion,
+                Log::info('DEBUG GeocodingService: No se encontraron resultados, intentando variaciones', [
+                    'direccion_original' => $direccion,
+                    'direccion_completa' => $direccionCompleta,
                 ]);
-                return null;
+                
+                // Intentar variaciones de la dirección
+                $variaciones = $this->generarVariacionesDireccion($direccion, $ciudad, $pais);
+                
+                foreach ($variaciones as $variacion) {
+                    Log::info('DEBUG GeocodingService: Intentando variación', [
+                        'variacion' => $variacion,
+                    ]);
+                    
+                    $responseVariacion = Http::timeout(10)
+                        ->withHeaders([
+                            'User-Agent' => 'ModuStackPet/1.0 (Contact: ' . config('app.email', 'info@modustackpet.com') . ')',
+                            'Accept-Language' => 'es,en'
+                        ])
+                        ->get(self::NOMINATIM_API_URL, [
+                            'q' => $variacion,
+                            'format' => 'json',
+                            'limit' => 1,
+                            'addressdetails' => 1,
+                            'countrycodes' => 'co',
+                        ]);
+                    
+                    if ($responseVariacion->successful()) {
+                        $dataVariacion = $responseVariacion->json();
+                        if (!empty($dataVariacion) && isset($dataVariacion[0])) {
+                            Log::info('DEBUG GeocodingService: Variación exitosa', [
+                                'variacion' => $variacion,
+                                'resultado' => $dataVariacion[0],
+                            ]);
+                            $data = $dataVariacion;
+                            break;
+                        }
+                    }
+                    
+                    // Pequeña pausa entre intentos para no sobrecargar la API
+                    usleep(500000); // 0.5 segundos
+                }
+                
+                // Si aún no hay resultados después de todas las variaciones
+                if (empty($data) || !isset($data[0])) {
+                    Log::warning('Error en geocodificación: No se encontraron resultados después de todas las variaciones', [
+                        'direccion' => $direccion,
+                        'variaciones_intentadas' => count($variaciones),
+                    ]);
+                    return null;
+                }
             }
 
             $resultado = $data[0];
@@ -125,6 +172,64 @@ class GeocodingService
         ]);
         
         return $resultado;
+    }
+
+    /**
+     * Generar variaciones de una dirección para mejorar las búsquedas
+     *
+     * @param string $direccion
+     * @param string|null $ciudad
+     * @param string|null $pais
+     * @return array
+     */
+    private function generarVariacionesDireccion(string $direccion, ?string $ciudad = null, ?string $pais = 'Colombia'): array
+    {
+        $variaciones = [];
+        
+        // Limpiar y normalizar la dirección
+        $direccionLimpia = trim($direccion);
+        
+        // Variación 1: Dirección original completa
+        $variaciones[] = $direccionLimpia . ($ciudad ? ', ' . $ciudad : '') . ($pais ? ', ' . $pais : '');
+        
+        // Variación 2: Sin símbolo # (reemplazar por "No" o "Número")
+        $direccionSinNumeral = str_replace('#', 'No', $direccionLimpia);
+        if ($direccionSinNumeral !== $direccionLimpia) {
+            $variaciones[] = $direccionSinNumeral . ($ciudad ? ', ' . $ciudad : '') . ($pais ? ', ' . $pais : '');
+        }
+        
+        // Variación 3: Reemplazar # por número
+        $direccionConNumero = preg_replace('/#\s*/', 'número ', $direccionLimpia);
+        if ($direccionConNumero !== $direccionLimpia) {
+            $variaciones[] = $direccionConNumero . ($ciudad ? ', ' . $ciudad : '') . ($pais ? ', ' . $pais : '');
+        }
+        
+        // Variación 4: Solo dirección + Engativá, Bogotá (específico para este caso)
+        if (stripos($direccionLimpia, 'CRA') !== false || stripos($direccionLimpia, 'Carrera') !== false) {
+            $variaciones[] = $direccionLimpia . ', Engativá, Bogotá, ' . $pais;
+            $variaciones[] = $direccionLimpia . ', Engativa, Bogota, ' . $pais;
+            // Agregar variación con "Carrera" en lugar de "CRA"
+            $direccionConCarrera = str_ireplace('CRA', 'Carrera', $direccionLimpia);
+            if ($direccionConCarrera !== $direccionLimpia) {
+                $variaciones[] = $direccionConCarrera . ', Engativá, Bogotá, ' . $pais;
+            }
+        }
+        
+        // Variación 5: Solo dirección + Bogotá
+        $variaciones[] = $direccionLimpia . ', Bogotá, ' . $pais;
+        $variaciones[] = $direccionLimpia . ', Bogota, ' . $pais;
+        
+        // Variación 6: Solo dirección + Colombia
+        $variaciones[] = $direccionLimpia . ', ' . $pais;
+        
+        // Variación 7: Solo Engativá, Bogotá (para buscar ubicación aproximada si no se encuentra la dirección exacta)
+        if ($ciudad && (stripos($ciudad, 'Engativá') !== false || stripos($ciudad, 'Engativa') !== false)) {
+            $variaciones[] = 'Engativá, Bogotá, ' . $pais;
+            $variaciones[] = 'Engativa, Bogota, ' . $pais;
+        }
+        
+        // Eliminar duplicados manteniendo el orden
+        return array_unique($variaciones);
     }
 
     /**
