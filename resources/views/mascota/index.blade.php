@@ -52,12 +52,9 @@
                                     <tr>
                                         <th>No.</th>
                                         <th>Nombre</th>
-                                        <th>Especie</th>
                                         <th>Raza</th>
                                         <th>Edad</th>
                                         <th>Propietario</th>
-                                        <th>Estado</th>
-                                        <th>Fecha Creación</th>
                                         <th class="text-center no-sort">Acciones</th>
                                     </tr>
                                 </thead>
@@ -66,7 +63,6 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $mascota->nombre }}</td>
-                                            <td>{{ $mascota->raza->tipo_mascota ?? 'N/A' }}</td>
                                             <td>{{ $mascota->raza->nombre ?? 'N/A' }}</td>
                                             <td>
                                                 @if($mascota->edad)
@@ -76,10 +72,6 @@
                                                 @endif
                                             </td>
                                             <td>{{ $mascota->user->name ?? 'N/A' }}</td>
-                                            <td>
-                                                <span class="badge bg-success">Activo</span>
-                                            </td>
-                                            <td>{{ $mascota->created_at->format('d/m/Y H:i:s') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
                                                     @hasanyrole('Superadmin|Admin|Cliente')
@@ -143,21 +135,21 @@
                                 extend: 'excel',
                                 text: '<i class="fas fa-file-excel"></i> Excel',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4]
                                 }
                             },
                             {
                                 extend: 'pdf',
                                 text: '<i class="fas fa-file-pdf"></i> PDF',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4]
                                 }
                             },
                             {
                                 extend: 'print',
                                 text: '<i class="fas fa-print"></i> Imprimir',
                                 exportOptions: {
-                                    columns: [0,1,2,3,4,5,6,7]
+                                    columns: [0,1,2,3,4]
                                 }
                             }
                         ]
