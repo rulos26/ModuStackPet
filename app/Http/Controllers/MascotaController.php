@@ -51,6 +51,10 @@ class MascotaController extends Controller
         try {
             $validatedData = $request->validated();
 
+            // Convertir valores de radio buttons a boolean
+            $validatedData['vacunas_completas'] = (bool) ($request->vacunas_completas ?? 0);
+            $validatedData['esterilizado'] = (bool) ($request->esterilizado ?? 0);
+
             // Usar automáticamente el usuario autenticado como propietario
             $user = auth()->user();
             $validatedData['user_id'] = $user->id;
@@ -118,6 +122,10 @@ class MascotaController extends Controller
     {
         try {
             $validatedData = $request->validated();
+
+            // Convertir valores de radio buttons a boolean
+            $validatedData['vacunas_completas'] = (bool) ($request->vacunas_completas ?? 0);
+            $validatedData['esterilizado'] = (bool) ($request->esterilizado ?? 0);
 
             // Usar automáticamente el usuario autenticado como propietario
             $user = auth()->user();

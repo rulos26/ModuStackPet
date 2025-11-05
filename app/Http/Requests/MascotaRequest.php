@@ -24,10 +24,10 @@ class MascotaRequest extends FormRequest
         return [
 			'avatar' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
 			'nombre' => 'required|string',
-			'vacunas_completas' => 'required|boolean',
+			'vacunas_completas' => 'required|in:0,1',
 			'comportamiento' => 'nullable|string',
 			'recomendaciones' => 'nullable|string',
-			'esterilizado' => 'required|boolean',
+			'esterilizado' => 'required|in:0,1',
 			'enfermedades' => 'nullable|string',
 			'edad' => 'required|integer|min:0',
 			'genero' => 'required|string',

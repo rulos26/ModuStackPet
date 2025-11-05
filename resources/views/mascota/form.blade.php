@@ -113,13 +113,18 @@
             <div class="col-md-6">
                 <!-- Vacunas Completas -->
                 <div class="form-group mb-3">
-                    <label class="form-label">{{ __('Vacunas Completas') }}</label>
+                    <label class="form-label">{{ __('Vacunas Completas') }} <span class="text-danger">*</span></label>
                     <div class="form-check">
-                        <input type="checkbox" name="vacunas_completas" class="form-check-input @error('vacunas_completas') is-invalid @enderror"
-                            id="vacunas_completas" value="1" {{ old('vacunas_completas', $mascota->vacunas_completas ?? false) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="vacunas_completas">{{ __('Sí') }}</label>
-            {!! $errors->first('vacunas_completas', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
+                        <input type="radio" name="vacunas_completas" class="form-check-input @error('vacunas_completas') is-invalid @enderror"
+                            id="vacunas_completas_si" value="1" {{ old('vacunas_completas', $mascota->vacunas_completas ?? null) === 1 || old('vacunas_completas', $mascota->vacunas_completas ?? null) === true ? 'checked' : '' }}>
+                        <label class="form-check-label" for="vacunas_completas_si">{{ __('Sí') }}</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="vacunas_completas" class="form-check-input @error('vacunas_completas') is-invalid @enderror"
+                            id="vacunas_completas_no" value="0" {{ old('vacunas_completas', $mascota->vacunas_completas ?? null) === 0 || old('vacunas_completas', $mascota->vacunas_completas ?? null) === false ? 'checked' : '' }}>
+                        <label class="form-check-label" for="vacunas_completas_no">{{ __('No') }}</label>
+                    </div>
+                    {!! $errors->first('vacunas_completas', '<div class="invalid-feedback d-block" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
 
@@ -136,13 +141,18 @@
             <div class="col-md-6">
                 <!-- Esterilizado -->
                 <div class="form-group mb-3">
-                    <label class="form-label">{{ __('Esterilizado') }}</label>
+                    <label class="form-label">{{ __('Esterilizado') }} <span class="text-danger">*</span></label>
                     <div class="form-check">
-                        <input type="checkbox" name="esterilizado" class="form-check-input @error('esterilizado') is-invalid @enderror"
-                            id="esterilizado" value="1" {{ old('esterilizado', $mascota->esterilizado ?? false) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="esterilizado">{{ __('Sí') }}</label>
-                        {!! $errors->first('esterilizado', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                        <input type="radio" name="esterilizado" class="form-check-input @error('esterilizado') is-invalid @enderror"
+                            id="esterilizado_si" value="1" {{ old('esterilizado', $mascota->esterilizado ?? null) === 1 || old('esterilizado', $mascota->esterilizado ?? null) === true ? 'checked' : '' }}>
+                        <label class="form-check-label" for="esterilizado_si">{{ __('Sí') }}</label>
                     </div>
+                    <div class="form-check">
+                        <input type="radio" name="esterilizado" class="form-check-input @error('esterilizado') is-invalid @enderror"
+                            id="esterilizado_no" value="0" {{ old('esterilizado', $mascota->esterilizado ?? null) === 0 || old('esterilizado', $mascota->esterilizado ?? null) === false ? 'checked' : '' }}>
+                        <label class="form-check-label" for="esterilizado_no">{{ __('No') }}</label>
+                    </div>
+                    {!! $errors->first('esterilizado', '<div class="invalid-feedback d-block" role="alert"><strong>:message</strong></div>') !!}
                 </div>
             </div>
 
