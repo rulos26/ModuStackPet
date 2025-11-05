@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Mascota;
 use App\Models\Raza;
-use App\Models\Barrio;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\MascotaRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-use App\Models\User;
 
 class MascotaController extends Controller
 {
@@ -23,7 +21,7 @@ class MascotaController extends Controller
      */
     public function index(Request $request): View
     {
-        $mascotas = Mascota::with(['raza', 'barrio'])->paginate();
+        $mascotas = Mascota::with(['raza', 'user'])->paginate();
 
         return view('mascota.index', compact('mascotas'))
             ->with('i', ($request->input('page', 1) - 1) * $mascotas->perPage());
@@ -38,10 +36,8 @@ class MascotaController extends Controller
     {
         $mascota = new Mascota();
         $razas = Raza::all();
-        $barrios = Barrio::all();
-        $users = User::role('Cliente')->get();
 
-        return view('mascota.create', compact('mascota', 'razas', 'barrios', 'users'));
+        return view('mascota.create', compact('mascota', 'razas'));
     }
 
     /**
@@ -55,8 +51,9 @@ class MascotaController extends Controller
         try {
             $validatedData = $request->validated();
 
-            // Obtener el usuario propietario
-            $user = User::findOrFail($validatedData['user_id']);
+            // Usar automáticamente el usuario autenticado como propietario
+            $user = auth()->user();
+            $validatedData['user_id'] = $user->id;
 
             // Manejar la subida de la imagen del avatar
             if ($request->hasFile('avatar')) {
@@ -91,7 +88,7 @@ class MascotaController extends Controller
      */
     public function show($id): View
     {
-        $mascota = Mascota::with(['raza', 'barrio'])->find($id);
+        $mascota = Mascota::with(['raza', 'user.cliente.ciudad', 'user.cliente.barrio'])->find($id);
 
         return view('mascota.show', compact('mascota'));
     }
@@ -106,10 +103,8 @@ class MascotaController extends Controller
     {
         $mascota = Mascota::find($id);
         $razas = Raza::all();
-        $barrios = Barrio::all();
-        $users = User::role('Cliente')->get();
 
-        return view('mascota.edit', compact('mascota', 'razas', 'barrios', 'users'));
+        return view('mascota.edit', compact('mascota', 'razas'));
     }
 
     /**
@@ -124,8 +119,9 @@ class MascotaController extends Controller
         try {
             $validatedData = $request->validated();
 
-            // Obtener el usuario propietario
-            $user = User::findOrFail($validatedData['user_id']);
+            // Usar automáticamente el usuario autenticado como propietario
+            $user = auth()->user();
+            $validatedData['user_id'] = $user->id;
 
             // Manejar la subida de la imagen del avatar
             if ($request->hasFile('avatar')) {

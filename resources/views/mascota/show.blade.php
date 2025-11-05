@@ -36,8 +36,8 @@
                                 </div>
                             <div class="col-sm-4">
                                 <div class="description-block">
-                                    <h5 class="description-header">{{ __('Barrio') }}</h5>
-                                    <span class="description-text">{{ $mascota->barrio->nombre ?? 'No especificado' }}</span>
+                                    <h5 class="description-header">{{ __('Propietario') }}</h5>
+                                    <span class="description-text">{{ $mascota->user->name ?? 'No especificado' }}</span>
                                 </div>
                                 </div>
                                 </div>
@@ -74,10 +74,6 @@
                                         <span class="float-right">{{ $mascota->raza->nombre ?? 'No especificada' }}</span>
                                     </li>
                                     <li class="list-group-item">
-                                        <strong>{{ __('Interior/Apartamento:') }}</strong>
-                                        <span class="float-right">{{ $mascota->interior_apto ?? 'No especificado' }}</span>
-                                    </li>
-                                    <li class="list-group-item">
                                         <strong>{{ __('Recomendaciones:') }}</strong>
                                         <span class="float-right">{{ $mascota->recomendaciones ?? 'No especificadas' }}</span>
                                     </li>
@@ -94,10 +90,6 @@
                                                 <span class="badge badge-danger">{{ __('No') }}</span>
                                             @endif
                                         </span>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <strong>{{ __('Dirección:') }}</strong>
-                                        <span class="float-right">{{ $mascota->direccion ?? 'No especificada' }}</span>
                                     </li>
                                     <li class="list-group-item">
                                         <strong>{{ __('Comportamiento:') }}</strong>

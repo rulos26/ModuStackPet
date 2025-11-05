@@ -22,20 +22,16 @@ class MascotaRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'user_id' => 'required',
 			'avatar' => 'image|mimes:jpeg,png,jpg,gif,webp|max:4096',
 			'nombre' => 'required|string',
 			'vacunas_completas' => 'required|boolean',
 			'comportamiento' => 'nullable|string',
-			'direccion' => 'nullable|string',
-			'interior_apto' => 'nullable|string',
 			'recomendaciones' => 'nullable|string',
 			'esterilizado' => 'required|boolean',
 			'enfermedades' => 'nullable|string',
 			'edad' => 'required|integer|min:0',
 			'genero' => 'required|string',
 			'raza_id' => 'required|exists:razas,id',
-			'barrio_id' => 'required|exists:barrios,id',
         ];
     }
 }

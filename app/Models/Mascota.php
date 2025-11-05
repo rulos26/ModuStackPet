@@ -44,16 +44,10 @@ class Mascota extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['user_id', 'avatar', 'nombre', 'edad', 'fecha_nacimiento', 'raza_id', 'genero', 'vacunas_completas', 'ultima_vacunacion', 'comportamiento', 'direccion', 'interior_apto', 'barrio_id', 'recomendaciones', 'esterilizado', 'enfermedades', 'ultimo_examen_medico'];
+    protected $fillable = ['user_id', 'avatar', 'nombre', 'edad', 'fecha_nacimiento', 'raza_id', 'genero', 'vacunas_completas', 'ultima_vacunacion', 'comportamiento', 'recomendaciones', 'esterilizado', 'enfermedades', 'ultimo_examen_medico'];
 
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function barrio()
-    {
-        return $this->belongsTo(\App\Models\Barrio::class, 'barrio_id', 'id');
-    }
+    // Relación con barrio eliminada - la ubicación se obtiene del cliente
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

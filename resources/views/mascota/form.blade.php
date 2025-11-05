@@ -17,20 +17,17 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-6">
-                <!-- Propietario -->
+                <!-- Propietario (Automático - Usuario autenticado) -->
                 <div class="form-group mb-3">
-                    <label for="user_id" class="form-label">{{ __('Propietario') }}</label>
-                    <select name="user_id" class="form-select @error('user_id') is-invalid @enderror" id="user_id" required>
-                        <option value="">-- {{ __('Seleccione un propietario') }} --</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}" {{ old('user_id', $mascota->user_id ?? '') == $user->id ? 'selected' : '' }}>
-                                {{ $user->name }} ({{ $user->email }})
-                            </option>
-                        @endforeach
-                    </select>
-            {!! $errors->first('user_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-        </div>
-        </div>
+                    <label for="propietario" class="form-label">{{ __('Propietario') }}</label>
+                    <input type="text" class="form-control" id="propietario" 
+                           value="{{ auth()->user()->name }} ({{ auth()->user()->email }})" 
+                           readonly disabled 
+                           style="background-color: #e9ecef; cursor: not-allowed;">
+                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                    <small class="form-text text-muted">{{ __('El propietario es automáticamente el usuario que tiene la sesión activa') }}</small>
+                </div>
+            </div>
 
             <div class="col-md-6">
                 <!-- Nombre -->
@@ -80,10 +77,10 @@
     </div>
 </div>
 
-<!-- Sección: Información de Raza y Ubicación -->
+<!-- Sección: Información de Raza -->
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="card-title mb-0">{{ __('Información de Raza y Ubicación') }}</h5>
+        <h5 class="card-title mb-0">{{ __('Información de Raza') }}</h5>
     </div>
     <div class="card-body">
         <div class="row">
@@ -101,44 +98,6 @@
                     </select>
             {!! $errors->first('raza_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
-            </div>
-
-            <div class="col-md-6">
-                <!-- Barrio -->
-                <div class="form-group mb-3">
-                    <label for="barrio_id" class="form-label">{{ __('Barrio') }}</label>
-                    <select name="barrio_id" class="form-select @error('barrio_id') is-invalid @enderror" id="barrio_id" required>
-                        <option value="">-- {{ __('Seleccione un barrio') }} --</option>
-                        @foreach($barrios as $barrio)
-                            <option value="{{ $barrio->id }}" {{ old('barrio_id', $mascota->barrio_id ?? '') == $barrio->id ? 'selected' : '' }}>
-                                {{ $barrio->nombre }} ({{ $barrio->localidad }})
-                            </option>
-                        @endforeach
-                    </select>
-                    {!! $errors->first('barrio_id', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <!-- Dirección -->
-                <div class="form-group mb-3">
-                    <label for="direccion" class="form-label">{{ __('Dirección') }}</label>
-                    <input type="text" name="direccion" class="form-control @error('direccion') is-invalid @enderror"
-                        id="direccion" placeholder="{{ __('Dirección de la mascota') }}"
-                        value="{{ old('direccion', $mascota->direccion ?? '') }}" required>
-                    {!! $errors->first('direccion', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <!-- Interior/Apartamento -->
-                <div class="form-group mb-3">
-                    <label for="interior_apto" class="form-label">{{ __('Interior/Apartamento') }}</label>
-                    <input type="text" name="interior_apto" class="form-control @error('interior_apto') is-invalid @enderror"
-                        id="interior_apto" placeholder="{{ __('Interior o apartamento') }}"
-                        value="{{ old('interior_apto', $mascota->interior_apto ?? '') }}">
-                    {!! $errors->first('interior_apto', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
             </div>
         </div>
     </div>
