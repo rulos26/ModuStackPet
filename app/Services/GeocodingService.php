@@ -32,6 +32,14 @@ class GeocodingService
                 $direccionCompleta .= ', ' . $pais;
             }
 
+            // Construir URL completa para logging
+            $urlCompleta = self::NOMINATIM_API_URL . '?q=' . urlencode($direccionCompleta) . '&format=json&limit=1&addressdetails=1&countrycodes=co';
+            
+            Log::info('DEBUG GeocodingService: Realizando petición HTTP', [
+                'url' => $urlCompleta,
+                'direccion_completa' => $direccionCompleta,
+            ]);
+
             // Realizar petición a Nominatim
             $response = Http::timeout(10)
                 ->withHeaders([
@@ -45,6 +53,12 @@ class GeocodingService
                     'addressdetails' => 1,
                     'countrycodes' => 'co', // Solo Colombia
                 ]);
+
+            Log::info('DEBUG GeocodingService: Respuesta HTTP recibida', [
+                'status' => $response->status(),
+                'successful' => $response->successful(),
+                'body_preview' => substr($response->body(), 0, 200),
+            ]);
 
             if (!$response->successful()) {
                 Log::warning('Error en geocodificación: Respuesta no exitosa', [
@@ -96,7 +110,21 @@ class GeocodingService
      */
     public function geocodeEngativa(string $direccion): ?array
     {
-        return $this->geocode($direccion, 'Engativá, Bogotá', 'Colombia');
+        Log::info('DEBUG GeocodingService: Iniciando geocodeEngativa', [
+            'direccion' => $direccion,
+            'direccion_completa' => $direccion . ', Engativá, Bogotá, Colombia',
+        ]);
+        
+        $resultado = $this->geocode($direccion, 'Engativá, Bogotá', 'Colombia');
+        
+        Log::info('DEBUG GeocodingService: Resultado de geocodeEngativa', [
+            'direccion' => $direccion,
+            'resultado' => $resultado,
+            'es_array' => is_array($resultado),
+            'no_null' => !is_null($resultado),
+        ]);
+        
+        return $resultado;
     }
 
     /**

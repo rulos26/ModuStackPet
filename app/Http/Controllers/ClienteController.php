@@ -17,6 +17,7 @@ use Illuminate\View\View;
 use App\Services\ClienteDataVerificationService;
 use App\Services\GeocodingService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class ClienteController extends Controller
 {
@@ -211,22 +212,60 @@ class ClienteController extends Controller
             'barrio_id' => !empty($request->barrio_id) ? $request->barrio_id : null,
         ];
 
+        // DEBUG: Log inicial del estado
+        Log::info('DEBUG: Inicio geocodificación', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id ?? 'no existe',
+            'direccion_request' => $request->direccion,
+            'direccion_cliente_actual' => $cliente->direccion ?? 'no existe',
+            'latitud_actual' => $cliente->latitud ?? 'null',
+            'longitud_actual' => $cliente->longitud ?? 'null',
+            'request_filled_direccion' => $request->filled('direccion'),
+        ]);
+
         // Verificar si la dirección cambió para geocodificar nuevamente
         $direccionCambio = $request->filled('direccion') && 
                           ($cliente->direccion !== $request->direccion || 
                            !$cliente->latitud || !$cliente->longitud);
 
+        Log::info('DEBUG: Evaluación geocodificación', [
+            'user_id' => $user->id,
+            'direccion_cambio' => $direccionCambio,
+            'direccion_diferente' => $cliente->direccion !== $request->direccion,
+            'sin_coordenadas' => !$cliente->latitud || !$cliente->longitud,
+        ]);
+
         // Geocodificar dirección si cambió o si no tiene coordenadas
         if ($direccionCambio) {
             try {
+                Log::info('DEBUG: Iniciando llamada a API de geocodificación', [
+                    'user_id' => $user->id,
+                    'direccion' => $request->direccion,
+                    'direccion_completa' => $request->direccion . ', Engativá, Bogotá, Colombia',
+                ]);
+
                 $geocodingService = new GeocodingService();
 
                 // Geocodificar dirección (específica para Engativá, Bogotá)
                 $coordenadas = $geocodingService->geocodeEngativa($request->direccion);
                 
-                if ($coordenadas) {
+                Log::info('DEBUG: Respuesta de geocodificación', [
+                    'user_id' => $user->id,
+                    'coordenadas_recibidas' => $coordenadas,
+                    'coordenadas_es_array' => is_array($coordenadas),
+                    'coordenadas_no_null' => !is_null($coordenadas),
+                ]);
+                
+                if ($coordenadas && is_array($coordenadas)) {
                     $datosCliente['latitud'] = $coordenadas['latitud'];
                     $datosCliente['longitud'] = $coordenadas['longitud'];
+                    
+                    Log::info('DEBUG: Coordenadas asignadas a datosCliente', [
+                        'user_id' => $user->id,
+                        'latitud' => $datosCliente['latitud'],
+                        'longitud' => $datosCliente['longitud'],
+                        'datos_cliente_keys' => array_keys($datosCliente),
+                    ]);
                     
                     Log::info('Dirección geocodificada exitosamente', [
                         'user_id' => $user->id,
@@ -235,9 +274,11 @@ class ClienteController extends Controller
                         'longitud' => $coordenadas['longitud'],
                     ]);
                 } else {
-                    Log::warning('No se pudo geocodificar la dirección', [
+                    Log::warning('DEBUG: No se pudo geocodificar la dirección', [
                         'user_id' => $user->id,
                         'direccion' => $request->direccion,
+                        'coordenadas_retornadas' => $coordenadas,
+                        'tipo_coordenadas' => gettype($coordenadas),
                     ]);
                     // Si no se puede geocodificar y no hay coordenadas previas, mantener null
                     if (!$cliente->latitud && !$cliente->longitud) {
@@ -246,10 +287,13 @@ class ClienteController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                Log::error('Error al geocodificar dirección', [
+                Log::error('DEBUG: Excepción al geocodificar dirección', [
                     'user_id' => $user->id,
                     'direccion' => $request->direccion,
                     'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
                 ]);
                 // Si hay error y no hay coordenadas previas, mantener null
                 if (!$cliente->latitud && !$cliente->longitud) {
@@ -259,6 +303,11 @@ class ClienteController extends Controller
             }
         } else {
             // Si no cambió la dirección, mantener las coordenadas existentes
+            Log::info('DEBUG: No se geocodifica, manteniendo coordenadas existentes', [
+                'user_id' => $user->id,
+                'latitud_existente' => $cliente->latitud ?? 'null',
+                'longitud_existente' => $cliente->longitud ?? 'null',
+            ]);
             if ($cliente->latitud && $cliente->longitud) {
                 $datosCliente['latitud'] = $cliente->latitud;
                 $datosCliente['longitud'] = $cliente->longitud;
@@ -271,10 +320,54 @@ class ClienteController extends Controller
             $datosCliente['avatar'] = $user->avatar;
         }
 
-        // Actualizar el cliente con todos los datos
-        $cliente->update($datosCliente);
+        // DEBUG: Verificar que las columnas existan en la tabla
+        $columnasExisten = Schema::hasColumn('clientes', 'latitud') && Schema::hasColumn('clientes', 'longitud');
+        Log::info('DEBUG: Verificación de columnas', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id,
+            'columna_latitud_existe' => Schema::hasColumn('clientes', 'latitud'),
+            'columna_longitud_existe' => Schema::hasColumn('clientes', 'longitud'),
+            'columnas_existen' => $columnasExisten,
+        ]);
 
-        // Log para debugging
+        // DEBUG: Log antes de actualizar
+        Log::info('DEBUG: Antes de actualizar cliente', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id,
+            'datos_cliente_completos' => $datosCliente,
+            'latitud_en_datos' => $datosCliente['latitud'] ?? 'NO ESTÁ EN DATOS',
+            'longitud_en_datos' => $datosCliente['longitud'] ?? 'NO ESTÁ EN DATOS',
+            'cliente_fillable' => $cliente->getFillable(),
+        ]);
+
+        // Actualizar el cliente con todos los datos
+        $resultadoUpdate = $cliente->update($datosCliente);
+
+        // DEBUG: Log después de actualizar
+        Log::info('DEBUG: Después de actualizar cliente', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id,
+            'resultado_update' => $resultadoUpdate,
+            'wasRecentlyCreated' => $cliente->wasRecentlyCreated,
+            'wasChanged' => $cliente->wasChanged(),
+            'getChanges' => $cliente->getChanges(),
+            'getDirty' => $cliente->getDirty(),
+        ]);
+
+        // Verificar que se guardaron correctamente
+        $cliente->refresh();
+
+        // DEBUG: Log después de refresh
+        Log::info('DEBUG: Después de refresh cliente', [
+            'user_id' => $user->id,
+            'cliente_id' => $cliente->id,
+            'latitud_en_bd' => $cliente->latitud ?? 'NULL',
+            'longitud_en_bd' => $cliente->longitud ?? 'NULL',
+            'direccion_en_bd' => $cliente->direccion ?? 'NULL',
+            'barrio_id_en_bd' => $cliente->barrio_id ?? 'NULL',
+        ]);
+
+        // Log para debugging final
         Log::info('Datos del cliente actualizados', [
             'user_id' => $user->id,
             'cliente_id' => $cliente->id,
@@ -285,10 +378,14 @@ class ClienteController extends Controller
                 'longitud' => $datosCliente['longitud'] ?? 'no establecida',
                 'direccion' => $datosCliente['direccion'],
             ],
+            'datos_en_bd' => [
+                'barrio_id' => $cliente->barrio_id,
+                'ciudad_id' => $cliente->ciudad_id,
+                'latitud' => $cliente->latitud,
+                'longitud' => $cliente->longitud,
+                'direccion' => $cliente->direccion,
+            ],
         ]);
-
-        // Verificar que se guardaron correctamente
-        $cliente->refresh();
         
         return redirect()->route('cliente.dashboard')
             ->with('success', 'Perfil actualizado exitosamente.');
