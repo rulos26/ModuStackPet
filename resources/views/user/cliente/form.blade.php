@@ -179,29 +179,14 @@
     </div>
 </div>
 
-<!-- Sección: Otros -->
+<!-- Sección: Foto de Perfil -->
 <div class="card mb-4">
     <div class="card-header">
-        <h5 class="card-title mb-0">{{ __('Otros') }}</h5>
+        <h5 class="card-title mb-0">{{ __('Foto de Perfil') }}</h5>
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-6">
-                <!-- Activo -->
-                <div class="form-group mb-3">
-                    <label for="activo" class="form-label">{{ __('Activo') }}</label>
-                    <div class="form-check form-switch">
-                        <!-- Campo oculto para enviar 0 si el checkbox no está marcado -->
-                        <input type="hidden" name="activo" value="0">
-                        <input type="checkbox" name="activo" class="form-check-input @error('activo') is-invalid @enderror" id="activo" value="1" 
-                            {{ old('activo', $user?->activo) == 1 ? 'checked' : '' }}>
-                        <label class="form-check-label" for="activo">{{ __('¿Está activo?') }}</label>
-                    </div>
-                    {!! $errors->first('activo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
-                </div>
-            </div>
-
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <!-- Foto de Perfil -->
                 <div class="form-group mb-3">
                     <label for="avatar" class="form-label">{{ __('Foto de Perfil') }}</label>

@@ -34,7 +34,7 @@ class ClienteRequest extends FormRequest
             'barrio_id' => 'nullable|exists:barrios,id',
             'password' => 'nullable|string|min:8|confirmed',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'activo' => 'nullable|boolean'
+            // 'activo' => NO se valida aquí - solo los administradores pueden cambiarlo
         ];
     }
 

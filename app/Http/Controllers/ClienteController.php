@@ -123,6 +123,8 @@ class ClienteController extends Controller
         }
 
         // Actualizar datos del usuario
+        // NOTA: El campo 'activo' NO se actualiza desde el formulario de cliente
+        // Solo los administradores pueden cambiar el estado activo desde el backend
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -131,7 +133,7 @@ class ClienteController extends Controller
             'telefono' => $request->telefono,
             'whatsapp' => $request->whatsapp,
             'fecha_nacimiento' => $request->fecha_nacimiento,
-            'activo' => $request->activo ?? $user->activo
+            // 'activo' => NO se actualiza aquí - solo los administradores pueden cambiarlo
         ]);
 
         if ($request->filled('password')) {
