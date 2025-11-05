@@ -24,6 +24,7 @@ class SeederController extends Controller
         'Database\\Seeders\\DatabaseConfigSeeder',
         'Database\\Seeders\\EmailConfigSeeder',
         'Database\\Seeders\\OAuthProviderSeeder',
+        'Database\\Seeders\\DocumentRequirementSeeder',
         // Variantes tolerantes por si el proyecto define clases con casing distinto
         'Database\\Seeders\\roleSeeder',
     ];
