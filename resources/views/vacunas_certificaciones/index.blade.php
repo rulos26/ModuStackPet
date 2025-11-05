@@ -21,13 +21,11 @@
                             <span id="card_title">
                                 <i class="fas fa-syringe"></i> Vacunas y Certificaciones
                             </span>
-                            @hasanyrole('Superadmin|Admin')
                             <div class="float-right">
                                 <a href="{{ route('vacunas_certificaciones.create') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Nuevo Registro
                                 </a>
                             </div>
-                            @endhasanyrole
                         </div>
                     </div>
 
@@ -76,20 +74,25 @@
                                                     N/A
                                                 @endif
                                             </td>
-                                            <td>{{ $vacuna->cedula_propietario ?? 'N/A' }}</td>
+                                            <td>
+                                                @if($vacuna->cedula_propietario)
+                                                    <a href="{{ asset('storage/' . $vacuna->cedula_propietario) }}" target="_blank" class="btn btn-info btn-sm">
+                                                        <i class="fas fa-file-pdf"></i> Ver
+                                                    </a>
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
                                             <td>{{ $vacuna->created_at->format('d/m/Y H:i:s') }}</td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
-                                                    @hasanyrole('Superadmin|Admin')
                                                     <a class="btn btn-info btn-sm" href="{{ route('vacunas_certificaciones.show', $vacuna->id) }}" title="Ver">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     <a class="btn btn-success btn-sm" href="{{ route('vacunas_certificaciones.edit', $vacuna->id) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    @endhasanyrole
-
-                                                    @hasrole('Superadmin')
+                                                    @hasanyrole('Superadmin|Admin')
                                                     <form action="{{ route('vacunas_certificaciones.destroy', $vacuna->id) }}" method="POST" class="d-inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
@@ -97,7 +100,7 @@
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
-                                                    @endhasrole
+                                                    @endhasanyrole
                                                 </div>
                                             </td>
                                         </tr>

@@ -178,6 +178,20 @@ class ModuleSeeder extends Seeder
 				'description' => 'Visualización interactiva del árbol genealógico de clientes con sus mascotas usando D3.js',
 				'status' => true,
 			],
+			// Módulo de Requisitos Documentales
+			[
+				'name' => 'Requisitos Documentales',
+				'slug' => 'requisitos-documentales',
+				'description' => 'Gestión de requisitos documentales para ingreso de mascotas (activar/desactivar requisitos)',
+				'status' => true,
+			],
+			// Módulo de Documentos de Mascotas
+			[
+				'name' => 'Documentos de Mascotas',
+				'slug' => 'documentos-mascotas',
+				'description' => 'Carga y validación de documentos requeridos para el ingreso de mascotas (vacunas, certificados, etc.)',
+				'status' => true,
+			],
         ];
 
         foreach ($modules as $moduleData) {

@@ -30,6 +30,8 @@ use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\SeederController;
 use App\Http\Controllers\CleanController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DocumentRequirementController;
+use App\Http\Controllers\MascotaDocumentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Barrio;
@@ -286,6 +288,24 @@ Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(functi
     Route::get('/perfil/{user}', [PaseadorController::class, 'show'])->name('perfil.show');
     Route::get('/perfil/{user}/edit', [PaseadorController::class, 'edit'])->name('perfil.edit');
     Route::put('/perfil/{user}', [PaseadorController::class, 'update'])->name('perfil.update');
+});
+
+// Rutas para gestión de requisitos documentales (solo administradores)
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':requisitos-documentales'])->group(function () {
+        Route::resource('document-requirements', \App\Http\Controllers\DocumentRequirementController::class);
+        Route::post('/document-requirements/{documentRequirement}/toggle-status', [\App\Http\Controllers\DocumentRequirementController::class, 'toggleStatus'])->name('document-requirements.toggle-status');
+    });
+});
+
+// Rutas para carga de documentos de mascotas
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':documentos-mascotas'])->group(function () {
+        Route::resource('mascota-documents', \App\Http\Controllers\MascotaDocumentController::class);
+        Route::post('/mascota-documents/{mascotaDocument}/aprobar', [\App\Http\Controllers\MascotaDocumentController::class, 'aprobar'])->name('mascota-documents.aprobar');
+        Route::post('/mascota-documents/{mascotaDocument}/rechazar', [\App\Http\Controllers\MascotaDocumentController::class, 'rechazar'])->name('mascota-documents.rechazar');
+        Route::get('/mascota-documents/{mascotaDocument}/descargar', [\App\Http\Controllers\MascotaDocumentController::class, 'descargar'])->name('mascota-documents.descargar');
+    });
 });
 
 // Rutas para configuraciones del sistema (solo superadmin)

@@ -1,5 +1,11 @@
 @extends('layouts.app')
 
+@php
+    $isModuleActive = function($slug) {
+        return \App\Models\Module::where('slug', $slug)->where('status', true)->exists();
+    };
+@endphp
+
 @section('template_title')
     Gestión de Mascotas
 @endsection
@@ -81,6 +87,11 @@
                                                     <a class="btn btn-success btn-sm" href="{{ route('mascotas.edit', $mascota->id) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @if($isModuleActive('documentos-mascotas'))
+                                                    <a class="btn btn-warning btn-sm" href="{{ route('mascota-documents.create', ['mascota_id' => $mascota->id]) }}" title="Subir Documentos">
+                                                        <i class="fas fa-upload"></i>
+                                                    </a>
+                                                    @endif
                                                     @endhasanyrole
 
                                                     @hasanyrole('Superadmin|Admin')

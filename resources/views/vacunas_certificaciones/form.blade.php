@@ -7,7 +7,7 @@
         <option value="">Seleccione una mascota</option>
         @foreach($mascotas as $mascota)
             <option value="{{ $mascota->id }}" {{ (old('id_mascota', $vacunasCertificacione->id_mascota ?? '') == $mascota->id) ? 'selected' : '' }}>
-                {{ $mascota->nombre }} ({{ $mascota->especie }})
+                {{ $mascota->nombre }}@if($mascota->raza) ({{ $mascota->raza->tipo_mascota ?? 'Mascota' }})@endif
             </option>
         @endforeach
     </select>
