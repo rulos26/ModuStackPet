@@ -21,7 +21,7 @@ class MascotaController extends Controller
      */
     public function index(Request $request): View
     {
-        $mascotas = Mascota::with(['raza', 'user'])->paginate();
+        $mascotas = Mascota::with(['raza', 'user.cliente'])->paginate();
 
         return view('mascota.index', compact('mascotas'))
             ->with('i', ($request->input('page', 1) - 1) * $mascotas->perPage());

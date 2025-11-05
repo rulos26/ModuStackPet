@@ -66,16 +66,18 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $mascota->nombre }}</td>
-                                            <td>{{ $mascota->especie }}</td>
+                                            <td>{{ $mascota->raza->tipo_mascota ?? 'N/A' }}</td>
                                             <td>{{ $mascota->raza->nombre ?? 'N/A' }}</td>
-                                            <td>{{ $mascota->edad }} años</td>
-                                            <td>{{ $mascota->cliente->nombre ?? 'N/A' }}</td>
                                             <td>
-                                                @if($mascota->activo)
-                                                    <span class="badge bg-success">Activo</span>
+                                                @if($mascota->edad)
+                                                    {{ $mascota->edad }} años
                                                 @else
-                                                    <span class="badge bg-danger">Inactivo</span>
+                                                    N/A
                                                 @endif
+                                            </td>
+                                            <td>{{ $mascota->user->name ?? 'N/A' }}</td>
+                                            <td>
+                                                <span class="badge bg-success">Activo</span>
                                             </td>
                                             <td>{{ $mascota->created_at->format('d/m/Y H:i:s') }}</td>
                                             <td class="text-center">
