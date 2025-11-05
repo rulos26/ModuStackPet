@@ -175,6 +175,45 @@
                     </h4>
                 </div>
                 <div class="card-body p-4">
+                    <!-- Ciudad (Primero) -->
+                    <div class="info-item mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-city text-white fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">{{ __('Ciudad') }}</small>
+                                <strong class="text-dark">
+                                    @if($user->cliente && $user->cliente->ciudad)
+                                        {{ $user->cliente->ciudad->municipio }}
+                                    @else
+                                        {{ __('No especificada') }}
+                                    @endif
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barrio (Segundo) -->
+                    <div class="info-item mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-map text-white fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">{{ __('Barrio') }}</small>
+                                <strong class="text-dark">
+                                    @if($user->cliente && $user->cliente->barrio)
+                                        {{ $user->cliente->barrio->nombre }}
+                                    @else
+                                        {{ __('No especificado') }}
+                                    @endif
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dirección (Tercero) -->
                     <div class="info-item mb-4">
                         <div class="d-flex align-items-center mb-2">
                             <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -187,6 +226,7 @@
                         </div>
                     </div>
 
+                    <!-- Nombre del Conjunto/Cerrado (Cuarto) -->
                     <div class="info-item mb-4">
                         <div class="d-flex align-items-center mb-2">
                             <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
@@ -199,7 +239,8 @@
                         </div>
                     </div>
 
-                    <div class="info-item mb-4">
+                    <!-- Interior/Apartamento (Quinto) -->
+                    <div class="info-item">
                         <div class="d-flex align-items-center mb-2">
                             <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-door-open text-white fa-lg"></i>
@@ -207,30 +248,6 @@
                             <div class="flex-grow-1">
                                 <small class="text-muted d-block">{{ __('Interior/Apartamento') }}</small>
                                 <strong class="text-dark">{{ $user->cliente->interior_apartamento ?? __('No especificado') }}</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-item mb-4">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-city text-white fa-lg"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <small class="text-muted d-block">{{ __('Ciudad') }}</small>
-                                <strong class="text-dark">{{ $user->cliente->ciudad->municipio ?? __('No especificada') }}</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-item">
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-map text-white fa-lg"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <small class="text-muted d-block">{{ __('Barrio') }}</small>
-                                <strong class="text-dark">{{ $user->cliente->barrio->nombre ?? __('No especificado') }}</strong>
                             </div>
                         </div>
                     </div>

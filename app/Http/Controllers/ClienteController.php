@@ -116,6 +116,13 @@ class ClienteController extends Controller
                 ->with('error', 'No tienes permiso para ver este perfil.');
         }
 
+        // Cargar las relaciones necesarias para evitar consultas N+1
+        $user->load([
+            'cliente.ciudad',
+            'cliente.barrio',
+            'cliente.tipoDocumento'
+        ]);
+
         return view('user.cliente.show', compact('user'));
     }
 
