@@ -303,8 +303,8 @@ class ClienteController extends Controller
                         'coordenadas_retornadas' => $coordenadas,
                         'tipo_coordenadas' => gettype($coordenadas),
                         'es_array' => is_array($coordenadas),
-                        'tiene_latitud' => isset($coordenadas['latitud'] ?? null),
-                        'tiene_longitud' => isset($coordenadas['longitud'] ?? null),
+                        'tiene_latitud' => is_array($coordenadas) && isset($coordenadas['latitud']),
+                        'tiene_longitud' => is_array($coordenadas) && isset($coordenadas['longitud']),
                     ]);
                     // Si no se puede geocodificar y no hay coordenadas previas, establecer null explícitamente
                     if (!$cliente->latitud && !$cliente->longitud) {
