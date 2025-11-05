@@ -15,9 +15,37 @@
                             <i class="fas fa-file-alt"></i> Documentos de Mascotas
                         </span>
                         <div class="float-right">
-                            <a href="{{ route('mascotas.index') }}" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-arrow-left"></i> Volver a Mascotas
-                            </a>
+                            @php
+                                $user = auth()->user();
+                                $mascotasPropias = \App\Models\Mascota::where('user_id', $user->id)->get();
+                            @endphp
+                            @if($mascotasPropias->count() > 0)
+                                <div class="btn-group" role="group">
+                                    @if($mascotasPropias->count() === 1)
+                                        <a href="{{ route('mascota-documents.create', ['mascota_id' => $mascotasPropias->first()->id]) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-upload"></i> Subir Documentos
+                                        </a>
+                                    @else
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-upload"></i> Subir Documentos
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                @foreach($mascotasPropias as $mascota)
+                                                    <li><a class="dropdown-item" href="{{ route('mascota-documents.create', ['mascota_id' => $mascota->id]) }}">{{ $mascota->nombre }}</a></li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
+                                <a href="{{ route('mascotas.index') }}" class="btn btn-secondary btn-sm ms-2">
+                                    <i class="fas fa-arrow-left"></i> Volver a Mascotas
+                                </a>
+                            @else
+                                <a href="{{ route('mascotas.index') }}" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-arrow-left"></i> Volver a Mascotas
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -30,6 +58,19 @@
                 @endif
 
                 <div class="card-body">
+                    @php
+                        $user = auth()->user();
+                        $mascotasPropias = \App\Models\Mascota::where('user_id', $user->id)->get();
+                    @endphp
+                    
+                    @if($mascotasPropias->count() === 0 && !$user->hasRole('Superadmin') && !$user->hasRole('Admin'))
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            <strong>Atención:</strong> No tienes mascotas registradas. 
+                            <a href="{{ route('mascotas.create') }}" class="alert-link">Registra una mascota primero</a> para poder subir documentos.
+                        </div>
+                    @endif
+                    
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead>
