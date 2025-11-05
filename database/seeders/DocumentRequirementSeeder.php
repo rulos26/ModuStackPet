@@ -46,7 +46,7 @@ class DocumentRequirementSeeder extends Seeder
                 'obligatorio' => true,
                 'activo' => true,
                 'orden' => 3,
-                'tipo_validacion' => 'sello_veterinario',
+                'tipo_validacion' => 'fecha_vencimiento', // Validación por fecha de vencimiento
                 'dias_validez' => 30, // 1 mes
                 'formatos_permitidos' => ['pdf', 'jpg', 'jpeg', 'png'],
                 'tamaño_maximo_kb' => 2048,
@@ -72,7 +72,7 @@ class DocumentRequirementSeeder extends Seeder
                 'obligatorio' => true,
                 'activo' => true,
                 'orden' => 5,
-                'tipo_validacion' => 'firma_digital',
+                'tipo_validacion' => 'firma_digital', // Requiere firma digital
                 'dias_validez' => null,
                 'formatos_permitidos' => ['pdf'],
                 'tamaño_maximo_kb' => 5120,
