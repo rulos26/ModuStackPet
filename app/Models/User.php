@@ -87,6 +87,26 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Obtener el nombre del tipo de documento
+     * Intenta desde el cliente primero, luego desde el campo directo del usuario
+     */
+    public function getTipoDocumentoNombreAttribute()
+    {
+        // Intentar desde el cliente
+        if ($this->cliente && $this->cliente->tipoDocumento) {
+            return $this->cliente->tipoDocumento->nombre;
+        }
+        
+        // Intentar desde el campo directo (tipo_documento es un ID)
+        if ($this->tipo_documento) {
+            $tipo = TipoDocumento::find($this->tipo_documento);
+            return $tipo ? $tipo->nombre : null;
+        }
+        
+        return null;
+    }
+
+    /**
      * Verificar si el usuario es un cliente
      */
     public function isCliente(): bool
