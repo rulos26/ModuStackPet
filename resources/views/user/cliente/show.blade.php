@@ -176,27 +176,37 @@
                 </div>
                 <div class="card-body p-4">
                     <div class="info-item mb-4">
-                        <div class="mb-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-map-pin text-white fa-lg"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <small class="text-muted d-block">{{ __('Dirección Completa') }}</small>
-                                </div>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-map-pin text-white fa-lg"></i>
                             </div>
-                            <div class="ps-5">
-                                <strong class="text-dark d-block mb-2">{{ $user->cliente->direccion ?? __('No especificada') }}</strong>
-                                @if($user->cliente->nombre_conjunto_cerrado)
-                                    <span class="badge badge-info mb-1" style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); color: #1E40AF; border: none;">
-                                        <i class="fas fa-building"></i> {{ $user->cliente->nombre_conjunto_cerrado }}
-                                    </span>
-                                @endif
-                                @if($user->cliente->interior_apartamento)
-                                    <span class="badge badge-secondary mb-1" style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); color: #92400E; border: none;">
-                                        <i class="fas fa-door-open"></i> {{ $user->cliente->interior_apartamento }}
-                                    </span>
-                                @endif
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">{{ __('Dirección Completa') }}</small>
+                                <strong class="text-dark">{{ $user->cliente->direccion ?? __('No especificada') }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-item mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-building text-white fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">{{ __('Nombre del Conjunto/Cerrado') }}</small>
+                                <strong class="text-dark">{{ $user->cliente->nombre_conjunto_cerrado ?? __('No especificado') }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-item mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="icon-box me-3" style="width: 50px; height: 50px; background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-door-open text-white fa-lg"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block">{{ __('Interior/Apartamento') }}</small>
+                                <strong class="text-dark">{{ $user->cliente->interior_apartamento ?? __('No especificado') }}</strong>
                             </div>
                         </div>
                     </div>
