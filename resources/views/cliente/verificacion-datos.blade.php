@@ -5,12 +5,25 @@
 @section('content')
 <div class="container my-5">
     <!-- Alerta de datos faltantes -->
+    @if(!empty($missingData) && count($missingData) > 0)
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> ¡Atención!</h4>
         <p>Tu perfil está <strong>{{ $completionPercentage }}% completo</strong>. Para disfrutar de todas las funcionalidades, necesitas completar algunos datos importantes.</p>
         <hr>
-        <p class="mb-0">Completa los siguientes datos para continuar:</p>
+        <p class="mb-2"><strong>Datos faltantes ({{ count($missingData) }}):</strong></p>
+        <ul class="mb-0">
+            @foreach($missingData as $item)
+                <li>{{ $item['label'] }} - {{ $item['description'] }}</li>
+            @endforeach
+        </ul>
+        <p class="mt-2 mb-0"><strong>Completa los siguientes datos para continuar:</strong></p>
     </div>
+    @else
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading"><i class="fas fa-check-circle"></i> ¡Excelente!</h4>
+        <p class="mb-0">Tu perfil está <strong>100% completo</strong>. Puedes disfrutar de todas las funcionalidades.</p>
+    </div>
+    @endif
 
     <!-- Barra de progreso -->
     <div class="card shadow-lg mb-4" style="border: 2px solid #007bff; border-radius: 15px;">
@@ -43,9 +56,10 @@
     </div>
 
     <!-- Lista de datos faltantes -->
+    @if(!empty($missingData) && count($missingData) > 0)
     <div class="card shadow-lg" style="border: 2px solid #000; border-radius: 15px;">
         <div class="card-header bg-primary text-white">
-            <h4 class="mb-0"><i class="fas fa-tasks"></i> Datos por Completar</h4>
+            <h4 class="mb-0"><i class="fas fa-tasks"></i> Datos por Completar ({{ count($missingData) }})</h4>
         </div>
         <div class="card-body">
             <div class="row">
@@ -99,6 +113,18 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="card shadow-lg border-success" style="border-radius: 15px;">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0"><i class="fas fa-check-circle"></i> ¡Todos los datos están completos!</h4>
+        </div>
+        <div class="card-body text-center">
+            <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+            <h5>Tu perfil está 100% completo</h5>
+            <p class="text-muted">Puedes continuar al dashboard para disfrutar de todas las funcionalidades.</p>
+        </div>
+    </div>
+    @endif
 
     <!-- Botón para continuar al dashboard (solo si no hay datos críticos faltantes) -->
     @php

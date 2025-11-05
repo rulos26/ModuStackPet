@@ -135,10 +135,55 @@ class ClienteDataVerificationService
      */
     public function getCompletionPercentage(User $user): int
     {
-        $totalItems = 10; // Total de items a verificar
-        $completedItems = $totalItems - count($this->getMissingData($user));
+        $totalSteps = 0;
+        $completedSteps = 0;
+
+        // Email verification (1 paso)
+        $totalSteps++;
+        if ($user->hasVerifiedEmail()) {
+            $completedSteps++;
+        }
+
+        // User profile fields (5 pasos)
+        $userProfileFields = ['telefono', 'whatsapp', 'cedula', 'fecha_nacimiento', 'avatar'];
+        foreach ($userProfileFields as $field) {
+            $totalSteps++;
+            if (!empty($user->$field)) {
+                $completedSteps++;
+            }
+        }
+
+        // Cliente profile (4 pasos)
+        $cliente = $user->cliente;
+        if ($cliente) {
+            $totalSteps++; // Existe el perfil
+            $completedSteps++;
+            
+            $clienteFields = ['direccion', 'ciudad_id', 'barrio_id'];
+            foreach ($clienteFields as $field) {
+                $totalSteps++;
+                if (!empty($cliente->$field)) {
+                    $completedSteps++;
+                }
+            }
+        } else {
+            $totalSteps++; // Perfil no existe (pendiente)
+        }
+
+        // Mascotas (1 paso por tener al menos una)
+        $totalSteps++;
+        if ($user->mascotas->isNotEmpty()) {
+            $completedSteps++;
+        }
+
+        if ($totalSteps === 0) {
+            return 100;
+        }
+
+        $percentage = (int) round(($completedSteps / $totalSteps) * 100);
         
-        return (int) round(($completedItems / $totalItems) * 100);
+        // Asegurar que el porcentaje no sea mayor a 100
+        return min($percentage, 100);
     }
     
     /**

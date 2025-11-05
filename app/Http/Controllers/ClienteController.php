@@ -48,8 +48,25 @@ class ClienteController extends Controller
                 ->with('warning', 'Debes verificar tu correo electrónico antes de continuar.');
         }
 
-        // Si hay datos faltantes críticos, mostrar vista de verificación
-        if (!empty($missingData)) {
+        // Si el perfil está 100% completo, ir directamente al dashboard
+        if ($completionPercentage >= 100 && empty($missingData)) {
+            $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Cliente')->first();
+            
+            return view('cliente.dashboard', [
+                'user' => $user,
+                'titulo' => $mensajeDeBienvenida->titulo ?? 'Bienvenido a ModuStackPet',
+                'descripcion' => $mensajeDeBienvenida->descripcion ?? 'Gestiona tus mascotas de manera fácil y rápida.',
+                'logo' => $mensajeDeBienvenida->logo ?? 'storage/img/logo.jpg',
+            ]);
+        }
+        
+        // Filtrar solo datos faltantes críticos (prioridad 1-2)
+        $criticalMissing = array_filter($missingData, function($item) {
+            return isset($item['priority']) && $item['priority'] <= 2;
+        });
+        
+        // Si hay datos faltantes (críticos o no), mostrar vista de verificación
+        if (!empty($missingData) || $completionPercentage < 100) {
             // Buscar el mensaje de bienvenida para el rol Cliente
             $mensajeDeBienvenida = MensajeDeBienvenida::where('rol', 'Cliente')->first();
             
