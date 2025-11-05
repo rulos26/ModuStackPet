@@ -45,8 +45,43 @@
                 <!-- Fecha de Nacimiento -->
                 <div class="form-group mb-3">
                     <label for="fecha_nacimiento" class="form-label">{{ __('Fecha de Nacimiento') }}</label>
+                    @php
+                        // Formatear la fecha correctamente para el input type="date" (formato Y-m-d)
+                        $fechaNacimiento = null;
+                        if (old('fecha_nacimiento')) {
+                            $fechaNacimiento = old('fecha_nacimiento');
+                        } elseif ($user && $user->fecha_nacimiento) {
+                            // Si es un objeto Carbon/Date, formatear a Y-m-d
+                            if ($user->fecha_nacimiento instanceof \Carbon\Carbon || $user->fecha_nacimiento instanceof \DateTime) {
+                                $fechaNacimiento = $user->fecha_nacimiento->format('Y-m-d');
+                            } elseif (is_string($user->fecha_nacimiento)) {
+                                // Si es string, intentar parsearlo y formatearlo
+                                try {
+                                    $fechaNacimiento = \Carbon\Carbon::parse($user->fecha_nacimiento)->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    $fechaNacimiento = $user->fecha_nacimiento;
+                                }
+                            } else {
+                                $fechaNacimiento = $user->fecha_nacimiento;
+                            }
+                        }
+                        // También verificar en el cliente si no está en el usuario
+                        if (!$fechaNacimiento && $user && $user->cliente && $user->cliente->fecha_nacimiento) {
+                            if ($user->cliente->fecha_nacimiento instanceof \Carbon\Carbon || $user->cliente->fecha_nacimiento instanceof \DateTime) {
+                                $fechaNacimiento = $user->cliente->fecha_nacimiento->format('Y-m-d');
+                            } elseif (is_string($user->cliente->fecha_nacimiento)) {
+                                try {
+                                    $fechaNacimiento = \Carbon\Carbon::parse($user->cliente->fecha_nacimiento)->format('Y-m-d');
+                                } catch (\Exception $e) {
+                                    $fechaNacimiento = $user->cliente->fecha_nacimiento;
+                                }
+                            } else {
+                                $fechaNacimiento = $user->cliente->fecha_nacimiento;
+                            }
+                        }
+                    @endphp
                     <input type="date" name="fecha_nacimiento" class="form-control @error('fecha_nacimiento') is-invalid @enderror" 
-                           value="{{ old('fecha_nacimiento', $user?->fecha_nacimiento) }}" id="fecha_nacimiento" 
+                           value="{{ $fechaNacimiento }}" id="fecha_nacimiento" 
                            max="{{ now()->subYears(18)->format('Y-m-d') }}" required>
                     {!! $errors->first('fecha_nacimiento', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                 </div>
