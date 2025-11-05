@@ -86,9 +86,6 @@
     </div>
 </div>
 
-<!-- D3.js desde CDN -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-
 <style>
     .node-card {
         cursor: pointer;
@@ -136,205 +133,286 @@
     }
 </style>
 
+<!-- D3.js desde CDN -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
 <script>
-    // Datos del árbol
-    const arbolData = @json($arbolData);
-    
-    // Ocultar overlay de carga después de un momento
-    setTimeout(() => {
-        document.getElementById('loading-overlay').style.display = 'none';
-    }, 500);
-    
-    // Configuración del SVG
-    const svg = d3.select('#arbol-svg');
-    const width = document.getElementById('arbol-container').clientWidth;
-    const height = 700;
-    
-    svg.attr('width', width).attr('height', height);
-    
-    const g = svg.append('g').attr('transform', `translate(${width / 2}, ${height / 2})`);
-    
-    // Si no hay mascotas, mostrar mensaje
-    if (arbolData.mascotas.length === 0) {
-        g.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('dy', '0.35em')
-            .attr('fill', '#6B7280')
-            .style('font-size', '24px')
-            .style('font-weight', '600')
-            .text('Agrega mascotas para visualizar tu árbol genealógico');
-        return;
+    // Función para ocultar el overlay de carga
+    function hideLoadingOverlay() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
     }
     
-    // Crear el layout radial
-    const angleStep = (2 * Math.PI) / (arbolData.mascotas.length || 1);
-    const radius = Math.min(width, height) * 0.3;
-    
-    // Dibujar el nodo del cliente (centro)
-    const clienteGroup = g.append('g')
-        .attr('class', 'node-card cliente')
-        .attr('transform', `translate(0, 0)`);
-    
-    // Círculo de fondo del cliente
-    clienteGroup.append('circle')
-        .attr('r', 80)
-        .attr('fill', arbolData.cliente.color)
-        .attr('stroke', 'white')
-        .attr('stroke-width', 4);
-    
-    // Avatar del cliente
-    clienteGroup.append('image')
-        .attr('xlink:href', arbolData.cliente.avatar)
-        .attr('x', -50)
-        .attr('y', -50)
-        .attr('width', 100)
-        .attr('height', 100)
-        .attr('clip-path', 'url(#clienteClip)');
-    
-    // Clip path para el avatar del cliente
-    svg.append('defs').append('clipPath')
-        .attr('id', 'clienteClip')
-        .append('circle')
-        .attr('r', 50)
-        .attr('cx', 0)
-        .attr('cy', 0);
-    
-    // Nombre del cliente
-    clienteGroup.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('y', 100)
-        .attr('fill', 'white')
-        .style('font-size', '16px')
-        .style('font-weight', '700')
-        .style('text-shadow', '2px 2px 4px rgba(0,0,0,0.5)')
-        .text(arbolData.cliente.nombre);
-    
-    // Etiqueta "Dueño"
-    clienteGroup.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('y', 120)
-        .attr('fill', 'white')
-        .style('font-size', '12px')
-        .style('opacity', '0.9')
-        .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.5)')
-        .text('Dueño');
-    
-    // Dibujar las líneas de conexión y los nodos de mascotas
-    arbolData.mascotas.forEach((mascota, index) => {
-        const angle = (index * angleStep) - (Math.PI / 2);
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        
-        // Línea de conexión
-        g.append('line')
-            .attr('class', 'connection-line')
-            .attr('x1', 0)
-            .attr('y1', 0)
-            .attr('x2', x)
-            .attr('y2', y)
-            .attr('marker-end', 'url(#arrowhead)');
-        
-        // Grupo de la mascota
-        const mascotaGroup = g.append('g')
-            .attr('class', 'node-card mascota')
-            .attr('transform', `translate(${x}, ${y})`)
-            .style('cursor', 'pointer')
-            .on('click', function() {
-                window.location.href = `/mascotas/${mascota.id}`;
+    // Función principal para renderizar el árbol
+    function renderArbol() {
+        try {
+            // Datos del árbol
+            const arbolData = @json($arbolData);
+            
+            // Verificar que D3.js está cargado
+            if (typeof d3 === 'undefined') {
+                console.error('D3.js no está cargado');
+                hideLoadingOverlay();
+                document.getElementById('arbol-svg').innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#6B7280" font-size="18px">Error al cargar D3.js</text>';
+                return;
+            }
+            
+            // Ocultar overlay después de que todo esté listo
+            setTimeout(hideLoadingOverlay, 100);
+            
+            // Configuración del SVG
+            const svg = d3.select('#arbol-svg');
+            const container = document.getElementById('arbol-container');
+            
+            if (!container) {
+                console.error('Contenedor del árbol no encontrado');
+                hideLoadingOverlay();
+                return;
+            }
+            
+            const width = container.clientWidth || 800;
+            const height = 700;
+            
+            svg.attr('width', width).attr('height', height);
+            
+            const g = svg.append('g').attr('transform', `translate(${width / 2}, ${height / 2})`);
+            
+            // Si no hay mascotas, mostrar mensaje
+            if (!arbolData.mascotas || arbolData.mascotas.length === 0) {
+                g.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dy', '0.35em')
+                    .attr('fill', '#6B7280')
+                    .style('font-size', '24px')
+                    .style('font-weight', '600')
+                    .text('Agrega mascotas para visualizar tu árbol genealógico');
+                hideLoadingOverlay();
+                return;
+            }
+            
+            // Crear el layout radial
+            const angleStep = (2 * Math.PI) / (arbolData.mascotas.length || 1);
+            const radius = Math.min(width, height) * 0.3;
+            
+            // Dibujar el nodo del cliente (centro)
+            const clienteGroup = g.append('g')
+                .attr('class', 'node-card cliente')
+                .attr('transform', `translate(0, 0)`);
+            
+            // Círculo de fondo del cliente
+            clienteGroup.append('circle')
+                .attr('r', 80)
+                .attr('fill', arbolData.cliente.color)
+                .attr('stroke', 'white')
+                .attr('stroke-width', 4);
+            
+            // Avatar del cliente
+            clienteGroup.append('image')
+                .attr('xlink:href', arbolData.cliente.avatar)
+                .attr('x', -50)
+                .attr('y', -50)
+                .attr('width', 100)
+                .attr('height', 100)
+                .attr('clip-path', 'url(#clienteClip)');
+            
+            // Clip path para el avatar del cliente
+            svg.append('defs').append('clipPath')
+                .attr('id', 'clienteClip')
+                .append('circle')
+                .attr('r', 50)
+                .attr('cx', 0)
+                .attr('cy', 0);
+            
+            // Nombre del cliente
+            clienteGroup.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('y', 100)
+                .attr('fill', 'white')
+                .style('font-size', '16px')
+                .style('font-weight', '700')
+                .style('text-shadow', '2px 2px 4px rgba(0,0,0,0.5)')
+                .text(arbolData.cliente.nombre);
+            
+            // Etiqueta "Dueño"
+            clienteGroup.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('y', 120)
+                .attr('fill', 'white')
+                .style('font-size', '12px')
+                .style('opacity', '0.9')
+                .style('text-shadow', '1px 1px 2px rgba(0,0,0,0.5)')
+                .text('Dueño');
+            
+            // Dibujar las líneas de conexión y los nodos de mascotas
+            arbolData.mascotas.forEach((mascota, index) => {
+                const angle = (index * angleStep) - (Math.PI / 2);
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                
+                // Línea de conexión
+                g.append('line')
+                    .attr('class', 'connection-line')
+                    .attr('x1', 0)
+                    .attr('y1', 0)
+                    .attr('x2', x)
+                    .attr('y2', y)
+                    .attr('marker-end', 'url(#arrowhead)');
+                
+                // Grupo de la mascota
+                const mascotaGroup = g.append('g')
+                    .attr('class', 'node-card mascota')
+                    .attr('transform', `translate(${x}, ${y})`)
+                    .style('cursor', 'pointer')
+                    .on('click', function() {
+                        window.location.href = `/mascotas/${mascota.id}`;
+                    });
+                
+                // Círculo de fondo de la mascota
+                mascotaGroup.append('circle')
+                    .attr('r', 60)
+                    .attr('fill', mascota.color)
+                    .attr('stroke', 'white')
+                    .attr('stroke-width', 3);
+                
+                // Avatar de la mascota
+                mascotaGroup.append('image')
+                    .attr('xlink:href', mascota.avatar)
+                    .attr('x', -35)
+                    .attr('y', -35)
+                    .attr('width', 70)
+                    .attr('height', 70)
+                    .attr('clip-path', `url(#mascotaClip${index})`);
+                
+                // Clip path para el avatar de la mascota
+                svg.append('defs').append('clipPath')
+                    .attr('id', `mascotaClip${index}`)
+                    .append('circle')
+                    .attr('r', 35)
+                    .attr('cx', 0)
+                    .attr('cy', 0);
+                
+                // Nombre de la mascota
+                mascotaGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('y', 80)
+                    .attr('fill', '#1F2937')
+                    .style('font-size', '14px')
+                    .style('font-weight', '700')
+                    .text(mascota.nombre);
+                
+                // Raza de la mascota
+                mascotaGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('y', 95)
+                    .attr('fill', '#6B7280')
+                    .style('font-size', '11px')
+                    .text(mascota.raza);
+                
+                // Badge con tipo de mascota
+                mascotaGroup.append('circle')
+                    .attr('r', 12)
+                    .attr('cx', 45)
+                    .attr('cy', -45)
+                    .attr('fill', mascota.color)
+                    .attr('stroke', 'white')
+                    .attr('stroke-width', 2);
+                
+                mascotaGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('x', 45)
+                    .attr('y', -42)
+                    .attr('fill', 'white')
+                    .style('font-size', '10px')
+                    .style('font-weight', 'bold')
+                    .text(mascota.tipo_mascota.charAt(0));
             });
-        
-        // Círculo de fondo de la mascota
-        mascotaGroup.append('circle')
-            .attr('r', 60)
-            .attr('fill', mascota.color)
-            .attr('stroke', 'white')
-            .attr('stroke-width', 3);
-        
-        // Avatar de la mascota
-        mascotaGroup.append('image')
-            .attr('xlink:href', mascota.avatar)
-            .attr('x', -35)
-            .attr('y', -35)
-            .attr('width', 70)
-            .attr('height', 70)
-            .attr('clip-path', `url(#mascotaClip${index})`);
-        
-        // Clip path para el avatar de la mascota
-        svg.append('defs').append('clipPath')
-            .attr('id', `mascotaClip${index}`)
-            .append('circle')
-            .attr('r', 35)
-            .attr('cx', 0)
-            .attr('cy', 0);
-        
-        // Nombre de la mascota
-        mascotaGroup.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('y', 80)
-            .attr('fill', '#1F2937')
-            .style('font-size', '14px')
-            .style('font-weight', '700')
-            .text(mascota.nombre);
-        
-        // Raza de la mascota
-        mascotaGroup.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('y', 95)
-            .attr('fill', '#6B7280')
-            .style('font-size', '11px')
-            .text(mascota.raza);
-        
-        // Badge con tipo de mascota
-        mascotaGroup.append('circle')
-            .attr('r', 12)
-            .attr('cx', 45)
-            .attr('cy', -45)
-            .attr('fill', mascota.color)
-            .attr('stroke', 'white')
-            .attr('stroke-width', 2);
-        
-        mascotaGroup.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('x', 45)
-            .attr('y', -42)
-            .attr('fill', 'white')
-            .style('font-size', '10px')
-            .style('font-weight', 'bold')
-            .text(mascota.tipo_mascota.charAt(0));
-    });
+            
+            // Flecha para las conexiones
+            svg.append('defs').append('marker')
+                .attr('id', 'arrowhead')
+                .attr('viewBox', '0 -5 10 10')
+                .attr('refX', 0)
+                .attr('refY', 0)
+                .attr('markerWidth', 8)
+                .attr('markerHeight', 8)
+                .attr('orient', 'auto')
+                .append('path')
+                .attr('d', 'M0,-5L10,0L0,5')
+                .attr('fill', '#3B82F6');
+            
+            // Animación de entrada
+            g.selectAll('.node-card')
+                .transition()
+                .duration(800)
+                .delay((d, i) => i * 100)
+                .style('opacity', 1);
+            
+            // Zoom y pan
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 2])
+                .on('zoom', (event) => {
+                    g.attr('transform', event.transform);
+                });
+            
+            svg.call(zoom);
+            
+            // Ajustar el zoom inicial
+            const initialScale = Math.min(width / 800, height / 700, 1);
+            svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(initialScale));
+            
+            // Ocultar overlay cuando todo esté renderizado
+            hideLoadingOverlay();
+            
+        } catch (error) {
+            console.error('Error al renderizar el árbol:', error);
+            hideLoadingOverlay();
+            const svg = d3.select('#arbol-svg');
+            svg.append('text')
+                .attr('x', '50%')
+                .attr('y', '50%')
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#EF4444')
+                .style('font-size', '18px')
+                .text('Error al cargar el árbol genealógico');
+        }
+    }
     
-    // Flecha para las conexiones
-    svg.append('defs').append('marker')
-        .attr('id', 'arrowhead')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 0)
-        .attr('refY', 0)
-        .attr('markerWidth', 8)
-        .attr('markerHeight', 8)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', '#3B82F6');
-    
-    // Animación de entrada
-    g.selectAll('.node-card')
-        .transition()
-        .duration(800)
-        .delay((d, i) => i * 100)
-        .style('opacity', 1);
-    
-    // Zoom y pan
-    const zoom = d3.zoom()
-        .scaleExtent([0.5, 2])
-        .on('zoom', (event) => {
-            g.attr('transform', event.transform);
+    // Esperar a que D3.js se cargue y luego renderizar
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Esperar un poco más para asegurar que D3.js está cargado
+            if (typeof d3 !== 'undefined') {
+                renderArbol();
+            } else {
+                // Si D3.js no está cargado, intentar cargarlo
+                const script = document.createElement('script');
+                script.src = 'https://d3js.org/d3.v7.min.js';
+                script.onload = renderArbol;
+                script.onerror = function() {
+                    console.error('Error al cargar D3.js');
+                    hideLoadingOverlay();
+                };
+                document.head.appendChild(script);
+            }
         });
-    
-    svg.call(zoom);
-    
-    // Ajustar el zoom inicial
-    const initialScale = Math.min(width / 800, height / 700, 1);
-    svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(initialScale));
+    } else {
+        // Si el DOM ya está listo
+        if (typeof d3 !== 'undefined') {
+            renderArbol();
+        } else {
+            // Intentar cargar D3.js si no está disponible
+            const script = document.createElement('script');
+            script.src = 'https://d3js.org/d3.v7.min.js';
+            script.onload = renderArbol;
+            script.onerror = function() {
+                console.error('Error al cargar D3.js');
+                hideLoadingOverlay();
+            };
+            document.head.appendChild(script);
+        }
+    }
 </script>
 @endsection
 
