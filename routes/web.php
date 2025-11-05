@@ -274,7 +274,7 @@ Route::middleware(['auth'])->prefix('cliente')->name('cliente.')->group(function
     Route::put('/perfil/{user}', [ClienteController::class, 'update'])->name('perfil.update');
     
     // Árbol Genealógico
-    Route::middleware('module.active:arbol-genealogico')->group(function () {
+    Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':arbol-genealogico'])->group(function () {
         Route::get('/arbol-genealogico', [\App\Http\Controllers\ArbolGenealogicoController::class, 'index'])->name('arbol_genealogico');
     });
 });
