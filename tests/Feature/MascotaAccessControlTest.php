@@ -176,22 +176,23 @@ class MascotaAccessControlTest extends TestCase
     }
 
     #[Test]
-    public function mascota_controller_no_expone_el_mensaje_interno_de_la_excepcion(): void
+    public function mascota_controller_no_expone_el_mensaje_interno_de_la_excepcion_al_usuario(): void
     {
-        $cliente = $this->userWithRole('Cliente');
-        $raza = RazaFactory::new()->create();
-        $mascota = MascotaFactory::new()->create(['user_id' => $cliente->id, 'raza_id' => $raza->id]);
+        // No podemos forzar fácilmente una excepción real sin tocar el storage,
+        // así que verificamos que ninguna línea que arma el mensaje de sesión
+        // ('error', ...) concatene $e->getMessage(). El uso de $e->getMessage()
+        // para el log interno (Log::error(...)) sigue permitido y esperado.
+        $lineas = file(app_path('Http/Controllers/MascotaController.php'));
 
-        // Forzar una excepción en destroy() borrando la mascota bajo el controlador
-        // (avatar path inexistente ya se maneja bien; aquí verificamos que si algo
-        // falla, el mensaje mostrado al usuario nunca contiene texto de la excepción
-        // real). Como no podemos forzar fácilmente una excepción real sin tocar el
-        // storage, verificamos directamente que el código fuente ya no interpola
-        // $e->getMessage() en los mensajes de sesión.
-        $this->assertStringNotContainsString(
-            '$e->getMessage()',
-            file_get_contents(app_path('Http/Controllers/MascotaController.php'))
-        );
+        foreach ($lineas as $numero => $linea) {
+            if (str_contains($linea, "with('error'") || str_contains($linea, 'with("error"')) {
+                $this->assertStringNotContainsString(
+                    'getMessage()',
+                    $linea,
+                    "La línea " . ($numero + 1) . " expone el mensaje interno de la excepción al usuario."
+                );
+            }
+        }
     }
 
     private function userWithRole(string $role): User

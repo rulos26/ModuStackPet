@@ -7,6 +7,7 @@ use App\Models\Raza;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\MascotaRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
@@ -90,8 +91,13 @@ class MascotaController extends Controller
             return Redirect::route('mascotas.index')
                 ->with('success', 'Mascota creada exitosamente.');
         } catch (\Exception $e) {
+            Log::error('Error al crear mascota', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
             return Redirect::route('mascotas.create')
-                ->with('error', 'Error al crear la mascota: ' . $e->getMessage())
+                ->with('error', 'Ocurrió un error al crear la mascota. Intenta nuevamente.')
                 ->withInput();
         }
     }
@@ -99,12 +105,14 @@ class MascotaController extends Controller
     /**
      * Muestra una mascota específica.
      *
-     * @param int $id
+     * @param Mascota $mascota
      * @return View
      */
-    public function show($id): View
+    public function show(Mascota $mascota): View
     {
-        $mascota = Mascota::with(['raza', 'user.cliente.ciudad', 'user.cliente.barrio'])->find($id);
+        $this->authorize('view', $mascota);
+
+        $mascota->load(['raza', 'user.cliente.ciudad', 'user.cliente.barrio']);
 
         return view('mascota.show', compact('mascota'));
     }
@@ -112,12 +120,13 @@ class MascotaController extends Controller
     /**
      * Muestra el formulario para editar una mascota específica.
      *
-     * @param int $id
+     * @param Mascota $mascota
      * @return View
      */
-    public function edit($id): View
+    public function edit(Mascota $mascota): View
     {
-        $mascota = Mascota::find($id);
+        $this->authorize('update', $mascota);
+
         $razas = Raza::all();
 
         return view('mascota.edit', compact('mascota', 'razas'));
@@ -132,6 +141,8 @@ class MascotaController extends Controller
      */
     public function update(MascotaRequest $request, Mascota $mascota): RedirectResponse
     {
+        $this->authorize('update', $mascota);
+
         try {
             $validatedData = $request->validated();
 
@@ -139,9 +150,11 @@ class MascotaController extends Controller
             $validatedData['vacunas_completas'] = (bool) ($request->vacunas_completas ?? 0);
             $validatedData['esterilizado'] = (bool) ($request->esterilizado ?? 0);
 
-            // Usar automáticamente el usuario autenticado como propietario
+            // El dueño (user_id) nunca cambia al editar, ni siquiera para
+            // Admin o Superadmin: se ignora cualquier user_id recibido y se
+            // conserva el propietario original de la mascota.
+            unset($validatedData['user_id']);
             $user = auth()->user();
-            $validatedData['user_id'] = $user->id;
 
             // Manejar la subida de la imagen del avatar
             if ($request->hasFile('avatar')) {
@@ -167,8 +180,14 @@ class MascotaController extends Controller
             return Redirect::route('mascotas.index')
                 ->with('success', 'Mascota actualizada exitosamente');
         } catch (\Exception $e) {
+            Log::error('Error al actualizar mascota', [
+                'user_id' => auth()->id(),
+                'mascota_id' => $mascota->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return Redirect::route('mascotas.edit', $mascota)
-                ->with('error', 'Error al actualizar la mascota: ' . $e->getMessage())
+                ->with('error', 'Ocurrió un error al actualizar la mascota. Intenta nuevamente.')
                 ->withInput();
         }
     }
@@ -176,14 +195,14 @@ class MascotaController extends Controller
     /**
      * Elimina una mascota específica de la base de datos.
      *
-     * @param int $id
+     * @param Mascota $mascota
      * @return RedirectResponse
      */
-    public function destroy($id): RedirectResponse
+    public function destroy(Mascota $mascota): RedirectResponse
     {
-        try {
-            $mascota = Mascota::find($id);
+        $this->authorize('delete', $mascota);
 
+        try {
             // Eliminar el avatar si existe
             if ($mascota->avatar && file_exists(public_path($mascota->avatar))) {
                 unlink(public_path($mascota->avatar));
@@ -194,8 +213,14 @@ class MascotaController extends Controller
             return Redirect::route('mascotas.index')
                 ->with('success', 'Mascota eliminada exitosamente');
         } catch (\Exception $e) {
+            Log::error('Error al eliminar mascota', [
+                'user_id' => auth()->id(),
+                'mascota_id' => $mascota->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return Redirect::route('mascotas.index')
-                ->with('error', 'Error al eliminar la mascota: ' . $e->getMessage());
+                ->with('error', 'Ocurrió un error al eliminar la mascota. Intenta nuevamente.');
         }
     }
 }
