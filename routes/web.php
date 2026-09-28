@@ -169,7 +169,8 @@ Route::post('/notificaciones/leidas', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
 })->name('notificaciones.marcar.leidas');
-Route::resource('users', UserController::class);
+Route::resource('users', UserController::class)
+    ->middleware(['auth', 'verified', 'role:Superadmin']);
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
     Route::resource('tipo-documentos', TipoDocumentoController::class);
 });
