@@ -6,9 +6,14 @@ use App\Http\Middleware\CheckModuleStatus;
 use App\Models\Module;
 use App\Models\ModuleLog;
 use App\Models\User;
+use Illuminate\Database\ConnectionResolverInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -123,5 +128,67 @@ class CheckModuleStatusMiddlewareTest extends TestCase
             'module_id' => $module->id,
             'action' => 'access_denied',
         ]);
+    }
+
+    #[Test]
+    public function middleware_returns_503_when_modules_table_is_missing()
+    {
+        Schema::shouldReceive('hasTable')
+            ->once()
+            ->with('modules')
+            ->andReturnFalse();
+
+        $nextWasCalled = false;
+        $response = $this->middleware->handle(
+            Request::create('/test', 'GET'),
+            function () use (&$nextWasCalled) {
+                $nextWasCalled = true;
+
+                return new Response('OK', 200);
+            },
+            'modulo-sensible',
+        );
+
+        $this->assertSame(503, $response->getStatusCode());
+        $this->assertFalse($nextWasCalled);
+    }
+
+    #[Test]
+    public function middleware_returns_503_and_does_not_log_sensitive_exception_details_on_query_failure()
+    {
+        $secret = 'password-super-secreto';
+        $originalResolver = Model::getConnectionResolver();
+        $failingResolver = Mockery::mock(ConnectionResolverInterface::class);
+        $failingResolver->shouldReceive('connection')
+            ->andThrow(new \RuntimeException("Fallo de conexión: {$secret}"));
+        Model::setConnectionResolver($failingResolver);
+        Log::spy();
+
+        $nextWasCalled = false;
+
+        try {
+            $response = $this->middleware->handle(
+                Request::create('/test', 'GET'),
+                function () use (&$nextWasCalled) {
+                    $nextWasCalled = true;
+
+                    return new Response('OK', 200);
+                },
+                'modulo-sensible',
+            );
+        } finally {
+            Model::setConnectionResolver($originalResolver);
+        }
+
+        $this->assertSame(503, $response->getStatusCode());
+        $this->assertFalse($nextWasCalled);
+        Log::shouldHaveReceived('error')
+            ->once()
+            ->with(
+                'Error consultando tabla modules en middleware',
+                Mockery::on(function (array $context) use ($secret): bool {
+                    return ! str_contains(json_encode($context), $secret);
+                }),
+            );
     }
 }
