@@ -82,3 +82,5 @@ Sección Handoff (obligatoria al terminar):
 - Si una prueba contradice el comportamiento del código, NO reescribas la prueba
   para que pase. Revisa el historial (`git log -S`) para saber si el cambio de
   comportamiento fue intencional y repórtalo en el Handoff; la decisión es humana.
+- Nunca uses `git add -A` ni `git add .`: agrega los archivos por nombre.
+  Nunca versiones bases de datos (.sqlite ni archivos binarios de datos).

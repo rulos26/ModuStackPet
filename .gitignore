@@ -23,3 +23,8 @@ yarn-error.log
 /.zed
 
 _borrar/
+
+# Bases de datos locales: nunca versionar
+/u494150416_*
+*.sqlite
+*.sqlite3
