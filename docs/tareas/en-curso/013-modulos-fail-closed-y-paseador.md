@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/modulos-fail-closed-paseador
 archivos: [app/Http/Middleware/CheckModuleStatus.php, app/Models/Paseador.php, tests/]
 ---
 
