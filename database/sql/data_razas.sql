@@ -121,7 +121,7 @@ INSERT INTO razas (nombre) VALUES
 ('Glen of Imaal Terrier'),
 ('Golden Retriever'),
 ('Gordon Setter'),
-('Gos d\'Atura Catalá'),
+('Gos d''Atura Catalá'),
 ('Gran Basset Griffon Vendeano'),
 ('Gran Boyero Suizo'),
 ('Gran Danés (Dogo Aleman)'),
