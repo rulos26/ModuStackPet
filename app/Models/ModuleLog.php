@@ -53,7 +53,7 @@ class ModuleLog extends Model
      * Create a log entry
      */
     public static function createLog(
-        int $userId,
+        ?int $userId,
         int $moduleId,
         string $action,
         ?string $ipAddress = null,

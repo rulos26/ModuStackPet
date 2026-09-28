@@ -22,7 +22,7 @@ class ModuleObserver
 
         // Log the creation
         ModuleLog::createLog(
-            auth()->id() ?? 0,
+            auth()->id(),
             $module->id,
             'module_created',
             request()->ip(),
@@ -42,7 +42,7 @@ class ModuleObserver
             $action = $changes['status'] ? 'activated' : 'deactivated';
 
             ModuleLog::createLog(
-                auth()->id() ?? 0,
+                auth()->id(),
                 $module->id,
                 $action,
                 request()->ip(),
@@ -59,7 +59,7 @@ class ModuleObserver
 
         if (isset($changes['name']) || isset($changes['description'])) {
             ModuleLog::createLog(
-                auth()->id() ?? 0,
+                auth()->id(),
                 $module->id,
                 'module_updated',
                 request()->ip(),
@@ -80,7 +80,7 @@ class ModuleObserver
     public function deleted(Module $module): void
     {
         ModuleLog::createLog(
-            auth()->id() ?? 0,
+            auth()->id(),
             $module->id,
             'module_deleted',
             request()->ip(),
@@ -100,7 +100,7 @@ class ModuleObserver
     public function restored(Module $module): void
     {
         ModuleLog::createLog(
-            auth()->id() ?? 0,
+            auth()->id(),
             $module->id,
             'module_restored',
             request()->ip(),
@@ -119,7 +119,7 @@ class ModuleObserver
     public function forceDeleted(Module $module): void
     {
         ModuleLog::createLog(
-            auth()->id() ?? 0,
+            auth()->id(),
             $module->id,
             'module_force_deleted',
             request()->ip(),

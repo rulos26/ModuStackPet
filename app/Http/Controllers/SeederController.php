@@ -115,7 +115,7 @@ class SeederController extends Controller
             ]);
 
             ModuleLog::createLog(
-                Auth::id() ?? 0,
+                Auth::id(),
                 optional(Module::where('slug','seeders')->first())->id ?? 0,
                 'seeder_executed',
                 request()->ip(),
