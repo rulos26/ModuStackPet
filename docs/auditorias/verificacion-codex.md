@@ -1,7 +1,9 @@
 # Verificación independiente de la auditoría de dependencias
 
-**Fecha:** 2026-09-27  
-**Documento verificado:** `docs/auditorias/auditoria-deps-cursor-local.md`  
+**Fecha:** 2026-09-27
+
+**Documento verificado:** `docs/auditorias/auditoria-deps-cursor-local.md`
+
 **Alcance:** manifiestos, lockfiles y archivos Docker indicados en la tarea; consultas a fuentes oficiales. No se instaló ni actualizó ningún paquete y no se leyó `.env`.
 
 ## Resumen
