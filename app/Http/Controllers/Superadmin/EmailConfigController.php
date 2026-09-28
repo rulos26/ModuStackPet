@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use App\Models\EmailConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class EmailConfigController extends Controller
+class EmailConfigController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [EnsureAdminToolsEnabled::class];
+    }
+
     /**
      * Display a listing of the resource.
      */

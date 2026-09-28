@@ -130,7 +130,7 @@
         @endif
 
         {{-- Configuración de Base de Datos --}}
-        @if($isModuleActive('database-config'))
+        @if(config('admin_tools.enabled') && $isModuleActive('database-config'))
         <li class="nav-item">
             <a href="{{ route('superadmin.database-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.database-configs.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-database"></i>
@@ -140,7 +140,7 @@
         @endif
 
         {{-- Configuración de Correo Electrónico --}}
-        @if($isModuleActive('email-config'))
+        @if(config('admin_tools.enabled') && $isModuleActive('email-config'))
         <li class="nav-item">
             <a href="{{ route('superadmin.email-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.email-configs.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-envelope"></i>
@@ -150,7 +150,7 @@
         @endif
 
         {{-- Backup de Base de Datos --}}
-        @if($isModuleActive('backup-config'))
+        @if(config('admin_tools.enabled') && $isModuleActive('backup-config'))
         <li class="nav-item">
             <a href="{{ route('superadmin.backup-configs.index') }}" class="nav-link {{ request()->routeIs('superadmin.backup-configs.*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-database"></i>
@@ -192,6 +192,7 @@
             </a>
         </li>
 
+        @if(config('admin_tools.enabled'))
         {{-- Gestión de Migraciones --}}
         <li class="nav-item">
             <a href="{{ route('superadmin.migrations.index') }}" class="nav-link {{ request()->routeIs('superadmin.migrations.*') ? 'active' : '' }}">
@@ -199,6 +200,7 @@
                 <p>Gestión de Migraciones</p>
             </a>
         </li>
+        @endif
 
         {{-- AutoClean - Limpieza del Sistema --}}
         <li class="nav-item">
@@ -208,6 +210,7 @@
             </a>
         </li>
 
+        @if(config('admin_tools.enabled'))
         {{-- Gestión de Seeders --}}
         <li class="nav-item">
             <a href="{{ route('superadmin.seeders.index') }}" class="nav-link {{ request()->routeIs('superadmin.seeders.*') ? 'active' : '' }}">
@@ -215,6 +218,7 @@
                 <p>Seeders</p>
             </a>
         </li>
+        @endif
 
         {{-- Administrador de Módulos --}}
         <li class="nav-item">

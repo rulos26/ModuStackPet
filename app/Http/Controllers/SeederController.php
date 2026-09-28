@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use App\Models\Module;
 use App\Models\ModuleLog;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -10,8 +11,9 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class SeederController extends Controller
+class SeederController extends Controller implements HasMiddleware
 {
     private array $allowedSeeders = [
         // FQCN con casing estándar
@@ -29,13 +31,9 @@ class SeederController extends Controller
         'Database\\Seeders\\roleSeeder',
     ];
 
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware(['auth','verified']);
-        // Permitir acceso sin verificar si el módulo no está registrado (como migraciones)
-        if (!\App\Models\Module::where('slug', 'seeders')->exists()) {
-            $this->middleware('auth')->except(['index', 'execute']);
-        }
+        return ['auth', 'verified', EnsureAdminToolsEnabled::class];
     }
 
     public function index()
@@ -145,5 +143,3 @@ class SeederController extends Controller
         }, $this->allowedSeeders);
     }
 }
-
-

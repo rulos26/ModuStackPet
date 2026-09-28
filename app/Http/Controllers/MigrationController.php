@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class MigrationController extends Controller
+class MigrationController extends Controller implements HasMiddleware
 {
-    public function __construct()
+    public static function middleware(): array
     {
-        $this->middleware('auth');
+        return ['auth', EnsureAdminToolsEnabled::class];
     }
 
     /**
@@ -142,4 +144,3 @@ class MigrationController extends Controller
         }
     }
 }
-
