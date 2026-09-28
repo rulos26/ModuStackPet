@@ -27,6 +27,7 @@ class EmailConfig extends Model
         'is_active' => 'boolean',
         'port' => 'integer',
         'last_tested_at' => 'datetime',
+        'password' => 'encrypted',
     ];
 
     protected $hidden = [

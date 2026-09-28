@@ -22,6 +22,7 @@ class OAuthProvider extends Model
     {
         return [
             'is_active' => 'boolean',
+            'client_secret' => 'encrypted',
         ];
     }
 
