@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/documentos-autoaprobacion
 archivos: [app/Http/Controllers/MascotaDocumentController.php, app/Models/MascotaDocument.php, database/migrations/, resources/views/, tests/Feature/]
 ---
 
