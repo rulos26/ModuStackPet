@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/comando-superadmin-inicial
 archivos: [app/Console/Commands/, database/seeders/UserSeeder.php, database/seeders/TokenSeeder.php, database/seeders/DatabaseSeeder.php, tests/Feature/CrearSuperadminCommandTest.php, docs/]
 ---
 
