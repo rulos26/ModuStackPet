@@ -1,0 +1,54 @@
+# AGENTS.md — ModuStackPet
+
+Reglas compartidas para todos los agentes de IA (Claude Code, Codex, Cursor).
+Si otro archivo de reglas contradice este, manda este.
+
+## Proyecto
+- Laravel + PHP + MySQL, entorno local con Docker Compose.
+- Verifica versiones reales en `composer.json` / `composer.lock` antes de asumir.
+- Documentación en `docs/`. SQL auxiliar en `database/sql/`.
+
+## Git
+- Nunca trabajes ni hagas commit directamente en `main`.
+- Una rama por tarea: `ia/<agente>/<tarea-corta>` (ej. `ia/codex/fix-rutas`).
+- Commits pequeños con Conventional Commits: feat, fix, docs, chore, refactor, test.
+- Sin merge, force push ni reescritura de historial sin autorización explícita.
+
+## Seguridad
+- Nunca leas, muestres ni subas `.env`. `.env.example` solo lleva placeholders.
+- Nunca escribas credenciales en código, docs ni commits: usa `env()` / `config()`.
+- No elimines archivos: muévelos a `_borrar/` (ignorada por git) para revisión humana.
+- Sin comandos destructivos (`migrate:fresh`, `db:wipe`, `DROP`, `rm -rf`) sin autorización.
+
+## Protocolo de tareas entre agentes
+Carpetas: `docs/tareas/pendientes/`, `en-curso/`, `terminados/`.
+1. Toma una tarea de `pendientes/` solo si `agente:` es tu nombre o `cualquiera`.
+2. Muévela a `en-curso/`, completa `rama:` y haz commit + push de ese movimiento
+   ANTES de empezar, para que los demás agentes la vean reservada.
+3. No modifiques archivos listados en `archivos:` de otra tarea en curso.
+4. Al terminar, agrega la sección Handoff y mueve la tarea a `terminados/`.
+
+Encabezado de cada tarea:
+    ---
+    agente: claude | codex | cursor | cualquiera
+    estado: pendiente
+    rama:
+    archivos: []
+    ---
+
+Sección Handoff (obligatoria al terminar):
+    ## Handoff
+    - Agente y fecha:
+    - Qué se hizo:
+    - Archivos modificados:
+    - Cómo probarlo:
+    - Pendientes y riesgos:
+    - Preguntas para el humano:
+
+## Antes de dar una tarea por terminada
+- `php artisan test` y `composer validate` si es posible ejecutarlos.
+- Si no pudiste ejecutar algo, dilo en el Handoff. No afirmes que algo pasó sin verlo.
+
+## Forma de trabajar
+- Responde en español. Cambios mínimos y dentro del alcance; no refactorices de más.
+- Ante ambigüedad, pregunta antes de asumir.
