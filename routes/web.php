@@ -309,7 +309,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // Rutas para configuraciones del sistema (solo superadmin)
-Route::middleware(['auth','verified'])->prefix('superadmin')->name('superadmin.')->group(function () {
+Route::middleware(['auth','verified','role:Superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
