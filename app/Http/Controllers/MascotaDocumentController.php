@@ -149,12 +149,6 @@ class MascotaDocumentController extends Controller
                         $user->id
                     );
 
-                    // Determinar estado inicial
-                    $estado = 'pendiente';
-                    if ($validacion['valido']) {
-                        $estado = 'aprobado';
-                    }
-
                     // Eliminar documento anterior si existe
                     $documentoAnterior = MascotaDocument::where('mascota_id', $mascota->id)
                         ->where('document_requirement_id', $requirement->id)
@@ -176,15 +170,15 @@ class MascotaDocumentController extends Controller
                         'tipo_mime' => $datosArchivo['tipo_mime'],
                         'tamaño_bytes' => $datosArchivo['tamaño_bytes'],
                         'hash_archivo' => $datosArchivo['hash_archivo'],
-                        'estado' => $estado,
+                        'estado' => 'pendiente',
                         'motivo_rechazo' => null,
                         'fecha_emision' => $fechaEmision,
                         'fecha_vencimiento' => $fechaVencimiento,
                         'validacion_automatica' => $validacion['valido'],
                         'detalles_validacion' => $validacion['detalles'] ?? [],
                         'usuario_subio_id' => $user->id,
-                        'usuario_aprobo_id' => $estado === 'aprobado' ? $user->id : null,
-                        'fecha_aprobacion' => $estado === 'aprobado' ? now() : null,
+                        'usuario_aprobo_id' => null,
+                        'fecha_aprobacion' => null,
                         'notas' => $request->input("notas_{$requirementId}"),
                     ]);
 
@@ -209,10 +203,12 @@ class MascotaDocumentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al subir documentos: ' . $e->getMessage());
+            Log::error('Error al subir documentos.', [
+                'exception' => $e::class,
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Error al subir los documentos: ' . $e->getMessage())
+                ->with('error', 'No fue posible subir los documentos. Intenta nuevamente.')
                 ->withInput();
         }
     }
@@ -260,6 +256,15 @@ class MascotaDocumentController extends Controller
      */
     public function update(Request $request, MascotaDocument $mascotaDocument)
     {
+        $user = Auth::user();
+
+        if (!$user->hasRole('Superadmin') && !$user->hasRole('Admin')) {
+            if ($mascotaDocument->mascota->user_id !== $user->id) {
+                return redirect()->back()
+                    ->with('error', 'No tienes permiso para editar este documento.');
+            }
+        }
+
         $validated = $request->validate([
             'fecha_emision' => 'nullable|date',
             'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_emision',
@@ -270,16 +275,6 @@ class MascotaDocumentController extends Controller
         try {
             DB::beginTransaction();
 
-            $user = Auth::user();
-            
-            // Verificar propiedad
-            if (!$user->hasRole('Superadmin') && !$user->hasRole('Admin')) {
-                if ($mascotaDocument->mascota->user_id !== $user->id) {
-                    return redirect()->back()
-                        ->with('error', 'No tienes permiso para editar este documento.');
-                }
-            }
-
             // Si se sube un nuevo archivo
             if ($request->hasFile('archivo')) {
                 // Eliminar archivo anterior
@@ -288,8 +283,8 @@ class MascotaDocumentController extends Controller
                 }
 
                 // Validar y almacenar nuevo archivo
-                $fechaEmision = $validated['fecha_emision'] ? Carbon::parse($validated['fecha_emision']) : null;
-                $fechaVencimiento = $validated['fecha_vencimiento'] ? Carbon::parse($validated['fecha_vencimiento']) : null;
+                $fechaEmision = !empty($validated['fecha_emision']) ? Carbon::parse($validated['fecha_emision']) : null;
+                $fechaVencimiento = !empty($validated['fecha_vencimiento']) ? Carbon::parse($validated['fecha_vencimiento']) : null;
 
                 $validacion = $this->validationService->validarDocumento(
                     $mascotaDocument->mascota,
@@ -316,9 +311,9 @@ class MascotaDocumentController extends Controller
 
                 // Re-evaluar estado
                 if ($validacion['valido']) {
-                    $mascotaDocument->estado = 'aprobado';
-                    $mascotaDocument->usuario_aprobo_id = $user->id;
-                    $mascotaDocument->fecha_aprobacion = now();
+                    $mascotaDocument->estado = 'pendiente';
+                    $mascotaDocument->usuario_aprobo_id = null;
+                    $mascotaDocument->fecha_aprobacion = null;
                     $mascotaDocument->motivo_rechazo = null;
                 } else {
                     $mascotaDocument->estado = 'pendiente_correccion';
@@ -327,8 +322,8 @@ class MascotaDocumentController extends Controller
             }
 
             // Actualizar fechas y notas
-            $mascotaDocument->fecha_emision = $validated['fecha_emision'] ? Carbon::parse($validated['fecha_emision']) : null;
-            $mascotaDocument->fecha_vencimiento = $validated['fecha_vencimiento'] ? Carbon::parse($validated['fecha_vencimiento']) : null;
+            $mascotaDocument->fecha_emision = !empty($validated['fecha_emision']) ? Carbon::parse($validated['fecha_emision']) : null;
+            $mascotaDocument->fecha_vencimiento = !empty($validated['fecha_vencimiento']) ? Carbon::parse($validated['fecha_vencimiento']) : null;
             $mascotaDocument->notas = $validated['notas'] ?? null;
             $mascotaDocument->save();
 
@@ -339,10 +334,12 @@ class MascotaDocumentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al actualizar documento: ' . $e->getMessage());
+            Log::error('Error al actualizar documento.', [
+                'exception' => $e::class,
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Error al actualizar el documento: ' . $e->getMessage())
+                ->with('error', 'No fue posible actualizar el documento. Intenta nuevamente.')
                 ->withInput();
         }
     }
@@ -352,18 +349,17 @@ class MascotaDocumentController extends Controller
      */
     public function destroy(MascotaDocument $mascotaDocument)
     {
+        $user = Auth::user();
+
+        if (!$user->hasRole('Superadmin') && !$user->hasRole('Admin')) {
+            if ($mascotaDocument->mascota->user_id !== $user->id) {
+                return redirect()->back()
+                    ->with('error', 'No tienes permiso para eliminar este documento.');
+            }
+        }
+
         try {
             DB::beginTransaction();
-
-            $user = Auth::user();
-            
-            // Verificar propiedad
-            if (!$user->hasRole('Superadmin') && !$user->hasRole('Admin')) {
-                if ($mascotaDocument->mascota->user_id !== $user->id) {
-                    return redirect()->back()
-                        ->with('error', 'No tienes permiso para eliminar este documento.');
-                }
-            }
 
             // Eliminar archivo físico
             if ($mascotaDocument->ruta_archivo && Storage::disk('public')->exists($mascotaDocument->ruta_archivo)) {
@@ -379,10 +375,12 @@ class MascotaDocumentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al eliminar documento: ' . $e->getMessage());
+            Log::error('Error al eliminar documento.', [
+                'exception' => $e::class,
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Error al eliminar el documento: ' . $e->getMessage());
+                ->with('error', 'No fue posible eliminar el documento. Intenta nuevamente.');
         }
     }
 
@@ -420,10 +418,12 @@ class MascotaDocumentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al aprobar documento: ' . $e->getMessage());
+            Log::error('Error al aprobar documento.', [
+                'exception' => $e::class,
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Error al aprobar el documento: ' . $e->getMessage());
+                ->with('error', 'No fue posible aprobar el documento. Intenta nuevamente.');
         }
     }
 
@@ -458,10 +458,12 @@ class MascotaDocumentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error al rechazar documento: ' . $e->getMessage());
+            Log::error('Error al rechazar documento.', [
+                'exception' => $e::class,
+            ]);
 
             return redirect()->back()
-                ->with('error', 'Error al rechazar el documento: ' . $e->getMessage());
+                ->with('error', 'No fue posible rechazar el documento. Intenta nuevamente.');
         }
     }
 

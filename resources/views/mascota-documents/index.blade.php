@@ -100,6 +100,9 @@
                                         @else
                                             <span class="badge bg-secondary">Pendiente</span>
                                         @endif
+                                        @if($document->validacion_automatica)
+                                            <br><span class="badge bg-info mt-1">Validación automática superada</span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($document->fecha_vencimiento)
@@ -150,4 +153,3 @@
     </div>
 </div>
 @endsection
-
