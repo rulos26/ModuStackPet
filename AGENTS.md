@@ -16,6 +16,8 @@ Si otro archivo de reglas contradice este, manda este.
 
 ## Seguridad
 - Nunca leas, muestres ni subas `.env`. `.env.example` solo lleva placeholders.
+- `.env.testing` es la única excepción a la regla de `.env`: se versiona, y
+  nunca debe contener secretos.
 - Nunca escribas credenciales en código, docs ni commits: usa `env()` / `config()`.
 - No elimines archivos: muévelos a `_borrar/` (ignorada por git) para revisión humana.
 - Sin comandos destructivos (`migrate:fresh`, `db:wipe`, `DROP`, `rm -rf`) sin autorización.

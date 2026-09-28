@@ -30,7 +30,7 @@ class CheckModuleStatusMiddlewareTest extends TestCase
     #[Test]
     public function middleware_allows_access_to_active_module()
     {
-        $module = Module::factory()->createQuietly(['status' => true]);
+        $module = Module::factory()->create(['status' => true]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -48,7 +48,7 @@ class CheckModuleStatusMiddlewareTest extends TestCase
     #[Test]
     public function middleware_blocks_access_to_inactive_module()
     {
-        $module = Module::factory()->createQuietly(['status' => false]);
+        $module = Module::factory()->create(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -85,7 +85,7 @@ class CheckModuleStatusMiddlewareTest extends TestCase
     #[Test]
     public function middleware_logs_access_denied_attempts()
     {
-        $module = Module::factory()->createQuietly(['status' => false]);
+        $module = Module::factory()->create(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -106,7 +106,7 @@ class CheckModuleStatusMiddlewareTest extends TestCase
     #[Test]
     public function middleware_handles_unauthenticated_user()
     {
-        $module = Module::factory()->createQuietly(['status' => false]);
+        $module = Module::factory()->create(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         // No user set

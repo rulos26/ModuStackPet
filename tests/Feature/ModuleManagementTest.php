@@ -60,7 +60,7 @@ class ModuleManagementTest extends TestCase
     {
         Mail::fake();
 
-        $module = Module::factory()->createQuietly(['status' => true]);
+        $module = Module::factory()->create(['status' => true]);
 
         $response = $this->actingAs($this->superadmin)
             ->post(route('superadmin.modules.request-toggle', $module));
@@ -82,7 +82,7 @@ class ModuleManagementTest extends TestCase
     #[Test]
     public function superadmin_can_confirm_module_toggle_with_valid_code()
     {
-        $module = Module::factory()->createQuietly(['status' => true]);
+        $module = Module::factory()->create(['status' => true]);
 
         $verification = ModuleVerification::createForModule(
             $this->superadmin->id,
@@ -121,7 +121,7 @@ class ModuleManagementTest extends TestCase
     #[Test]
     public function superadmin_cannot_confirm_with_invalid_code()
     {
-        $module = Module::factory()->createQuietly(['status' => true]);
+        $module = Module::factory()->create(['status' => true]);
 
         $response = $this->actingAs($this->superadmin)
             ->post(route('superadmin.modules.confirm', $module), [
@@ -141,7 +141,7 @@ class ModuleManagementTest extends TestCase
     #[Test]
     public function superadmin_can_view_module_logs()
     {
-        $module = Module::factory()->createQuietly();
+        $module = Module::factory()->create();
 
         ModuleLog::createLog(
             $this->superadmin->id,
@@ -163,7 +163,7 @@ class ModuleManagementTest extends TestCase
     #[Test]
     public function superadmin_can_view_all_logs()
     {
-        $module = Module::factory()->createQuietly();
+        $module = Module::factory()->create();
 
         ModuleLog::createLog(
             $this->superadmin->id,
@@ -183,7 +183,7 @@ class ModuleManagementTest extends TestCase
     #[Test]
     public function rate_limiting_works_for_module_toggle()
     {
-        $module = Module::factory()->createQuietly(['status' => true]);
+        $module = Module::factory()->create(['status' => true]);
 
         // Make 6 requests (limit is 5 per minute)
         for ($i = 0; $i < 6; $i++) {

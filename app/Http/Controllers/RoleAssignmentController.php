@@ -37,7 +37,7 @@ class RoleAssignmentController extends Controller
             $usuariosModule = Module::where('slug', 'usuarios')->first();
             if ($usuariosModule) {
                 ModuleLog::createLog(
-                    auth()->id() ?? 0,
+                    auth()->id(),
                     $usuariosModule->id,
                     ModuleLog::ACTION_PERMISSION_CHANGED,
                     $request->ip(),
