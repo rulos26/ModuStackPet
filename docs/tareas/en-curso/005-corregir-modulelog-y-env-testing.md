@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/modulelog-env-testing
 archivos: [app/Models/ModuleLog.php, tests/, .env.testing, AGENTS.md]
 ---
 
