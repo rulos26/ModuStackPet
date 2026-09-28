@@ -13,6 +13,12 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        if (!app()->environment(['local', 'testing'])) {
+            $this->command?->warn('UserSeeder: entorno "' . app()->environment() . '" no es local ni testing, no se creó ningún usuario de prueba.');
+
+            return;
+        }
+
         // Usuario root con acceso completo
         $root = User::firstOrCreate(
             ['email' => 'root@modustackpet.com'],

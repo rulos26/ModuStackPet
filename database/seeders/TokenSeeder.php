@@ -12,6 +12,12 @@ class TokenSeeder extends Seeder
      */
     public function run(): void
     {
+        if (!app()->environment(['local', 'testing'])) {
+            $this->command?->warn('TokenSeeder: entorno "' . app()->environment() . '" no es local ni testing, no se creó ningún token de prueba.');
+
+            return;
+        }
+
         /* User::Create([
             'name' => 'Juan Carlos Diaz Lara',
             'email' => 'rulos26@gmail.com',
