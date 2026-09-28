@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/seg001-rol-superadmin
 archivos: [routes/web.php, bootstrap/app.php, tests/Feature/SuperadminAccessTest.php]
 ---
 
