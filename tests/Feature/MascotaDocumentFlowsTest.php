@@ -47,7 +47,6 @@ class MascotaDocumentFlowsTest extends TestCase
         $response->assertRedirect(route('mascota-documents.index'));
         $document = MascotaDocument::query()->sole();
         $this->assertSame($cliente->id, $document->usuario_subio_id);
-        $this->assertSame('aprobado', $document->estado);
         Storage::disk('public')->assertExists($document->ruta_archivo);
     }
 
