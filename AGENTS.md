@@ -84,3 +84,14 @@ Sección Handoff (obligatoria al terminar):
   comportamiento fue intencional y repórtalo en el Handoff; la decisión es humana.
 - Nunca uses `git add -A` ni `git add .`: agrega los archivos por nombre.
   Nunca versiones bases de datos (.sqlite ni archivos binarios de datos).
+
+## Worktrees (una carpeta por agente)
+- Claude Code trabaja SOLO en `../ModuStackPet-claude`. Codex trabaja SOLO en
+  `../ModuStackPet-codex`. La carpeta `ModuStackPet` es del humano y de Cursor.
+- Antes de tomar una tarea: `git fetch` y `git switch --detach origin/main`;
+  luego crea tu rama `ia/<agente>/<tarea>`.
+- Al terminar, vuelve con `git switch --detach origin/main`. No uses
+  `git switch main`: `main` está abierta en la carpeta del humano y git no
+  permite la misma rama en dos worktrees.
+- Nunca ejecutes `git worktree remove` ni `git worktree prune`.
+- Las pruebas no necesitan `.env`: usa `php artisan test` directamente.
