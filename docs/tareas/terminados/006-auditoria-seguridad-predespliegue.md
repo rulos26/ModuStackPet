@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/codex/auditoria-seguridad-predespliegue
 archivos: [docs/auditorias/]
 ---
 
@@ -33,3 +33,22 @@ ordenada por severidad, y una lista de verificación para el despliegue.
 ## Restricciones
 - SOLO LECTURA: no modifiques código, configuración ni dependencias.
 - No leas `.env`. No ejecutes seeders ni migraciones contra ninguna BD real.
+
+## Handoff
+
+- Agente y fecha: Codex, 2026-09-28.
+- Qué se hizo: auditoría estática de los ocho puntos solicitados; se documentaron
+  11 hallazgos priorizados y una lista de verificación previa al despliegue.
+- Archivos modificados: `docs/auditorias/seguridad-predespliegue.md` y esta ficha,
+  movida a `docs/tareas/terminados/`.
+- Cómo probarlo: revisar que cada referencia `archivo:línea` corresponda al estado
+  de la rama. `git diff --check` pasó. No se pudieron ejecutar `composer validate`
+  ni `php artisan test`: `composer` y `php` no están disponibles en el PATH local;
+  `docker compose ps` tampoco respondió y se interrumpió sin ejecutar comandos en
+  contenedores.
+- Pendientes y riesgos: antes de publicar, resolver primero SEG-001 a SEG-007 y
+  verificar en Hostinger la raíz documental, reglas de denegación y permisos. La
+  revisión fue estática: no valida la configuración efectiva del hosting ni datos
+  existentes.
+- Preguntas para el humano: ninguna para cerrar la auditoría; la decisión pendiente
+  es priorizar la remediación de los bloqueantes identificados.
