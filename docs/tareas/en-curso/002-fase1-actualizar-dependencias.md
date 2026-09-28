@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/fase1-actualizar-dependencias
 archivos: [composer.json, composer.lock]
 ---
 
