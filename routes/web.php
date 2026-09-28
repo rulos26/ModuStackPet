@@ -173,7 +173,7 @@ Route::resource('users', UserController::class);
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
     Route::resource('tipo-documentos', TipoDocumentoController::class);
 });
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:Superadmin'])->group(function () {
 Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name('usuarios.roles.index');
 Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
 });

@@ -12,6 +12,8 @@ class RoleAssignmentController extends Controller
 {
     public function index()
     {
+        $this->authorize('manageRoles', User::class);
+
         $usuarios = User::with('roles')->get();
         $roles = Role::all();
         return view('user.roles', compact('usuarios', 'roles'));
@@ -19,6 +21,8 @@ class RoleAssignmentController extends Controller
 
     public function asignarRoles(Request $request, User $user)
     {
+        $this->authorize('assignRole', $user);
+
         // Validar que los roles enviados existan
         $request->validate([
             'roles' => 'array|exists:roles,name',
