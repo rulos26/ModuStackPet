@@ -77,3 +77,6 @@ Sección Handoff (obligatoria al terminar):
   argumentos); escribe el script en `_borrar/` y ejecútalo. En comandos que pasen
   por cmd.exe (por ejemplo `shell_exec`), usa `commit~1` en lugar de `commit^1`:
   cmd trata `^` como carácter de escape.
+- Si una prueba contradice el comportamiento del código, NO reescribas la prueba
+  para que pase. Revisa el historial (`git log -S`) para saber si el cambio de
+  comportamiento fue intencional y repórtalo en el Handoff; la decisión es humana.
