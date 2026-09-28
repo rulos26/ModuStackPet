@@ -60,3 +60,9 @@ Sección Handoff (obligatoria al terminar):
 - La carpeta del proyecto puede estar compartida con otros agentes. Si cambias
   de rama, al terminar vuelve a `main` y deja el árbol de trabajo limpio.
   Si trabajas en paralelo con otro agente, usa un `git worktree` propio.
+- Guarda todos los archivos en UTF-8 SIN BOM. Un BOM en `composer.json`
+  (commit 364f9400) rompió `composer install` en todos los entornos.
+  En Windows PowerShell 5, `Set-Content`/`Out-File -Encoding UTF8` añaden BOM:
+  usa `[IO.File]::WriteAllText()` o PowerShell 7.
+- Si una herramienta oficial existe (`composer validate`, `composer audit`,
+  `php artisan test`), ejecútala en lugar de revisar los archivos a mano.

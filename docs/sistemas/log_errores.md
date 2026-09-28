@@ -1,4 +1,4 @@
-﻿---
+---
 
 ## ✅ Implementación: Administrador de Módulos (Laravel 11)
 

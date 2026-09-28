@@ -1,4 +1,4 @@
-﻿# ModuStackPet
+# ModuStackPet
 
 ModuStack — SaaS veterinario: administración de guarderías y clínicas caninas
 
