@@ -29,6 +29,7 @@ class BackupConfig extends Model
         'port' => 'integer',
         'last_backup_at' => 'datetime',
         'last_backup_result' => 'array',
+        'password' => 'encrypted',
     ];
 
     protected $hidden = [
