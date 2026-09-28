@@ -13,16 +13,16 @@ class CheckModuleStatus
 {
     public function handle(Request $request, Closure $next, string $moduleSlug)
     {
-        // Si la tabla 'modules' aún no existe (entorno sin migraciones), permitir el paso
-        if (!Schema::hasTable('modules')) {
-            Log::warning('Tabla modules no existe, se permite acceso temporal', [
-                'slug' => $moduleSlug,
-                'path' => $request->path(),
-            ]);
-            return $next($request);
-        }
-
         try {
+            if (!Schema::hasTable('modules')) {
+                Log::error('Tabla modules no disponible en middleware', [
+                    'slug' => $moduleSlug,
+                    'failure' => 'modules_table_missing',
+                ]);
+
+                return response('Servicio temporalmente no disponible.', 503);
+            }
+
             $module = Module::where('slug', $moduleSlug)->first();
             
             // Si el módulo no existe, auto-crearlo con status=true por defecto
@@ -50,12 +50,12 @@ class CheckModuleStatus
                 ]);
             }
         } catch (\Throwable $e) {
-            // Si hay error de conexión o tabla, permitir paso para no romper UX
             Log::error('Error consultando tabla modules en middleware', [
-                'error' => $e->getMessage(),
                 'slug' => $moduleSlug,
+                'exception' => $e::class,
             ]);
-            return $next($request);
+
+            return response('Servicio temporalmente no disponible.', 503);
         }
 
         // Verificar si el módulo está inactivo
@@ -85,6 +85,5 @@ class CheckModuleStatus
         return $next($request);
     }
 }
-
 
 

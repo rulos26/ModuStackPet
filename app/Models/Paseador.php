@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Paseador extends Model
 {
+    protected $table = 'paseadores';
+
     /**
      * The attributes that are mass assignable.
      *
