@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Mail;
+use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -35,7 +36,7 @@ class ModuleManagementTest extends TestCase
         $this->admin->assignRole('Admin');
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_can_view_modules_index()
     {
         $response = $this->actingAs($this->superadmin)
@@ -45,7 +46,7 @@ class ModuleManagementTest extends TestCase
         $response->assertViewIs('modules.index');
     }
 
-    /** @test */
+    #[Test]
     public function non_superadmin_cannot_view_modules_index()
     {
         $response = $this->actingAs($this->admin)
@@ -54,12 +55,12 @@ class ModuleManagementTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_can_request_module_toggle()
     {
         Mail::fake();
 
-        $module = Module::factory()->create(['status' => true]);
+        $module = Module::factory()->createQuietly(['status' => true]);
 
         $response = $this->actingAs($this->superadmin)
             ->post(route('superadmin.modules.request-toggle', $module));
@@ -78,10 +79,10 @@ class ModuleManagementTest extends TestCase
         Mail::assertSent(\App\Mail\ModuleVerificationMail::class);
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_can_confirm_module_toggle_with_valid_code()
     {
-        $module = Module::factory()->create(['status' => true]);
+        $module = Module::factory()->createQuietly(['status' => true]);
 
         $verification = ModuleVerification::createForModule(
             $this->superadmin->id,
@@ -117,10 +118,10 @@ class ModuleManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_cannot_confirm_with_invalid_code()
     {
-        $module = Module::factory()->create(['status' => true]);
+        $module = Module::factory()->createQuietly(['status' => true]);
 
         $response = $this->actingAs($this->superadmin)
             ->post(route('superadmin.modules.confirm', $module), [
@@ -137,10 +138,10 @@ class ModuleManagementTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_can_view_module_logs()
     {
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         ModuleLog::createLog(
             $this->superadmin->id,
@@ -159,10 +160,10 @@ class ModuleManagementTest extends TestCase
         $response->assertViewHas('logs');
     }
 
-    /** @test */
+    #[Test]
     public function superadmin_can_view_all_logs()
     {
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         ModuleLog::createLog(
             $this->superadmin->id,
@@ -179,10 +180,10 @@ class ModuleManagementTest extends TestCase
         $response->assertViewIs('modules.all-logs');
     }
 
-    /** @test */
+    #[Test]
     public function rate_limiting_works_for_module_toggle()
     {
-        $module = Module::factory()->create(['status' => true]);
+        $module = Module::factory()->createQuietly(['status' => true]);
 
         // Make 6 requests (limit is 5 per minute)
         for ($i = 0; $i < 6; $i++) {

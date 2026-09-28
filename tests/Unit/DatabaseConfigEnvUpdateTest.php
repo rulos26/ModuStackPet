@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\DatabaseConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\File;
+use ReflectionMethod;
 
 class DatabaseConfigEnvUpdateTest extends TestCase
 {
@@ -19,7 +19,7 @@ class DatabaseConfigEnvUpdateTest extends TestCase
         $config = new DatabaseConfig();
         
         $content = "DB_HOST=127.0.0.1\nDB_DATABASE=test_db";
-        $result = $config->updateEnvVariable($content, 'DB_HOST', '192.168.1.1');
+        $result = $this->invokeProtected($config, 'updateEnvVariable', [$content, 'DB_HOST', '192.168.1.1']);
         
         $this->assertStringContainsString('DB_HOST=192.168.1.1', $result);
         $this->assertStringNotContainsString('DB_HOST=127.0.0.1', $result);
@@ -32,20 +32,16 @@ class DatabaseConfigEnvUpdateTest extends TestCase
     {
         $config = new DatabaseConfig();
         
-        $reflection = new \ReflectionClass($config);
-        $method = $reflection->getMethod('escapeEnvValue');
-        $method->setAccessible(true);
-        
         // Valor con espacios
-        $result = $method->invoke($config, 'value with spaces');
+        $result = $this->invokeProtected($config, 'escapeEnvValue', ['value with spaces']);
         $this->assertEquals('"value with spaces"', $result);
         
         // Valor sin espacios
-        $result = $method->invoke($config, 'simple_value');
+        $result = $this->invokeProtected($config, 'escapeEnvValue', ['simple_value']);
         $this->assertEquals('simple_value', $result);
         
         // Valor con comillas
-        $result = $method->invoke($config, 'value "with" quotes');
+        $result = $this->invokeProtected($config, 'escapeEnvValue', ['value "with" quotes']);
         $this->assertEquals('"value \\"with\\" quotes"', $result);
     }
 
@@ -57,7 +53,7 @@ class DatabaseConfigEnvUpdateTest extends TestCase
         $config = new DatabaseConfig();
         
         $content = "# DB_HOST=127.0.0.1\nDB_DATABASE=test_db";
-        $result = $config->updateEnvVariable($content, 'DB_HOST', '192.168.1.1');
+        $result = $this->invokeProtected($config, 'updateEnvVariable', [$content, 'DB_HOST', '192.168.1.1']);
         
         // Debe descomentar y actualizar
         $this->assertStringContainsString('DB_HOST=192.168.1.1', $result);
@@ -72,10 +68,14 @@ class DatabaseConfigEnvUpdateTest extends TestCase
         $config = new DatabaseConfig();
         
         $content = "DB_DATABASE=test_db";
-        $result = $config->updateEnvVariable($content, 'DB_HOST', '192.168.1.1');
+        $result = $this->invokeProtected($config, 'updateEnvVariable', [$content, 'DB_HOST', '192.168.1.1']);
         
         $this->assertStringContainsString('DB_HOST=192.168.1.1', $result);
         $this->assertStringContainsString('DB_DATABASE=test_db', $result);
     }
-}
 
+    private function invokeProtected(object $object, string $method, array $arguments): mixed
+    {
+        return (new ReflectionMethod($object, $method))->invoke($object, ...$arguments);
+    }
+}

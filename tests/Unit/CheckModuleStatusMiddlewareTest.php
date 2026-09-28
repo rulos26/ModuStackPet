@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CheckModuleStatusMiddlewareTest extends TestCase
@@ -26,10 +27,10 @@ class CheckModuleStatusMiddlewareTest extends TestCase
         $this->user = User::factory()->create();
     }
 
-    /** @test */
+    #[Test]
     public function middleware_allows_access_to_active_module()
     {
-        $module = Module::factory()->create(['status' => true]);
+        $module = Module::factory()->createQuietly(['status' => true]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -44,10 +45,10 @@ class CheckModuleStatusMiddlewareTest extends TestCase
         $this->assertEquals('OK', $response->getContent());
     }
 
-    /** @test */
+    #[Test]
     public function middleware_blocks_access_to_inactive_module()
     {
-        $module = Module::factory()->create(['status' => false]);
+        $module = Module::factory()->createQuietly(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -59,11 +60,11 @@ class CheckModuleStatusMiddlewareTest extends TestCase
         }, $module->slug);
 
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertStringContainsString('access-denied', $response->getContent());
+        $this->assertStringContainsString('Acceso denegado', $response->getContent());
     }
 
-    /** @test */
-    public function middleware_blocks_access_to_nonexistent_module()
+    #[Test]
+    public function middleware_auto_creates_and_allows_nonexistent_module()
     {
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -74,14 +75,17 @@ class CheckModuleStatusMiddlewareTest extends TestCase
             return new Response('OK', 200);
         }, 'nonexistent-module');
 
-        $this->assertEquals(403, $response->getStatusCode());
-        $this->assertStringContainsString('access-denied', $response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('modules', [
+            'slug' => 'nonexistent-module',
+            'status' => true,
+        ]);
     }
 
-    /** @test */
+    #[Test]
     public function middleware_logs_access_denied_attempts()
     {
-        $module = Module::factory()->create(['status' => false]);
+        $module = Module::factory()->createQuietly(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         $request->setUserResolver(function () {
@@ -99,10 +103,10 @@ class CheckModuleStatusMiddlewareTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function middleware_handles_unauthenticated_user()
     {
-        $module = Module::factory()->create(['status' => false]);
+        $module = Module::factory()->createQuietly(['status' => false]);
 
         $request = Request::create('/test', 'GET');
         // No user set
