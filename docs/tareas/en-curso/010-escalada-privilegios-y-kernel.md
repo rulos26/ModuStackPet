@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/escalada-privilegios-kernel
 archivos: [routes/web.php, bootstrap/app.php, app/Http/Kernel.php, app/Http/Controllers/, app/Policies/, tests/Feature/]
 ---
 
