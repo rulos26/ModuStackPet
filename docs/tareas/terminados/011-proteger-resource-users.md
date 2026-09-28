@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/codex/proteger-resource-users
 archivos: [routes/web.php, tests/Feature/UsersResourceAccessTest.php, docs/auditorias/]
 ---
 
@@ -40,3 +40,11 @@ análisis de duplicado y el informe de la parte C.
   Si no puedes ejecutarlas, NO cierres la tarea (AGENTS.md).
 - No toques `.env`, dependencias ni controladores.
 - Al terminar, vuelve con `git switch --detach origin/main`.
+
+## Handoff
+- Agente y fecha: Codex, 2026-09-28.
+- Qué se hizo: se añadieron pruebas de acceso para las siete rutas `users.*`; el commit rojo registró 28 fallos y 2 éxitos. Se protegió el resource con `auth`, `verified` y `role:Superadmin`. Se documentaron el duplicado con `superadmin.usuarios.*` y el `AuthServiceProvider` no registrado.
+- Archivos modificados: `routes/web.php`, `tests/Feature/UsersResourceAccessTest.php`, `docs/auditorias/seg011-resource-users.md` y esta ficha.
+- Cómo probarlo: `php artisan test` (110 pruebas, 252 aserciones, todas pasan); `composer validate` (`composer.json` válido); `php artisan route:list --path=users -v` para comprobar los tres middlewares en `users.*`.
+- Pendientes y riesgos: `users.*` y `superadmin.usuarios.*` son duplicados activos; se propone migrar referencias y retirar el resource raíz en otra tarea. `UserController@store` contiene un defecto preexistente de nombre de tabla (`paseadors`) que quedó visible durante la prueba roja y no se corrigió por alcance. `AuthServiceProvider` sigue sin registrarse; hoy su única policy se descubre por convención, pero futuras definiciones allí no se aplicarían.
+- Preguntas para el humano: ¿se abre una tarea separada para consolidar las rutas en `superadmin.usuarios.*` y otra para registrar de forma controlada `AuthServiceProvider`? ¿Se corrige también el nombre de tabla usado por el modelo `Paseador`?
