@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/pruebas-mascotas-documentos
 archivos: [tests/Feature/, database/factories/, docs/]
 ---
 
