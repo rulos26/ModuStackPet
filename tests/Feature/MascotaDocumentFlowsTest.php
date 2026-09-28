@@ -55,6 +55,17 @@ class MascotaDocumentFlowsTest extends TestCase
         $this->assertNull($document->usuario_aprobo_id);
         $this->assertNull($document->fecha_aprobacion);
         Storage::disk('public')->assertExists($document->ruta_archivo);
+
+        $this->actingAs($cliente)
+            ->get(route('mascota-documents.index'))
+            ->assertOk()
+            ->assertSee('Pendiente')
+            ->assertSee('Validación automática superada');
+        $this->actingAs($cliente)
+            ->get(route('mascota-documents.show', $document))
+            ->assertOk()
+            ->assertSee('Pendiente')
+            ->assertSee('Superada');
     }
 
     #[Test]
