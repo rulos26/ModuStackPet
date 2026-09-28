@@ -10,13 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
-use Illuminate\Routing\Controllers\HasMiddleware;
 
-class DatabaseConfigController extends Controller implements HasMiddleware
+class DatabaseConfigController extends Controller
 {
-    public static function middleware(): array
+    public function __construct()
     {
-        return [EnsureAdminToolsEnabled::class];
+        $this->middleware(EnsureAdminToolsEnabled::class);
     }
 
     /**

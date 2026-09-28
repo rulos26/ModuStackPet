@@ -14,20 +14,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\View\View;
-use Illuminate\Routing\Controllers\HasMiddleware;
 
-class BackupConfigController extends Controller implements HasMiddleware
+class BackupConfigController extends Controller
 {
     protected BackupService $backupService;
 
     public function __construct(BackupService $backupService)
     {
         $this->backupService = $backupService;
-    }
-
-    public static function middleware(): array
-    {
-        return [EnsureAdminToolsEnabled::class];
+        $this->middleware(EnsureAdminToolsEnabled::class);
     }
 
     /**

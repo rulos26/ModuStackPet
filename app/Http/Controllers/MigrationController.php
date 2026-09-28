@@ -8,13 +8,12 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Exception;
-use Illuminate\Routing\Controllers\HasMiddleware;
 
-class MigrationController extends Controller implements HasMiddleware
+class MigrationController extends Controller
 {
-    public static function middleware(): array
+    public function __construct()
     {
-        return ['auth', EnsureAdminToolsEnabled::class];
+        $this->middleware(['auth', EnsureAdminToolsEnabled::class]);
     }
 
     /**

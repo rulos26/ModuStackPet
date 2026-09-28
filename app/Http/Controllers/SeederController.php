@@ -11,10 +11,14 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Routing\Controllers\HasMiddleware;
 
-class SeederController extends Controller implements HasMiddleware
+class SeederController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified', EnsureAdminToolsEnabled::class]);
+    }
+
     private array $allowedSeeders = [
         // FQCN con casing estándar
         'Database\\Seeders\\ModuleSeeder',
@@ -30,11 +34,6 @@ class SeederController extends Controller implements HasMiddleware
         // Variantes tolerantes por si el proyecto define clases con casing distinto
         'Database\\Seeders\\roleSeeder',
     ];
-
-    public static function middleware(): array
-    {
-        return ['auth', 'verified', EnsureAdminToolsEnabled::class];
-    }
 
     public function index()
     {
