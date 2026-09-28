@@ -95,3 +95,5 @@ Sección Handoff (obligatoria al terminar):
   permite la misma rama en dos worktrees.
 - Nunca ejecutes `git worktree remove` ni `git worktree prune`.
 - Las pruebas no necesitan `.env`: usa `php artisan test` directamente.
+- Si no puedes ejecutar las pruebas, NO des la tarea por terminada: déjala en
+  en-curso/ con estado bloqueada y explica el motivo en el Handoff.
