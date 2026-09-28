@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: pendiente
+estado: en-curso
 rama: ia/claude/fase1-dirigida
 archivos: [composer.json, composer.lock, phpstan.neon]
 ---
