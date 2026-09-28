@@ -38,7 +38,7 @@ Las 30 pruebas que ya no fallan aparecen como warnings por una única advertenci
 - Se migró metadata PHPUnit de doc-comments a atributos.
 - No se modificaron factories porque sus datos por defecto eran válidos; el efecto lateral provenía del observer global.
 
-## Pendientes fuera del alcance
+## Pendientes fuera del alcance (de este documento; aplicados en la tarea 005)
 
 1. Aplicar la firma nullable de `ModuleLog::createLog()` y retirar los fallbacks `user_id = 0` del observer. Con ello debe desaparecer el único fallo restante.
 2. Añadir `restrictWarnings="true"` al elemento `<source>` de `phpunit.xml` y repetir la suite. Esto evita que la ausencia intencional de `.env` convierta pruebas exitosas en warnings, manteniendo visibles los warnings generados por `app/`.
@@ -50,3 +50,74 @@ Las 30 pruebas que ya no fallan aparecen como warnings por una única advertenci
 - `composer validate` mediante Composer de Laravel Herd: válido.
 - `php -l` en los cinco archivos de prueba modificados: sin errores de sintaxis.
 - `git diff --check`: sin errores de whitespace.
+
+---
+
+## Corrección aplicada (tarea 005), rama `ia/claude/modulelog-env-testing`
+
+Fecha: 2026-09-27. Ambas propuestas de la sección "Pendientes fuera del
+alcance" fueron aprobadas por el humano y se aplicaron en esta tarea.
+
+### 1. `ModuleLog::createLog()` con usuario anónimo
+
+- `app/Models/ModuleLog.php:56`: el parámetro `int $userId` pasó a
+  `?int $userId` (misma posición).
+- Se confirmó en la migración
+  `database/migrations/2025_10_29_150002_create_module_logs_table.php:14`
+  que `user_id` ya admite `NULL` (`->nullable()->constrained('users')->nullOnDelete()`).
+  No fue necesario tocar migraciones.
+- `grep -rn "createLog" app/` mostró 6 llamadas adicionales a las de
+  `app/Models/ModuleLog.php` con `auth()->id() ?? 0` o `Auth::id() ?? 0`
+  como *fallback* de "sin usuario". El paso 1 de la tarea pide
+  explícitamente corregir "cualquier uso de 0... por null" en todo `app/`,
+  aunque el campo `archivos:` de la tarea solo listaba
+  `app/Models/ModuleLog.php`. Se interpretó la instrucción del cuerpo de la
+  tarea (más específica y coincidente con la propuesta ya aprobada en este
+  mismo diagnóstico) como la vigente, y se corrigieron también:
+  - `app/Observers/ModuleObserver.php:25,45,62,83,103,122` — los 6 `auth()->id() ?? 0` → `auth()->id()`.
+  - `app/Http/Controllers/RoleAssignmentController.php:40` — `auth()->id() ?? 0` → `auth()->id()`.
+  - `app/Http/Controllers/SeederController.php:118` — `Auth::id() ?? 0` → `Auth::id()`.
+    (La línea 119, `optional(...)->id ?? 0`, es el `moduleId`, no el
+    usuario; `createLog()` no cambió esa firma, así que se dejó intacta.)
+  - Se revisaron el resto de llamadores (`ModuleController.php`,
+    `CheckModuleStatus.php`, `ToggleButton.php`) y ninguno usaba `?? 0`.
+- En los tests, se revirtió `Module::factory()->createQuietly(...)` a
+  `Module::factory()->create(...)` en los 22 usos de:
+  - `tests/Feature/ModuleManagementTest.php`
+  - `tests/Unit/CheckModuleStatusMiddlewareTest.php`
+  - `tests/Unit/ModuleTest.php`
+
+  Se revisó cada prueba antes de revertir: ninguna verifica un conteo exacto
+  de filas de `module_logs` (todas usan `assertDatabaseHas`, que no se ve
+  afectado por filas adicionales del observer), así que no fue necesario
+  mantener `createQuietly()` en ningún caso.
+
+### 2. `.env.testing` sin secretos
+
+- Creado [.env.testing](../../.env.testing) con solo comentarios; ninguna
+  variable ni secreto. Laravel lo detecta automáticamente porque
+  `phpunit.xml` define `APP_ENV=testing`
+  (`Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::checkForSpecificEnvironmentFile()`
+  busca `.env.{APP_ENV}` antes de intentar `.env`), así que Dotenv deja de
+  intentar abrir un `.env` inexistente y las advertencias desaparecen.
+- `git check-ignore -v .env.testing` no devolvió nada (no está ignorado);
+  no fue necesario tocar `.gitignore`.
+- Añadida a `AGENTS.md` (sección Seguridad) la nota: "`.env.testing` es la
+  única excepción a la regla de `.env`: se versiona, y nunca debe contener
+  secretos."
+
+### Resultado
+
+| Momento | Comando | Resultado |
+|---|---|---|
+| Antes (estado de este diagnóstico) | `php artisan test` | 27 failed, 4 warnings, 1 passed |
+| Después de corregir `ModuleLog`/observer/tests (sin `.env.testing`) | `php artisan test` | 0 failed, 31 warnings, 1 passed |
+| Después de agregar `.env.testing` | `php artisan test` | **32 passed, 0 failed, 0 warnings** |
+
+`composer validate`: OK. `php -l` sin errores en los 8 archivos modificados
+(`app/Models/ModuleLog.php`, `app/Observers/ModuleObserver.php`,
+`app/Http/Controllers/RoleAssignmentController.php`,
+`app/Http/Controllers/SeederController.php`, y los 3 archivos de tests).
+
+No se tocó `.env`, ninguna migración, ninguna dependencia, ni ningún otro
+archivo de `app/` fuera de los listados arriba.
