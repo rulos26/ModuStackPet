@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/idor-mascotas
 archivos: [routes/web.php, app/Http/Controllers/MascotaController.php, app/Policies/MascotaPolicy.php, tests/Feature/]
 ---
 
