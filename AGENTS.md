@@ -66,3 +66,8 @@ Sección Handoff (obligatoria al terminar):
   usa `[IO.File]::WriteAllText()` o PowerShell 7.
 - Si una herramienta oficial existe (`composer validate`, `composer audit`,
   `php artisan test`), ejecútala en lugar de revisar los archivos a mano.
+- NUNCA crees, copies, modifiques ni sobrescribas `.env`, ni ejecutes
+  `php artisan key:generate` fuera de `phpunit.xml`. Contiene credenciales
+  locales sin historial: si se pierde, no se recupera. Las pruebas usan
+  SQLite en memoria y una APP_KEY propia definidas en `phpunit.xml`.
+  Si algo parece requerir `.env`, detente y pregunta al humano.
