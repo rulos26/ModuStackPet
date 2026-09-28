@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: pendiente
+estado: en-curso
 rama: ia/claude/corregir-009
 archivos: [app/Http/Controllers/MigrationController.php, app/Http/Controllers/SeederController.php, app/Http/Controllers/Superadmin/BackupConfigController.php, app/Http/Controllers/Superadmin/DatabaseConfigController.php, app/Http/Controllers/Superadmin/EmailConfigController.php, tests/Feature/AdminWebToolsTest.php, docs/auditorias/seg009-herramientas-web.md]
 ---
