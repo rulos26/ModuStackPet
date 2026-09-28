@@ -71,3 +71,9 @@ Sección Handoff (obligatoria al terminar):
   locales sin historial: si se pierde, no se recupera. Las pruebas usan
   SQLite en memoria y una APP_KEY propia definidas en `phpunit.xml`.
   Si algo parece requerir `.env`, detente y pregunta al humano.
+- SemVer en 0.x: mientras un paquete esté en 0.x, un cambio del segundo número
+  (0.12 -> 0.14) cuenta como salto MAYOR. Compáralo así al verificar versiones.
+- Windows: no uses `php -r` con varias líneas (el puente .bat rompe los
+  argumentos); escribe el script en `_borrar/` y ejecútalo. En comandos que pasen
+  por cmd.exe (por ejemplo `shell_exec`), usa `commit~1` en lugar de `commit^1`:
+  cmd trata `^` como carácter de escape.
