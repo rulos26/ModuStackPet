@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use App\Models\DatabaseConfig;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,11 @@ use Illuminate\View\View;
 
 class DatabaseConfigController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(EnsureAdminToolsEnabled::class);
+    }
+
     /**
      * Display a listing of the resource.
      */

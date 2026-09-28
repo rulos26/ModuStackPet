@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ class MigrationController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth', EnsureAdminToolsEnabled::class]);
     }
 
     /**
@@ -142,4 +143,3 @@ class MigrationController extends Controller
         }
     }
 }
-

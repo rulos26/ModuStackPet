@@ -37,6 +37,7 @@
             <div class="card-body">
                 <div class="row g-3">
                     @foreach($modules as $module)
+                        @continue(!config('admin_tools.enabled') && in_array($module->slug, ['migraciones', 'seeders'], true))
                         @php
                             $routeMap = [
                                 'mascotas' => 'mascotas.index',

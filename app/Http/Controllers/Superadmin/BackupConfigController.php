@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Superadmin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\EnsureAdminToolsEnabled;
 use App\Models\BackupConfig;
 use App\Models\BackupLog;
 use App\Services\BackupService;
@@ -21,6 +22,7 @@ class BackupConfigController extends Controller
     public function __construct(BackupService $backupService)
     {
         $this->backupService = $backupService;
+        $this->middleware(EnsureAdminToolsEnabled::class);
     }
 
     /**
