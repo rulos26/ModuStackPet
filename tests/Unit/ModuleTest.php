@@ -7,13 +7,14 @@ use App\Models\ModuleLog;
 use App\Models\ModuleVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ModuleTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function module_has_required_fillable_fields()
     {
         $module = new Module();
@@ -25,18 +26,20 @@ class ModuleTest extends TestCase
         $this->assertContains('status', $fillable);
     }
 
-    /** @test */
+    #[Test]
     public function module_has_status_cast_to_boolean()
     {
-        $module = Module::factory()->create(['status' => 1]);
+        $module = Module::factory()->createQuietly(['status' => 1]);
 
         $this->assertTrue($module->status);
         $this->assertIsBool($module->status);
     }
 
-    /** @test */
+    #[Test]
     public function module_auto_generates_slug_on_creation()
     {
+        $this->actingAs(User::factory()->create());
+
         $module = Module::create([
             'name' => 'Test Module',
             'description' => 'Test Description',
@@ -46,11 +49,11 @@ class ModuleTest extends TestCase
         $this->assertEquals('test-module', $module->slug);
     }
 
-    /** @test */
+    #[Test]
     public function module_scope_active_works()
     {
-        Module::factory()->create(['status' => true]);
-        Module::factory()->create(['status' => false]);
+        Module::factory()->createQuietly(['status' => true]);
+        Module::factory()->createQuietly(['status' => false]);
 
         $activeModules = Module::active()->get();
 
@@ -58,11 +61,11 @@ class ModuleTest extends TestCase
         $this->assertTrue($activeModules->first()->status);
     }
 
-    /** @test */
+    #[Test]
     public function module_log_can_be_created()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $log = ModuleLog::createLog(
             $user->id,
@@ -82,11 +85,11 @@ class ModuleTest extends TestCase
         $this->assertInstanceOf(ModuleLog::class, $log);
     }
 
-    /** @test */
+    #[Test]
     public function module_log_has_relationships()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $log = ModuleLog::createLog(
             $user->id,
@@ -97,16 +100,16 @@ class ModuleTest extends TestCase
         );
 
         $this->assertInstanceOf(User::class, $log->user);
-        $this->assertInstanceOf(Module::class, $log->log);
+        $this->assertInstanceOf(Module::class, $log->module);
         $this->assertEquals($user->id, $log->user->id);
         $this->assertEquals($module->id, $log->module->id);
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_can_be_created()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::createForModule(
             $user->id,
@@ -124,11 +127,11 @@ class ModuleTest extends TestCase
         $this->assertEquals(6, strlen($verification->verification_code));
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_is_valid_when_not_expired_and_not_used()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::createForModule(
             $user->id,
@@ -139,11 +142,11 @@ class ModuleTest extends TestCase
         $this->assertTrue($verification->isValid());
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_is_invalid_when_expired()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::create([
             'user_id' => $user->id,
@@ -156,11 +159,11 @@ class ModuleTest extends TestCase
         $this->assertFalse($verification->isValid());
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_is_invalid_when_used()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::create([
             'user_id' => $user->id,
@@ -174,11 +177,11 @@ class ModuleTest extends TestCase
         $this->assertFalse($verification->isValid());
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_can_be_marked_as_used()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::createForModule(
             $user->id,
@@ -192,11 +195,11 @@ class ModuleTest extends TestCase
         $this->assertFalse($verification->isValid());
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_can_find_by_code()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         $verification = ModuleVerification::createForModule(
             $user->id,
@@ -213,11 +216,11 @@ class ModuleTest extends TestCase
         $this->assertEquals($verification->id, $found->id);
     }
 
-    /** @test */
+    #[Test]
     public function module_verification_cleanup_removes_expired()
     {
         $user = User::factory()->create();
-        $module = Module::factory()->create();
+        $module = Module::factory()->createQuietly();
 
         // Create expired verification
         ModuleVerification::create([
