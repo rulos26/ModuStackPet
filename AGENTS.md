@@ -52,3 +52,11 @@ Sección Handoff (obligatoria al terminar):
 ## Forma de trabajar
 - Responde en español. Cambios mínimos y dentro del alcance; no refactorices de más.
 - Ante ambigüedad, pregunta antes de asumir.
+
+## Lecciones aprendidas
+- Al verificar hallazgos, distingue el estado actual del historial de git.
+  Un secreto borrado hoy sigue expuesto en commits anteriores: repórtalo como
+  "corregido en HEAD, expuesto en historial", nunca como "refutado".
+- La carpeta del proyecto puede estar compartida con otros agentes. Si cambias
+  de rama, al terminar vuelve a `main` y deja el árbol de trabajo limpio.
+  Si trabajas en paralelo con otro agente, usa un `git worktree` propio.
