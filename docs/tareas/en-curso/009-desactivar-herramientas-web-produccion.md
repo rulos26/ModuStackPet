@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/desactivar-herramientas-web-produccion
 archivos: [config/admin_tools.php, app/Http/Middleware/, app/Http/Controllers/Superadmin/DatabaseConfigController.php, app/Http/Controllers/Superadmin/EmailConfigController.php, app/Http/Controllers/Superadmin/BackupConfigController.php, app/Http/Controllers/SeederController.php, app/Http/Controllers/MigrationController.php, resources/views/, tests/Feature/AdminWebToolsTest.php]
 ---
 
