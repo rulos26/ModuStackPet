@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/proteger-resource-users
 archivos: [routes/web.php, tests/Feature/UsersResourceAccessTest.php, docs/auditorias/]
 ---
 
