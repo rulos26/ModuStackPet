@@ -1,7 +1,7 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/cursor/cache-serializable-classes
 archivos: [config/cache.php]
 ---
 
