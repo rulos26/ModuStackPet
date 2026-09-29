@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 RAMA="$1"
 DIR="$2"
 cd "$DIR"
@@ -21,12 +21,17 @@ if [ -n "$HASH_TEST" ]; then
   echo "$RESULT_RED"
 fi
 git switch --detach origin/main
-if echo "$RESULT_FULL" | grep -q "failed"; then
+FALLO=""
+if ! echo "$RESULT_FULL" | grep -q "passed" || echo "$RESULT_FULL" | grep -qE "[1-9][0-9]* failed"; then
   echo "VERIFICACION FALLIDA: la suite completa tiene fallos"
-  exit 1
+  FALLO="si"
 fi
-if [ -n "${HASH_TEST:-}" ] && ! echo "$RESULT_RED" | grep -q "failed"; then
+if [ -n "$HASH_TEST" ] && ! echo "$RESULT_RED" | grep -qE "[1-9][0-9]* failed"; then
   echo "VERIFICACION FALLIDA: el commit de pruebas no falla (no demuestra el hueco)"
+  FALLO="si"
+fi
+if [ -z "$FALLO" ]; then
+  echo "VERIFICACION OK: $RAMA"
+else
   exit 1
 fi
-echo "VERIFICACION OK: $RAMA"
