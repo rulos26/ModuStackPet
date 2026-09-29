@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/paseador-sin-mascotas
 archivos: [app/Policies/MascotaPolicy.php, routes/web.php, tests/Feature/MascotaAccessControlTest.php]
 ---
 
