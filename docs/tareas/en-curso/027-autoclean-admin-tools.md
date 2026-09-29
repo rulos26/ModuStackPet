@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/autoclean-admin-tools
 archivos: [app/Http/Controllers/CleanController.php, tests/Feature/AdminWebToolsTest.php]
 ---
 
