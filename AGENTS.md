@@ -87,7 +87,8 @@ Sección Handoff (obligatoria al terminar):
 
 ## Worktrees (una carpeta por agente)
 - Claude Code trabaja SOLO en `../ModuStackPet-claude`. Codex trabaja SOLO en
-  `../ModuStackPet-codex`. La carpeta `ModuStackPet` es del humano y de Cursor.
+  `../ModuStackPet-codex`. Cursor trabaja SOLO en `../ModuStackPet-cursor`.
+  La carpeta `ModuStackPet` es del humano.
 - Antes de tomar una tarea: `git fetch` y `git switch --detach origin/main`;
   luego crea tu rama `ia/<agente>/<tarea>`.
 - Al terminar, vuelve con `git switch --detach origin/main`. No uses
