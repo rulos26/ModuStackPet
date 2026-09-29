@@ -320,4 +320,4 @@ No se tocó `.env` ni dependencias.
 ### Verificación
 
 - `php artisan test`: **144 passed** (436 assertions).
-- `composer validate --no-check-publish`: (idem).
+- `composer validate --no-check-publish`: **valid**.
