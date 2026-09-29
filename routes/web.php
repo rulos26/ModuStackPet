@@ -179,7 +179,7 @@ Route::get('/usuarios/roles', [RoleAssignmentController::class, 'index'])->name(
 Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignarRoles'])->name('usuarios.roles.asignar');
 });
 
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () {
     Route::resource('mascotas', MascotaController::class);
 });
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':razas'])->group(function () {
