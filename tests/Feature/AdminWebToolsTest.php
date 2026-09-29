@@ -39,6 +39,7 @@ class AdminWebToolsTest extends TestCase
             ['superadmin.backup-configs.index'],
             ['superadmin.seeders.index'],
             ['superadmin.migrations.index'],
+            ['superadmin.clean.index'],
         ];
     }
 
