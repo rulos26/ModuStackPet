@@ -24,8 +24,10 @@ class MascotaController extends Controller
      */
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Mascota::class);
+
         $user = auth()->user();
-        
+
         // Si es administrador (Superadmin o Admin), mostrar todas las mascotas
         if ($user->hasRole('Superadmin') || $user->hasRole('Admin')) {
             $mascotas = Mascota::with(['raza', 'user.cliente'])->paginate();
@@ -47,6 +49,8 @@ class MascotaController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('create', Mascota::class);
+
         $mascota = new Mascota();
         $razas = Raza::all();
 
@@ -61,6 +65,8 @@ class MascotaController extends Controller
      */
     public function store(MascotaRequest $request): RedirectResponse
     {
+        $this->authorize('create', Mascota::class);
+
         try {
             $validatedData = $request->validated();
 

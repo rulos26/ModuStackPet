@@ -11,6 +11,16 @@ class MascotaPolicy
      * SEG-016: corrige el IDOR de mascotas.* — Cliente solo ve/gestiona las
      * suyas, Admin y Superadmin gestionan todas, Paseador no tiene acceso.
      */
+    public function viewAny(User $user): bool
+    {
+        return $user->hasRole('Superadmin') || $user->hasRole('Admin') || $user->hasRole('Cliente');
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->hasRole('Superadmin') || $user->hasRole('Admin') || $user->hasRole('Cliente');
+    }
+
     public function view(User $user, Mascota $mascota): bool
     {
         return $this->puedeGestionar($user, $mascota);
