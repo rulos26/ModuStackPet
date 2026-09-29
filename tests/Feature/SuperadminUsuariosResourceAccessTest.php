@@ -11,7 +11,15 @@ use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-class UsersResourceAccessTest extends TestCase
+/**
+ * SEG-020: antes probaba el resource duplicado `users.*` (ver SEG-011).
+ * Ese resource se retiró de routes/web.php porque exponía las mismas siete
+ * acciones que `superadmin.usuarios.*`, ya elegido como ruta canónica. Esta
+ * prueba se renombró y sus rutas se migraron a `superadmin.usuarios.*` para
+ * no perder la cobertura de invitado/roles no autorizados/Superadmin en las
+ * siete acciones (index, show, create, edit, store, update, destroy).
+ */
+class SuperadminUsuariosResourceAccessTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -39,13 +47,13 @@ class UsersResourceAccessTest extends TestCase
     public static function resourceRoutesProvider(): array
     {
         return [
-            'index' => ['get', 'users.index'],
-            'show' => ['get', 'users.show'],
-            'create' => ['get', 'users.create'],
-            'edit' => ['get', 'users.edit'],
-            'store' => ['post', 'users.store'],
-            'update' => ['put', 'users.update'],
-            'destroy' => ['delete', 'users.destroy'],
+            'index' => ['get', 'superadmin.usuarios.index'],
+            'show' => ['get', 'superadmin.usuarios.show'],
+            'create' => ['get', 'superadmin.usuarios.create'],
+            'edit' => ['get', 'superadmin.usuarios.edit'],
+            'store' => ['post', 'superadmin.usuarios.store'],
+            'update' => ['put', 'superadmin.usuarios.update'],
+            'destroy' => ['delete', 'superadmin.usuarios.destroy'],
         ];
     }
 
@@ -65,8 +73,8 @@ class UsersResourceAccessTest extends TestCase
     public static function superadminReadRoutesProvider(): array
     {
         return [
-            'index' => ['users.index'],
-            'show' => ['users.show'],
+            'index' => ['superadmin.usuarios.index'],
+            'show' => ['superadmin.usuarios.show'],
         ];
     }
 
@@ -120,7 +128,7 @@ class UsersResourceAccessTest extends TestCase
             ? []
             : [$target];
 
-        $data = in_array($routeName, ['users.store', 'users.update'], true)
+        $data = in_array($routeName, ['superadmin.usuarios.store', 'superadmin.usuarios.update'], true)
             ? $this->validUserData($routeName)
             : [];
 
@@ -132,10 +140,10 @@ class UsersResourceAccessTest extends TestCase
         $tipoDocumento = TipoDocumento::firstOrCreate(['nombre' => 'Cédula de ciudadanía']);
 
         return [
-            'name' => $routeName === 'users.store' ? 'Usuario creado sin permiso' : 'Usuario alterado sin permiso',
-            'email' => $routeName === 'users.store' ? 'creado@example.com' : 'alterado@example.com',
+            'name' => $routeName === 'superadmin.usuarios.store' ? 'Usuario creado sin permiso' : 'Usuario alterado sin permiso',
+            'email' => $routeName === 'superadmin.usuarios.store' ? 'creado@example.com' : 'alterado@example.com',
             'tipo_documento' => $tipoDocumento->id,
-            'cedula' => $routeName === 'users.store' ? '123456789' : '987654321',
+            'cedula' => $routeName === 'superadmin.usuarios.store' ? '123456789' : '987654321',
             'fecha_nacimiento' => '1990-01-01',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -149,7 +157,7 @@ class UsersResourceAccessTest extends TestCase
         int $countBefore,
         string $nameBefore,
     ): void {
-        if (! in_array($routeName, ['users.store', 'users.update', 'users.destroy'], true)) {
+        if (! in_array($routeName, ['superadmin.usuarios.store', 'superadmin.usuarios.update', 'superadmin.usuarios.destroy'], true)) {
             return;
         }
 

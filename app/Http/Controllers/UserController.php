@@ -208,7 +208,7 @@ class UserController extends Controller
         // Actualizar el usuario con los datos validados
         $user->update($validatedData);
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario actualizado exitosamente.');
     }
 
@@ -219,7 +219,7 @@ class UserController extends Controller
     {
         User::find($id)->delete();
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario eliminado exitosamente.');
     }
 }

@@ -23,7 +23,7 @@
                             </span>
                             @hasrole('Superadmin')
                             <div class="float-right">
-                                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('superadmin.usuarios.create') }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-plus"></i> Nuevo Usuario
                                 </a>
                             </div>
@@ -81,16 +81,16 @@
                                             <td class="text-center">
                                                 <div class="btn-group" role="group" aria-label="Acciones">
                                                     @hasanyrole('Superadmin|Admin')
-                                                    <a class="btn btn-info btn-sm" href="{{ route('users.show', $user->id) }}" title="Ver">
+                                                    <a class="btn btn-info btn-sm" href="{{ route('superadmin.usuarios.show', $user->id) }}" title="Ver">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a class="btn btn-success btn-sm" href="{{ route('users.edit', $user->id) }}" title="Editar">
+                                                    <a class="btn btn-success btn-sm" href="{{ route('superadmin.usuarios.edit', $user->id) }}" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     @endhasanyrole
 
                                                     @hasrole('Superadmin')
-                                                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
+                                                    <form action="{{ route('superadmin.usuarios.destroy', $user->id) }}" method="POST" class="d-inline delete-form">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">

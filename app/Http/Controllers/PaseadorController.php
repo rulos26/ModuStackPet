@@ -120,7 +120,7 @@ class PaseadorController extends Controller
         $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
         User::create($validatedData);
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario creado exitosamente.');
     }
 
@@ -198,7 +198,7 @@ class PaseadorController extends Controller
     {
         User::find($id)->delete();
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario eliminado exitosamente.');
     }
 }
