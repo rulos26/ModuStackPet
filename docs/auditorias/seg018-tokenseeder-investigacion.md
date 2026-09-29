@@ -157,3 +157,8 @@ histórica necesaria para poder eliminarlo sin perder contexto.
   permisos y SQL.
 - No se ejecutó ni reparó el seeder porque la tarea era exclusivamente de
   investigación y documentación.
+
+## Decisión humana (2026-09-28)
+Se mantiene congelado (sin ejecutarse fuera de local/testing, ya aplicado en
+la tarea 014). Se reevaluará después de la versión 3.0 estable: si para
+entonces no se ha usado ni completado, se elimina.
