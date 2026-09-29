@@ -284,3 +284,40 @@ mínimo)**, porque es la que más protege todo el trabajo posterior — a
 partir de ese momento, cualquier regresión en las tareas 029-038 se
 detecta automáticamente en cada PR en vez de depender de que cada agente
 recuerde correr `php artisan test` manualmente.
+
+
+## 9. Confirmación U-01 (tarea 026) — `cache.serializable_classes = false`
+
+Fecha: 2026-09-28. Agente: Cursor. Rama: `ia/cursor/cache-serializable-classes`.
+
+### Revisión previa de usos de caché en `app/`
+
+No se cachean objetos PHP completos. Los únicos `Cache::` relevantes:
+
+- `Configuracion::obtenerValor` (`app/Models/Configuracion.php:34`):
+  `Cache::remember` de un valor escalar (`valor` o default).
+- `ModulesSyncCommand` (`app/Console/Commands/ModulesSyncCommand.php:46-47`):
+  `Cache::put` de arrays de strings (`pluck('slug')->toArray()`).
+- Limpieza: `Cache::forget` / `Cache::flush` en `Configuracion` y
+  `ConfiguracionController`.
+
+Coherente con lo ya auditado en `docs/auditorias/fase3-laravel13.md`.
+Ningún bloqueante: se aplicó el cambio.
+
+### Cambio aplicado
+
+En `config/cache.php`, al final del array de retorno (después de
+`prefix`), se añadió la clave y el bloque de documentación del skeleton
+oficial de Laravel 13
+(https://github.com/laravel/laravel/blob/13.x/config/cache.php):
+
+```php
+'serializable_classes' => false,
+```
+
+No se tocó `.env` ni dependencias.
+
+### Verificación
+
+- `php artisan test`: **144 passed** (436 assertions).
+- `composer validate --no-check-publish`: **valid**.
