@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/auditoria-seguridad-l13
 archivos: [docs/auditorias/]
 ---
 
