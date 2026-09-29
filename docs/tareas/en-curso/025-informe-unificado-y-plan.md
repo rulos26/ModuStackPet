@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/informe-unificado-plan
 archivos: [docs/auditorias/]
 ---
 
