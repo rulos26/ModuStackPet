@@ -526,7 +526,7 @@ class ClienteController extends Controller
         $validatedData['password'] = bcrypt($validatedData['password']); // Encriptar la contraseña
         User::create($validatedData);
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario creado exitosamente.');
     }
 
@@ -604,7 +604,7 @@ class ClienteController extends Controller
         // Actualizar el usuario con los datos validados
         $user->update($validatedData);
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario actualizado exitosamente.');
     }
 
@@ -615,7 +615,7 @@ class ClienteController extends Controller
     {
         User::find($id)->delete();
 
-        return Redirect::route('users.index')
+        return Redirect::route('superadmin.usuarios.index')
             ->with('success', 'Usuario eliminado exitosamente.');
     }
 }

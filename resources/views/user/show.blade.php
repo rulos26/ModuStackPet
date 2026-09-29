@@ -56,7 +56,7 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('users.index') }}" class="btn btn-secondary btn-block"><b>{{ __('Volver') }}</b></a>
+                        <a href="{{ route('superadmin.usuarios.index') }}" class="btn btn-secondary btn-block"><b>{{ __('Volver') }}</b></a>
                     </div>
                 </div>
             </div>

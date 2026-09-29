@@ -16,13 +16,13 @@
             <i class="fas fa-users"></i> Gestión de Usuarios
         </li>
         <li class="nav-item">
-            <a href="{{ route('users.index') }}" class="nav-link">
+            <a href="{{ route('superadmin.usuarios.index') }}" class="nav-link">
                 <i class="nav-icon fas fa-user"></i>
                 <p>Lista de Usuarios</p>
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('users.create') }}" class="nav-link">
+            <a href="{{ route('superadmin.usuarios.create') }}" class="nav-link">
                 <i class="nav-icon fas fa-user-plus"></i>
                 <p>Crear Usuario</p>
             </a>

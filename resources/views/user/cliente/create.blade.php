@@ -14,7 +14,7 @@
                         <span class="card-title">{{ __('Crear') }} Usuario</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('users.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('superadmin.usuarios.store') }}"  role="form" enctype="multipart/form-data">
                             @csrf
 
                             @include('user.form')
