@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminada
+rama: ia/codex/auditoria-seguridad-l13
 archivos: [docs/auditorias/]
 ---
 
@@ -44,3 +44,24 @@ y una sección explícita "Controles previos verificados: intactos/rotos".
 - SOLO LECTURA: no modifiques código, configuración ni dependencias.
 - No leas `.env`. No ejecutes seeders, migraciones ni backups.
 - Al terminar, vuelve con `git switch --detach origin/main`.
+
+## Handoff
+- Agente y fecha: Codex, 2026-09-28.
+- Qué se hizo: auditoría independiente de controles previos, cambios oficiales
+  de Laravel 13, sesiones JSON, passkeys y dependencias sensibles. No se halló
+  una regresión crítica. Se reportaron dos hallazgos medios: falta adoptar
+  `cache.serializable_classes=false` y AutoClean elude el interruptor local
+  (hueco preexistente, no causado por Laravel 13); además, falta cobertura de
+  flujos OAuth/2FA.
+- Archivos modificados:
+  `docs/auditorias/seg023-seguridad-post-l13.md` y este archivo de tarea.
+- Cómo probarlo: `php artisan test` — 144 pruebas y 436 aserciones correctas;
+  `composer validate` — válido; `composer audit --locked --format=json` — cero
+  avisos y cero paquetes abandonados; `php artisan route:list` — sin endpoints
+  passkey/WebAuthn.
+- Pendientes y riesgos: aplicar las correcciones requiere una tarea posterior;
+  no se cambió código/configuración por la restricción de solo lectura. OAuth y
+  2FA siguen requiriendo pruebas de integración y verificación manual antes de
+  desplegar.
+- Preguntas para el humano: ninguna; los tres trabajos sugeridos están
+  priorizados al final del informe para la fase de unificación.
