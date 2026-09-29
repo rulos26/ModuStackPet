@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminada
+rama: ia/codex/autoclean-admin-tools
 archivos: [app/Http/Controllers/CleanController.php, tests/Feature/AdminWebToolsTest.php]
 ---
 
@@ -26,3 +26,19 @@ docs/auditorias/seg027-autoclean.md.
 ## Restricciones
 - No toques routes/web.php ni otros controladores.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-09-28.
+- Qué se hizo: se añadió primero una prueba roja que demostró que AutoClean
+  respondía 200 con herramientas desactivadas. Después se aplicó
+  `EnsureAdminToolsEnabled` a `CleanController`; ahora devuelve 404 cuando está
+  deshabilitado y 200 cuando está habilitado.
+- Archivos modificados: `app/Http/Controllers/CleanController.php`,
+  `tests/Feature/AdminWebToolsTest.php`,
+  `docs/auditorias/seg027-autoclean.md` y este archivo de tarea.
+- Cómo probarlo: `php artisan test tests/Feature/AdminWebToolsTest.php` — 14
+  pruebas y 36 aserciones correctas; `php artisan test` — 146 pruebas y 438
+  aserciones correctas; `composer validate` — válido.
+- Pendientes y riesgos: ninguno conocido dentro del alcance. Se conservaron las
+  defensas existentes de autenticación, rol, módulo y throttling.
+- Preguntas para el humano: ninguna.
