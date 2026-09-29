@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/kernel-modelos-duplicados
 archivos: [app/Http/Kernel.php, app/Models/, docs/auditorias/]
 ---
 
