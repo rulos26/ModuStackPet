@@ -98,3 +98,43 @@ tocó `.env` ni dependencias.
   policy); se dejó así porque ya filtraba correctamente y no forma parte
   del defecto reportado (el defecto era el acceso directo por id, no el
   listado).
+
+## Tarea 019: Paseador sin acceso a index ni store
+
+Fecha: 2026-09-28. Agente: Claude. Rama: `ia/claude/paseador-sin-mascotas`.
+
+Decisión humana: Paseador tampoco debe poder crear (`store`) ni listar
+(`index`) mascotas, cerrando el pendiente que quedó abierto en la tarea 016.
+
+### Prueba roja
+
+Se añadieron dos pruebas a `MascotaAccessControlTest`:
+`paseador_no_puede_listar_ni_crear_mascotas` (index/create/store deben dar
+403 y la BD no debe cambiar) y
+`cliente_y_roles_altos_pueden_listar_y_crear_mascotas` (blindaje para que
+Cliente, Admin y Superadmin sigan funcionando). Antes de la corrección,
+`paseador_no_puede_listar_ni_crear_mascotas` fallaba: `index` y `create`
+devolvían 200 en vez de 403 (commit `5d882f05`).
+
+### Corrección
+
+1. [app/Policies/MascotaPolicy.php](../../app/Policies/MascotaPolicy.php):
+   se añadieron `viewAny` y `create`, ambas devuelven `true` solo para
+   Superadmin, Admin y Cliente (Paseador y cualquier otro rol quedan fuera).
+2. [app/Http/Controllers/MascotaController.php](../../app/Http/Controllers/MascotaController.php):
+   `index`, `create` y `store` ahora llaman
+   `$this->authorize('viewAny'|'create', Mascota::class)` al inicio, antes
+   de cualquier consulta o escritura.
+
+Tras la corrección, `php artisan test` da **144 pruebas, 436 aserciones**,
+todas en verde. `composer validate` también pasa.
+
+### Restricciones respetadas
+
+No se tocaron rutas de documentos ni `MascotaDocumentController`. No se
+tocó `.env` ni dependencias.
+
+### Pendientes y riesgos
+
+Ninguno identificado: con esto, Paseador queda sin ningún acceso a
+`mascotas.*` (index, create, store, show, edit, update, destroy).
