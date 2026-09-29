@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/unificar-rutas-usuarios
 archivos: [routes/web.php, resources/views/, tests/Feature/]
 ---
 
