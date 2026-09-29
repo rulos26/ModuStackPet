@@ -98,6 +98,59 @@ class MascotaAccessControlTest extends TestCase
     }
 
     #[Test]
+    public function paseador_no_puede_listar_ni_crear_mascotas(): void
+    {
+        $owner = $this->userWithRole('Cliente');
+        $paseador = $this->userWithRole('Paseador');
+        $raza = RazaFactory::new()->create();
+        MascotaFactory::new()->create(['user_id' => $owner->id, 'raza_id' => $raza->id]);
+
+        $this->actingAs($paseador)->get(route('mascotas.index'))->assertForbidden();
+        $this->actingAs($paseador)->get(route('mascotas.create'))->assertForbidden();
+
+        $conteoAntes = Mascota::count();
+
+        $this->actingAs($paseador)->post(route('mascotas.store'), [
+            'nombre' => 'Intento paseador',
+            'edad' => 1,
+            'raza_id' => $raza->id,
+            'genero' => 'Macho',
+            'vacunas_completas' => '0',
+            'esterilizado' => '0',
+        ])->assertForbidden();
+
+        $this->assertSame($conteoAntes, Mascota::count());
+        $this->assertDatabaseMissing('mascotas', ['nombre' => 'Intento paseador']);
+    }
+
+    #[Test]
+    public function cliente_y_roles_altos_pueden_listar_y_crear_mascotas(): void
+    {
+        $raza = RazaFactory::new()->create();
+
+        foreach (['Cliente', 'Admin', 'Superadmin'] as $role) {
+            $user = $this->userWithRole($role);
+
+            $this->actingAs($user)->get(route('mascotas.index'))->assertOk();
+            $this->actingAs($user)->get(route('mascotas.create'))->assertOk();
+
+            $this->actingAs($user)->post(route('mascotas.store'), [
+                'nombre' => 'Creada por ' . $role,
+                'edad' => 2,
+                'raza_id' => $raza->id,
+                'genero' => 'Hembra',
+                'vacunas_completas' => '1',
+                'esterilizado' => '0',
+            ])->assertRedirect(route('mascotas.index'));
+
+            $this->assertDatabaseHas('mascotas', [
+                'nombre' => 'Creada por ' . $role,
+                'user_id' => $user->id,
+            ]);
+        }
+    }
+
+    #[Test]
     public function admin_y_superadmin_pueden_ver_editar_y_borrar_mascotas_de_cualquiera(): void
     {
         $owner = $this->userWithRole('Cliente');
