@@ -176,3 +176,64 @@ comportamiento no cubiertas por la suite automatizada:
   sus versiones instaladas subieron solo porque `composer update` lo
   exigió dentro de sus propios rangos `^` para satisfacer
   `laravel/framework ^13`.
+
+## Tarea 022b: activar `session.serialization = json`
+
+Fecha: 2026-09-28. Agente: Claude. Misma rama `ia/claude/fase3-laravel-13`.
+
+Decisión humana aprobada: adoptar `session.serialization = json` ahora,
+porque el proyecto aún no está en producción y no hay sesiones reales que
+perder con el cambio.
+
+### Cambio aplicado
+
+[config/session.php](../../config/session.php): se agregó la clave
+`'serialization' => 'json'`, con el mismo bloque de comentario y en el
+mismo lugar (justo después de `'encrypt'`) que trae el skeleton oficial de
+Laravel 13
+(`https://github.com/laravel/laravel/blob/13.x/config/session.php`,
+verificado con WebFetch). No se envolvió en `env()` porque el skeleton
+oficial tampoco lo hace: es una decisión de seguridad de la aplicación, no
+algo que deba variar por entorno.
+
+### Verificación de riesgo (más allá de lo que cubren las pruebas)
+
+Antes de dar el cambio por seguro, se buscó en `app/` cualquier lugar que
+guarde objetos PHP (no serializables a JSON de forma trivial) directamente
+en la sesión:
+
+- `grep` de `session()->put(`, `Session::put(`, `session([` en `app/`: solo
+  una coincidencia,
+  [app/Http/Middleware/SessionTimeout.php:48](../../app/Http/Middleware/SessionTimeout.php)
+  (`session(['last_activity' => $currentTime])`), donde `$currentTime` es
+  el entero que devuelve `time()`. Es JSON-seguro.
+- El resto de datos que Laravel guarda en sesión (id de usuario autenticado,
+  token CSRF, mensajes flash, y el `MessageBag`/`ViewErrorBag` que Laravel
+  flashea automáticamente en `errors` tras una validación fallida) son
+  manejados internamente por el framework, no por código de este proyecto;
+  Laravel 13 los serializa correctamente en modo `json` porque es el modo
+  por defecto para aplicaciones nuevas.
+- La suite ya incluía pruebas que ejercitan justamente ese camino (fallo de
+  validación → redirect con `errors` en sesión →
+  `assertSessionHasErrors`) en `tests/Feature/MascotaFlowsTest.php`,
+  `tests/Feature/MascotaDocumentFlowsTest.php` y
+  `tests/Feature/ModuleManagementTest.php`. Se corrieron explícitamente
+  después del cambio (`php artisan test tests/Feature/MascotaDocumentFlowsTest.php
+  tests/Feature/MascotaFlowsTest.php tests/Feature/ModuleManagementTest.php`)
+  y las 19 pruebas de esos 3 archivos pasaron sin cambios.
+
+### Resultado de las pruebas
+
+- Antes del cambio (mismo estado de dependencias que en la tarea 022, ya
+  con `composer install` corrido en esta rama): `php artisan test` → 144
+  pruebas, 436 aserciones, verde.
+- Después de agregar `'serialization' => 'json'`: `php artisan test` → **144
+  pruebas, 436 aserciones, verde**. Ninguna prueba dependía implícitamente
+  de la serialización PHP de sesión; no hizo falta ajustar ni una.
+- `composer validate`: OK.
+
+### Restricciones respetadas
+
+No se tocó nada más de lo ya aplicado en la tarea 022 (ni `composer.json`,
+ni otros archivos de `config/`, ni `app/`). El único archivo de código
+modificado fue `config/session.php`.
