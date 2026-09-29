@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/codex/documentos-autoaprobacion
 archivos: [app/Http/Controllers/MascotaDocumentController.php, app/Models/MascotaDocument.php, database/migrations/, resources/views/, tests/Feature/]
 ---
 
@@ -34,3 +34,11 @@ Nunca se registra como aprobador a quien lo subió.
 - No toques routes/web.php ni MascotaController (los corrige Claude en la 016).
 - No toques `.env` ni dependencias. Todas las pruebas deben pasar.
 - Al terminar, vuelve con `git switch --detach origin/main`.
+
+## Handoff
+- Agente y fecha: Codex, 2026-09-28.
+- Qué se hizo: se añadieron primero tres pruebas rojas para autoaprobación, fuga de transacción y exposición de errores. Los documentos válidos ahora quedan pendientes, con `validacion_automatica=true` y sin aprobador; solo Admin/Superadmin aprueban. La autorización de update/destroy ocurre antes de abrir transacciones. Todos los catch del controlador muestran mensajes genéricos y registran solo la clase de excepción. Las vistas separan estado de aprobación y validación automática.
+- Archivos modificados: `app/Http/Controllers/MascotaDocumentController.php`, `resources/views/mascota-documents/create.blade.php`, `resources/views/mascota-documents/index.blade.php`, `resources/views/mascota-documents/show.blade.php`, `tests/Feature/MascotaDocumentFlowsTest.php`, `docs/auditorias/seg017-documentos.md` y esta ficha.
+- Cómo probarlo: `php artisan test` (136 pruebas, 371 aserciones, todas pasan); `composer validate` (`composer.json` válido). Prueba focal: `php artisan test tests/Feature/MascotaDocumentFlowsTest.php` (8 pruebas, 51 aserciones).
+- Pendientes y riesgos: no fue necesaria una migración porque `validacion_automatica` ya representa el resultado automático. El almacenamiento físico de archivos no es transaccional con la BD; una excepción posterior al guardado podría dejar un archivo huérfano, riesgo preexistente fuera del alcance.
+- Preguntas para el humano: ninguna para cerrar esta tarea.

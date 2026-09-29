@@ -54,6 +54,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th>Validación automática</th>
+                                    <td>
+                                        @if($mascotaDocument->validacion_automatica)
+                                            <span class="badge bg-info">Superada</span>
+                                        @else
+                                            <span class="badge bg-secondary">No superada</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Fecha de Emisión</th>
                                     <td>{{ $mascotaDocument->fecha_emision ? $mascotaDocument->fecha_emision->format('d/m/Y') : 'N/A' }}</td>
                                 </tr>
@@ -147,4 +157,3 @@
     </div>
 </div>
 @endsection
-

@@ -5,11 +5,14 @@ namespace Tests\Feature;
 use App\Models\DocumentRequirement;
 use App\Models\MascotaDocument;
 use App\Models\User;
+use App\Services\DocumentValidationService;
 use Database\Factories\MascotaFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -47,7 +50,22 @@ class MascotaDocumentFlowsTest extends TestCase
         $response->assertRedirect(route('mascota-documents.index'));
         $document = MascotaDocument::query()->sole();
         $this->assertSame($cliente->id, $document->usuario_subio_id);
+        $this->assertSame('pendiente', $document->estado);
+        $this->assertTrue($document->validacion_automatica);
+        $this->assertNull($document->usuario_aprobo_id);
+        $this->assertNull($document->fecha_aprobacion);
         Storage::disk('public')->assertExists($document->ruta_archivo);
+
+        $this->actingAs($cliente)
+            ->get(route('mascota-documents.index'))
+            ->assertOk()
+            ->assertSee('Pendiente')
+            ->assertSee('Validación automática superada');
+        $this->actingAs($cliente)
+            ->get(route('mascota-documents.show', $document))
+            ->assertOk()
+            ->assertSee('Pendiente')
+            ->assertSee('Superada');
     }
 
     #[Test]
@@ -131,15 +149,6 @@ class MascotaDocumentFlowsTest extends TestCase
             ->post(route('mascota-documents.rechazar', $document), ['motivo_rechazo' => 'No autorizado'])
             ->assertForbidden();
 
-        $updateResponse = $this->actingAs($cliente)
-            ->from(route('mascota-documents.index'))
-            ->put(route('mascota-documents.update', $document), ['notas' => 'Alterada']);
-
-        $updateResponse->assertRedirect(route('mascota-documents.index'));
-        // El controlador inicia una transacción antes de verificar propiedad y
-        // retorna sin cerrarla. Se equilibra aquí para no contaminar otros tests.
-        DB::rollBack();
-
         $this->assertDatabaseHas('mascota_documents', [
             'id' => $document->id,
             'notas' => 'Original',
@@ -201,6 +210,61 @@ class MascotaDocumentFlowsTest extends TestCase
         $response->assertSessionHas('error');
         $this->assertDatabaseCount('mascota_documents', 0);
         Storage::disk('public')->assertDirectoryEmpty('documentos_mascotas');
+    }
+
+    #[Test]
+    public function internal_exception_details_are_not_exposed_or_logged(): void
+    {
+        $secret = 'password-super-secreto';
+        $cliente = $this->userWithRole('Cliente');
+        $mascota = MascotaFactory::new()->create(['user_id' => $cliente->id]);
+        $requirement = DocumentRequirement::factory()->create();
+        $service = Mockery::mock(DocumentValidationService::class);
+        $service->shouldReceive('validarDocumento')
+            ->once()
+            ->andThrow(new \RuntimeException("Fallo interno: {$secret}"));
+        $this->app->instance(DocumentValidationService::class, $service);
+        Log::spy();
+
+        $response = $this->actingAs($cliente)
+            ->from(route('mascota-documents.create', ['mascota_id' => $mascota->id]))
+            ->post(route('mascota-documents.store'), [
+                'mascota_id' => $mascota->id,
+                "archivo_{$requirement->id}" => $this->validPdf(),
+            ]);
+
+        $response->assertRedirect(route('mascota-documents.create', ['mascota_id' => $mascota->id]));
+        $response->assertSessionHas('error', fn (string $message): bool => ! str_contains($message, $secret));
+        Log::shouldHaveReceived('error')
+            ->once()
+            ->with(
+                'Error al subir documentos.',
+                Mockery::on(fn (array $context): bool => ! str_contains(json_encode($context), $secret)),
+            );
+    }
+
+    #[Test]
+    public function denied_foreign_document_update_does_not_leave_a_transaction_open(): void
+    {
+        $cliente = $this->userWithRole('Cliente');
+        $otroCliente = $this->userWithRole('Cliente');
+        $mascotaAjena = MascotaFactory::new()->create(['user_id' => $otroCliente->id]);
+        $document = MascotaDocument::factory()->create([
+            'mascota_id' => $mascotaAjena->id,
+            'notas' => 'Original',
+        ]);
+        $transactionLevelBefore = DB::transactionLevel();
+
+        $response = $this->actingAs($cliente)
+            ->from(route('mascota-documents.index'))
+            ->put(route('mascota-documents.update', $document), ['notas' => 'Alterada']);
+
+        $response->assertRedirect(route('mascota-documents.index'));
+        $this->assertSame($transactionLevelBefore, DB::transactionLevel());
+        $this->assertDatabaseHas('mascota_documents', [
+            'id' => $document->id,
+            'notas' => 'Original',
+        ]);
     }
 
     private function uploadContext(): array

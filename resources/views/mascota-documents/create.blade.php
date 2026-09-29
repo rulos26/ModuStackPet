@@ -61,6 +61,10 @@
                                         <span class="badge bg-{{ $documentoExistente->estado === 'aprobado' ? 'success' : ($documentoExistente->estado === 'rechazado' ? 'danger' : 'warning') }}">
                                             {{ ucfirst($documentoExistente->estado) }}
                                         </span>
+                                        @if($documentoExistente->validacion_automatica)
+                                            <br><strong>Validación automática:</strong>
+                                            <span class="badge bg-info">Superada</span>
+                                        @endif
                                         @if($documentoExistente->fecha_vencimiento)
                                             <br><strong>Vence:</strong> {{ $documentoExistente->fecha_vencimiento->format('d/m/Y') }}
                                         @endif
@@ -136,4 +140,3 @@
     </div>
 </div>
 @endsection
-
