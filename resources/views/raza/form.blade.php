@@ -39,6 +39,32 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="requiere_cuidado_especial" value="1"
+                        class="form-check-input @error('requiere_cuidado_especial') is-invalid @enderror"
+                        id="requiere_cuidado_especial"
+                        {{ old('requiere_cuidado_especial', $raza->requiere_cuidado_especial ?? false) ? 'checked' : '' }}>
+                    <label for="requiere_cuidado_especial" class="form-check-label">
+                        {{ __('Requiere cuidado especial al manejarla') }}
+                    </label>
+                    {!! $errors->first('requiere_cuidado_especial', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label for="cuidados_especiales" class="form-label">{{ __('Indicaciones de cuidado') }}</label>
+                    <textarea name="cuidados_especiales" rows="3"
+                        class="form-control @error('cuidados_especiales') is-invalid @enderror"
+                        id="cuidados_especiales"
+                        placeholder="{{ __('Ejemplo: usar bozal y correa corta') }}">{{ old('cuidados_especiales', $raza->cuidados_especiales ?? '') }}</textarea>
+                    {!! $errors->first('cuidados_especiales', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-12 text-center">
                 <button type="submit" class="btn btn-primary">

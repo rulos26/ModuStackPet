@@ -84,9 +84,9 @@ class DocumentRequirement extends Model
             return true;
         }
         
-        // Si aplica solo para razas peligrosas, verificar si la raza es peligrosa
-        // Esto requeriría un campo en la tabla razas o una configuración
-        // Por ahora retornamos true si no es específico
-        return true; // TODO: Implementar lógica de razas peligrosas
+        // El nombre del campo es legado. La decisión de producto vigente no
+        // clasifica razas como peligrosas: identifica las que requieren cuidados
+        // especiales de manejo (bozal, correa corta, etc.).
+        return (bool) ($raza?->requiere_cuidado_especial ?? false);
     }
 }
