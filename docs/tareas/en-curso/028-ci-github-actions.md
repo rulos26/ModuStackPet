@@ -1,7 +1,7 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/cursor/ci-github-actions
 archivos: [.github/workflows/tests.yml]
 ---
 
