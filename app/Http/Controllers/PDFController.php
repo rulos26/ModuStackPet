@@ -24,7 +24,7 @@ class PDFController extends Controller
         }
 
         // Ruta de la imagen por defecto
-        $imagenPorDefecto = public_path('avatars/1110456003/mascotas/thanos.png');
+        $imagenPorDefecto = public_path('ruta_default_avatar.png');
 
         // Ruta de la imagen de la mascota
         $rutaImagen = $mascota->avatar
