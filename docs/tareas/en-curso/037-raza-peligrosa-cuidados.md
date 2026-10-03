@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/raza-cuidados-especiales
 archivos: [app/Models/Raza.php, app/Models/DocumentRequirement.php, database/migrations/, resources/views/, tests/]
 ---
 
