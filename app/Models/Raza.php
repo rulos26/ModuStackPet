@@ -27,7 +27,16 @@ class Raza extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['tipo_mascota', 'nombre'];
+    protected $fillable = [
+        'tipo_mascota',
+        'nombre',
+        'requiere_cuidado_especial',
+        'cuidados_especiales',
+    ];
+
+    protected $casts = [
+        'requiere_cuidado_especial' => 'boolean',
+    ];
 
 
     /**

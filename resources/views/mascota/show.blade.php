@@ -73,6 +73,15 @@
         </div>
     </div>
 
+    @if($mascota->raza?->requiere_cuidado_especial)
+        <div class="alert alert-warning shadow-sm mb-4" role="alert">
+            <h4 class="alert-heading mb-2">
+                <i class="fas fa-exclamation-triangle"></i> {{ __('Cuidado especial requerido') }}
+            </h4>
+            <p class="mb-0">{{ $mascota->raza->cuidados_especiales }}</p>
+        </div>
+    @endif
+
     <div class="row">
         <!-- Información Básica -->
         <div class="col-lg-6 mb-4">
