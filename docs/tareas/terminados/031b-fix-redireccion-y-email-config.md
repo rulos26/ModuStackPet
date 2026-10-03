@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/fortify-auth
 archivos: [app/, database/]
 ---
@@ -48,3 +48,11 @@ ambas correcciones y su verificación.
 - No toques .env ni dependencias.
 - Las 164 pruebas existentes deben seguir pasando, más las nuevas.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: verificación de correo redirige por rol (RoleRedirect); migración que desactiva filas de email_configs con password indescifrable.
+- Archivos modificados: routes/web.php, database/migrations/2026_10_03_000000_deactivate_undecryptable_email_configs.php, tests/Feature/FortifyVerificationRedirectTest.php, docs/auditorias/seg031-fortify-auth.md
+- Cómo probarlo: `php artisan test` (169 passed); `php artisan migrate` local y revisar que no aparece "Error al cargar configuración de Email".
+- Pendientes y riesgos: no ejecuté la migración contra la BD real ni verifiqué el log; el origen de la fila es una hipótesis.
+- Preguntas para el humano: ninguna.

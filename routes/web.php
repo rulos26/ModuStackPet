@@ -134,7 +134,7 @@ Route::get('/email/verify', function () {
 // Ruta que maneja el enlace de verificación
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/superadmin/dashboard');
+    return redirect(\App\Http\Responses\RoleRedirect::for($request->user()));
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 // Reenvío de verificación

@@ -30,3 +30,16 @@ Sin cambios: `auth/login`, `register`, `forgot-password`, `reset-password` ya co
 - URLs viejas `password/reset/{token}` en correos ya enviados dejan de funcionar (ahora `reset-password/{token}`).
 - `Features::emailVerification()` sigue activo en Fortify junto a las rutas `email/verify*` propias de `web.php` (no se tocó).
 - `config/fortify.php` `home` sigue en `/home` (ruta inexistente); solo afecta a `RedirectIfAuthenticated` con rutas guest.
+
+## Ajuste 031b (misma rama)
+
+### Hallazgo 1 — redirección tras verificar correo
+Causa: `routes/web.php` (`verification.verify`) tenía fijo `redirect('/superadmin/dashboard')`; no era Fortify. Ahora usa `RoleRedirect::for($request->user())`, la misma lógica que login y registro. Registro y login no se tocaron.
+Verificación: `tests/Feature/FortifyVerificationRedirectTest.php` (4 roles, enlace firmado real). Fallaban 3 de 4 antes del cambio (Superadmin ya coincidía por casualidad).
+
+### Hallazgo 2 — fila corrupta en `email_configs`
+Origen probable: el password quedó cifrado con una APP_KEY distinta a la actual (o es un valor no cifrado por `Crypt` que `EmailConfigSeeder` insertó antes de la migración `2025_11_06_000000_encrypt_credentials_columns`, que solo cifra valores en claro; un payload inválido con prefijo cifrado no se re-cifra). No se pudo confirmar contra la BD real (sin acceso a `.env`/MySQL en este worktree).
+Corrección: migración `2026_10_03_000000_deactivate_undecryptable_email_configs.php`: pone `is_active = false` en las filas activas cuyo password no se descifra. No borra filas, ni toca seeder ni tabla; idempotente; `down()` vacío a propósito. Si el humano quiere recuperar esa configuración, debe volver a guardar el password desde el panel de Superadmin.
+Verificación: prueba automatizada (fila inválida se desactiva, fila válida intacta). **Pendiente humano:** ejecutar `php artisan migrate` en el entorno local y confirmar que el warning desaparece del log (no pude hacerlo).
+
+Suite: 169 passed (164 + 5 nuevas).
