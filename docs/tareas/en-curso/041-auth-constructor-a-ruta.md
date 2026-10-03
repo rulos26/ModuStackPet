@@ -1,8 +1,8 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
-archivos: [routes/web.php]
+estado: en-curso
+rama: ia/cursor/auth-constructor-a-ruta
+archivos: [routes/web.php, tests/Feature/CatalogRouteAuthTest.php, docs/auditorias/seg041-auth-constructor-a-ruta.md]
 ---
 
 # Mover auth del constructor a la ruta (3 recursos)
