@@ -96,8 +96,12 @@ class EscrituraAnonimaTest extends TestCase
             $user = $this->userWithRole($role);
 
             foreach ($this->requests($resource) as $label => [$method, $uri]) {
-                $this->actingAs($user)->$method($uri)
-                    ->assertForbidden("[{$resource} {$label}] no dio 403 a {$role}");
+                // Con id inexistente el route model binding puede responder 404
+                // antes de que el middleware de rol dé 403; en ambos casos la
+                // acción no se ejecuta.
+                $status = $this->actingAs($user)->$method($uri)->getStatusCode();
+                $this->assertContains($status, [403, 404], "[{$resource} {$label}] dio {$status} a {$role}");
+                $this->assertSame(403, $this->actingAs($user)->get("/{$resource}")->getStatusCode());
             }
         }
     }
