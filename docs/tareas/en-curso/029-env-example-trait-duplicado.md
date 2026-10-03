@@ -1,7 +1,7 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/cursor/env-example-trait-duplicado
 archivos: [.env.example, app/Models/User.php]
 ---
 
