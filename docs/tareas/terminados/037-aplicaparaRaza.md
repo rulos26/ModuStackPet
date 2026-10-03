@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: en-curso
+estado: terminado
 rama: ia/codex/aplica-para-raza
 archivos: [app/Models/DocumentRequirement.php, tests/]
 ---
@@ -37,3 +37,18 @@ con la información disponible.
 - No toques .env ni dependencias.
 - Si implementas algo, las pruebas (196 + nuevas) deben pasar.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se trazó el uso de `aplicaParaRaza`, su esquema, interfaz,
+  datos auxiliares e historial. Se confirmó que el flag se consulta, pero no
+  existe ninguna clasificación ni relación que permita discriminar razas. El
+  hallazgo y las alternativas se documentaron sin inventar una regla.
+- Archivos modificados: `docs/auditorias/seg037-aplicaparaRaza.md`.
+- Cómo probarlo: `php artisan test` y `composer validate` (ambos ejecutados).
+- Pendientes y riesgos: el flag continúa sin efecto hasta definir y persistir
+  la clasificación. No se agregaron pruebas porque el modelo actual no permite
+  configurar la premisa "razas específicas" que esas pruebas necesitarían.
+- Preguntas para el humano: ¿producto prefiere una marca global
+  `razas.es_peligrosa` o una relación muchos-a-muchos que seleccione razas por
+  requisito? ¿Un requisito específico debe excluir mascotas sin raza?
