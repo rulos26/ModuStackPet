@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Sector;
-use App\Models\Sectore;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -34,36 +33,23 @@ class SectorCharacterizationTest extends TestCase
     }
 
     #[Test]
-    public function both_models_share_the_table_and_read_the_same_row(): void
+    public function sector_is_the_only_model_for_sectores_table(): void
     {
-        $id = $this->row();
-
+        $this->assertFileDoesNotExist(app_path('Models/Sectore.php'));
         $this->assertSame('sectores', (new Sector)->getTable());
-        $this->assertSame('sectores', (new Sectore)->getTable());
-        $this->assertSame('Salud', Sector::find($id)->nombre);
-        $this->assertSame('Salud', Sectore::find($id)->nombre);
-    }
-
-    #[Test]
-    public function delete_is_hard_for_sectore_and_soft_for_sector(): void
-    {
-        $a = $this->row('A');
-        $b = $this->row('B');
-
-        Sectore::find($a)->delete();
-        $this->assertDatabaseMissing('sectores', ['id' => $a]);
-
-        Sector::find($b)->delete();
-        $this->assertNotNull(DB::table('sectores')->where('id', $b)->value('deleted_at'));
-    }
-
-    #[Test]
-    public function sector_has_empresas_relation_sectore_does_not(): void
-    {
         $this->assertTrue(method_exists(Sector::class, 'empresas'));
-        $this->assertFalse(method_exists(Sectore::class, 'empresas'));
     }
 
+    #[Test]
+    public function sector_delete_is_soft(): void
+    {
+        $id = $this->row('B');
+
+        Sector::find($id)->delete();
+
+        $this->assertNotNull(DB::table('sectores')->where('id', $id)->value('deleted_at'));
+        $this->assertNull(Sector::find($id));
+    }
     #[Test]
     public function index_lists_twenty_per_page(): void
     {
@@ -94,19 +80,18 @@ class SectorCharacterizationTest extends TestCase
         $this->post('/sectores', ['nombre' => 'Otro'])->assertSessionHasErrors('nombre');
 
         $this->delete("/sectores/{$id}")->assertRedirect(route('sectores.index'));
-        $this->assertNull(Sectore::find($id));
+        $this->assertNull(Sector::find($id)); // borrado lógico
         $this->assertNotNull($otro);
     }
 
     #[Test]
-    public function missing_id_currently_crashes(): void
+    public function missing_id_returns_404(): void
     {
-        // Bug preexistente: find() sin fail → null: show renderiza vacío (200), edit y destroy dan 500.
-        $this->get('/sectores/9999')->assertOk(); // la vista show es tolerante a null
-        $this->get('/sectores/9999/edit')->assertStatus(500);
-        $this->delete('/sectores/9999')->assertStatus(500);
+        // Antes (find() sin fail) show daba 200 vacío y edit/destroy 500.
+        $this->get('/sectores/9999')->assertNotFound();
+        $this->get('/sectores/9999/edit')->assertNotFound();
+        $this->delete('/sectores/9999')->assertNotFound();
     }
-
     #[Test]
     public function routes_already_require_auth_and_role(): void
     {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sectore;
+use App\Models\Sector;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\SectoreRequest;
@@ -16,7 +16,7 @@ class SectoreController extends Controller
      */
     public function index(Request $request): View
     {
-        $sectores = Sectore::paginate();
+        $sectores = Sector::paginate();
 
         return view('sectore.index', compact('sectores'))
             ->with('i', ($request->input('page', 1) - 1) * $sectores->perPage());
@@ -27,7 +27,7 @@ class SectoreController extends Controller
      */
     public function create(): View
     {
-        $sectore = new Sectore();
+        $sectore = new Sector();
 
         return view('sectore.create', compact('sectore'));
     }
@@ -37,7 +37,7 @@ class SectoreController extends Controller
      */
     public function store(SectoreRequest $request): RedirectResponse
     {
-        Sectore::create($request->validated());
+        Sector::create($request->validated());
 
         return Redirect::route('sectores.index')
             ->with('success', 'Sectore created successfully.');
@@ -48,7 +48,7 @@ class SectoreController extends Controller
      */
     public function show($id): View
     {
-        $sectore = Sectore::find($id);
+        $sectore = Sector::findOrFail($id);
 
         return view('sectore.show', compact('sectore'));
     }
@@ -58,7 +58,7 @@ class SectoreController extends Controller
      */
     public function edit($id): View
     {
-        $sectore = Sectore::find($id);
+        $sectore = Sector::findOrFail($id);
 
         return view('sectore.edit', compact('sectore'));
     }
@@ -66,7 +66,7 @@ class SectoreController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(SectoreRequest $request, Sectore $sectore): RedirectResponse
+    public function update(SectoreRequest $request, Sector $sectore): RedirectResponse
     {
         $sectore->update($request->validated());
 
@@ -76,7 +76,7 @@ class SectoreController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        Sectore::find($id)->delete();
+        Sector::findOrFail($id)->delete();
 
         return Redirect::route('sectores.index')
             ->with('success', 'Sectore deleted successfully');

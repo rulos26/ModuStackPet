@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/consolidar-sector
 archivos: [app/Models/Sector.php, app/Models/Sectore.php, app/Http/Controllers/, resources/views/, tests/]
 ---
@@ -32,3 +32,11 @@ docs/auditorias/seg035-consolidar-sector.md.
 - No toques TipoEmpresa/TiposEmpresa (es la 036, despues de esta).
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: Sector/Sectore consolidados en `Sector`; `Sectore` movido a `_borrar/modelos/`; findOrFail en show/edit/destroy. Las rutas ya tenían auth desde la 040.
+- Archivos modificados: app/Http/Controllers/SectoreController.php, app/Models/{Sector,Empresa}.php, app/Models/Sectore.php (eliminado), tests/Feature/SectorCharacterizationTest.php, docs/auditorias/seg035-consolidar-sector.md
+- Cómo probarlo: `php artisan test` (254 passed); `composer dump-autoload` si el classmap local aún lista Sectore.
+- Pendientes y riesgos: borrado ahora lógico y la regla unique bloquea reutilizar nombres de sectores eliminados; sin prueba manual en navegador.
+- Preguntas para el humano: ¿Ajustamos `unique:sectores,nombre` para ignorar filas eliminadas (`whereNull('deleted_at')`)?
