@@ -49,3 +49,18 @@ comportamiento esperado y detecte la corrección futura.
   `email_verified_at` descrito arriba.
 - `composer validate` → `./composer.json is valid`.
 
+## Corrección 033b
+
+Se agregó `email_verified_at` a `$fillable` en `app/Models/User.php`. De este
+modo, el valor que ya proporciona `SocialAuthController` durante la creación
+del usuario OAuth se persiste y conserva el cast a `datetime` definido por el
+modelo. No fue necesario modificar el controlador ni la prueba que reveló el
+defecto.
+
+Resultados posteriores a la corrección:
+
+- `php artisan test --filter=SocialAuthTest` → 8 pruebas aprobadas,
+  48 aserciones.
+- `php artisan test` → 177 pruebas aprobadas, 558 aserciones; suite 100% en
+  verde.
+- `composer validate` → `./composer.json is valid`.
