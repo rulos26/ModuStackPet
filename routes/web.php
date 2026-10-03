@@ -6,9 +6,6 @@ use App\Http\Controllers\SuperadminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\PaseadorController;
-use App\Http\Controllers\RegisteredUserController;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MensajeDeBienvenidaController;
 use App\Http\Controllers\UserController;
@@ -29,7 +26,6 @@ use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\SeederController;
 use App\Http\Controllers\CleanController;
-use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\MascotaDocumentController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -88,30 +84,12 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::middleware(['web'])->group(function () {
-Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
-});
-
-// Ruta para mostrar el formulario de registro
-Route::get('register', [RegisterController::class, 'showRegisterForm'])->name('register');
-
-// Ruta para manejar el registro
-Route::post('register', [RegisterController::class, 'register']);
-
-
-Route::get('password/reset', [ResetPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('password/email', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
-
-
+// Registro, login y reset de contraseña: los registra Laravel Fortify
+// (config/fortify.php, app/Providers/FortifyServiceProvider.php).
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('temp.index');
-
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('login', [LoginController::class, 'login']);
 
 // Rutas OAuth para autenticación con redes sociales
 Route::get('/auth/{provider}', [\App\Http\Controllers\Auth\SocialAuthController::class, 'redirect'])->name('social.redirect');

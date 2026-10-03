@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/fortify-auth
 archivos: [bootstrap/providers.php, routes/web.php, app/Http/Controllers/, config/fortify.php]
 ---
@@ -50,3 +50,11 @@ vistas se ajustaron, resultado de pruebas automatizadas y manuales.
 - Si algo de esto requiere una decisión de producto que no está cubierta
   aquí, detente y pregunta en el Handoff en vez de decidir tú.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: Fortify pasa a ser el stack de auth (provider registrado, rutas propias retiradas, 2FA apagado, respuestas de login/registro y bloqueo de inactivos preservados). Ver docs/auditorias/seg031-fortify-auth.md.
+- Archivos modificados: bootstrap/providers.php, config/fortify.php, routes/web.php, app/Providers/FortifyServiceProvider.php, app/Http/Responses/{CustomLoginResponse,CustomRegisterResponse,RoleRedirect}.php, tests/Feature/FortifyAuthTest.php; controladores de auth eliminados de app/ (copias en _borrar/controladores-auth/).
+- Cómo probarlo: `php artisan test` (164 passed); `php artisan route:list | grep -i two-factor` (vacío).
+- Pendientes y riesgos: prueba manual en navegador NO realizada (sin .env/MySQL en este worktree); enlaces de reset antiguos cambian de URL.
+- Preguntas para el humano: ¿Aceptas conservar la redirección por rol y bloqueo de inactivos como respuestas/hook de Fortify? ¿Puedes hacer la prueba manual?

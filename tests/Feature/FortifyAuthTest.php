@@ -5,8 +5,9 @@ namespace Tests\Feature;
 use App\Models\Cliente;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
@@ -89,7 +90,7 @@ class FortifyAuthTest extends TestCase
         $this->assertTrue((bool) $user->activo);
         $this->assertDatabaseHas('clientes', ['user_id' => $user->id]);
         $this->assertAuthenticatedAs($user);
-        Notification::assertSentTo($user, VerifyEmail::class);
+        Notification::assertSentTo($user, VerifyEmailNotification::class);
     }
 
     #[Test]
