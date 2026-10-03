@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Storage;
  *
  * @property Ciudad $ciudad
  * @property Departamento $departamento
- * @property Sectore $sectore
+ * @property Sector $sector
  * @property TiposEmpresa $tiposEmpresa
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder

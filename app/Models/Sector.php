@@ -12,6 +12,8 @@ class Sector extends Model
 
     protected $table = 'sectores';
 
+    protected $perPage = 20;
+
     protected $fillable = [
         'nombre'
     ];
