@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/consolidar-ciudad
 archivos: [app/Models/Ciudad.php, app/Models/Ciudade.php, app/Http/Controllers/, app/Models/Departamento.php, resources/views/, tests/]
 ---
 
