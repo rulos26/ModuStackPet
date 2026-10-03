@@ -95,16 +95,6 @@ Route::get('/dashboard', function () {
 Route::get('/auth/{provider}', [\App\Http\Controllers\Auth\SocialAuthController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [\App\Http\Controllers\Auth\SocialAuthController::class, 'callback'])->name('social.callback');
 
-// Rutas para Superadmin
-Route::get('/superadmin/dashboard', [SuperadminController::class, 'login_Superadmin'])->name('superadmin.dashboard');
-
-// Rutas para Admin
-Route::get('/admin/dashboard', [AdminController::class, 'login_Admin'])->name('admin.dashboard');
-
-Route::get('/clientes/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
-
-
-route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
 /* // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home'); */
 
@@ -119,12 +109,6 @@ Route::get('/logout', function () {
 
     return redirect('/');
 })->name('logout');
-
-// Middleware para proteger el dashboard
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Rutas para Superadmin
-Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
-});
 
 // Ruta para verificar email
 Route::get('/email/verify', function () {
@@ -146,7 +130,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::post('/notificaciones/leidas', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
-})->name('notificaciones.marcar.leidas');
+})->middleware(['auth', 'verified'])->name('notificaciones.marcar.leidas');
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
     Route::resource('tipo-documentos', TipoDocumentoController::class);
 });

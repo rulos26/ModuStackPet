@@ -1,8 +1,8 @@
 ---
 agente: cursor
-estado: en-curso
+estado: terminado
 rama: ia/cursor/corregir-hallazgos-039b
-archivos: [routes/web.php, app/Http/Controllers/, tests/Feature/, docs/auditorias/seg039b-ampliacion-rutas.md]
+archivos: [routes/web.php, tests/Feature/Seg039bRoutesHardeningTest.php, docs/auditorias/seg039b-ampliacion-rutas.md]
 ---
 
 # Corregir hallazgos P1/P2 de seg039b (APIs y rutas duplicadas)
@@ -39,3 +39,11 @@ justificacion.
 - Si algo requiere una decision de producto que no esta clara, detente y
   pregunta en el Handoff en vez de decidir tu.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Cursor, 2026-10-03
+- Qué se hizo: Pruebas primero (`Seg039bRoutesHardeningTest`); `POST notificaciones/leidas` con `auth+verified` (sin IDOR entre usuarios); eliminados dashboards legacy (`/clientes/dashboard`, `login_Superadmin`/`login_Admin` sueltos, grupo superadmin intermedio sin rol); barrios JSON documentados como públicos; `empresas.pdf` confirmado OK tras 042. Actualizado `seg039b-ampliacion-rutas.md`.
+- Archivos modificados: `routes/web.php`, `tests/Feature/Seg039bRoutesHardeningTest.php`, `docs/auditorias/seg039b-ampliacion-rutas.md`, esta tarea.
+- Cómo probarlo: `php artisan test --filter=Seg039bRoutesHardeningTest`; `php artisan route:list --path=dashboard`; `composer validate`.
+- Pendientes y riesgos: `ciudades-api` y `temp.index` siguen públicos (P2). Mensajes de excepción en APIs barrios (P3). Métodos `login_Cliente`/`login_Paseador` siguen en uso bajo auth.
+- Preguntas para el humano: ¿Conviene exigir `auth` también en las APIs de barrios aunque el catálogo sea geográfico, o mantenerlas públicas?

@@ -95,7 +95,33 @@ No hay otras rutas `*pdf*` en `routes/web.php` ni en `routes/api.php` (no usado 
 
 ---
 
-## Verificación
+## Verificación (auditoría original)
 
 - `php artisan route:list --json` (2026-10-03, worktree cursor): middleware citado arriba.
-- No se modificó código de aplicación (solo este markdown).
+- No se modificó código de aplicación en la auditoría 039b (solo este markdown).
+
+---
+
+## Correcciones aplicadas (tarea 043 — 2026-10-03)
+
+Rama: `ia/cursor/corregir-hallazgos-039b`. Patrón: pruebas en
+`tests/Feature/Seg039bRoutesHardeningTest.php`, luego fix en `routes/web.php`.
+
+| Hallazgo | Decisión | Qué se hizo |
+|---|---|---|
+| APIs barrios (`/barrios-engativa`, `/barrios-por-ciudad/{ciudadId}`) | **Dejar públicas** | Catálogo geográfico (`id`, `nombre`, `localidad`) sin dato personal. Se usan desde `user.form` (fetch con sesión) para rellenar selects de Engativá; mismo criterio de “público por diseño” que `ciudades-api`. El CRUD de barrios sigue siendo Superadmin. No se cambió código. |
+| `POST /notificaciones/leidas` | **Corregido** | Confirmado: **no hay IDOR** — `auth()->user()->unreadNotifications` solo toca notificaciones del usuario de sesión (prueba Alice/Bob). El hueco real era invitado → 500 y falta de `verified`. Se añadió `middleware(['auth', 'verified'])`. |
+| Dashboards duplicados / `login_*` legacy | **Corregido** | La app usa `route('cliente.dashboard')` → `/cliente/dashboard` (grupo `auth`). Se eliminaron: `/clientes/dashboard`, registros sueltos `login_Superadmin` / `login_Admin` / `login_Paseador`, y el grupo intermedio `auth+verified` de `/superadmin/dashboard` sin `role` (quedaba sombreando el del prefijo Superadmin). Quedan solo las rutas bajo prefijos con `auth`. |
+| `empresas.pdf` duplicada | **Ya resuelto (042)** | Confirmado con prueba: una sola URI con `auth + verified + role:Superadmin\|Admin`. No se tocó. |
+| `/pdf` y `/pdf/mascota` | **Ya resuelto (042)** | Fuera del alcance de 043; ver `seg042-pdf-sin-auth.md`. |
+
+### Dejado sin cambio (justificación)
+
+- **`ciudades-api`**: JSON hardcodeado de demo; sin lectura de BD. Misma familia que barrios públicos; limpieza futura opcional (P2/P3).
+- **`GET /dashboard` (`temp.index`)**: vista genérica; no se abordó en 043.
+- **Mensajes de error en APIs de barrios** (`$e->getMessage()` en 500): mejora cosméticas/P3; no bloqueante si el catálogo es público.
+- **Métodos `login_Cliente` / `login_Paseador`**: siguen siendo los handlers de los dashboards autenticados (no son rutas legacy sueltas).
+
+### Pruebas
+
+`php artisan test --filter=Seg039bRoutesHardeningTest` (9 casos): invitado → login en notificaciones; Alice no marca las de Bob; sin verificar → `verification.notice`; `/clientes/dashboard` ausente (404); `cliente.dashboard` → `cliente/dashboard` con `auth`; dashboards de rol exigen login; `empresas.pdf` sigue única y completa.
