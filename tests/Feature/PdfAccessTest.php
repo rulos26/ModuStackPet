@@ -125,12 +125,15 @@ class PdfAccessTest extends TestCase
     #[Test]
     public function admin_can_download_an_empresa_pdf(): void
     {
-        DB::statement('PRAGMA foreign_keys = OFF');
+        $now = ['created_at' => now(), 'updated_at' => now()];
+        $tipo = DB::table('tipos_empresas')->insertGetId(['nombre' => 'SAS'] + $now);
+        $sector = DB::table('sectores')->insertGetId(['nombre' => 'Salud'] + $now);
+        $dep = DB::table('departamentos')->insertGetId(['nombre' => 'Cundinamarca', 'estado' => 1] + $now);
+        $ciudad = DB::table('ciudades')->insertGetId(['municipio' => 'Bogotá', 'departamento_id' => $dep, 'estado' => 1] + $now);
         $id = DB::table('empresas')->insertGetId([
             'nombre_legal' => 'Acme SAS', 'nit' => '900123456', 'representante_legal' => 'Ana',
-            'tipo_empresa_id' => 1, 'ciudad_id' => 1, 'departamento_id' => 1, 'sector_id' => 1,
-            'created_at' => now(), 'updated_at' => now(),
-        ]);
+            'tipo_empresa_id' => $tipo, 'ciudad_id' => $ciudad, 'departamento_id' => $dep, 'sector_id' => $sector,
+        ] + $now);
 
         $response = $this->actingAs($this->userWithRole('Admin'))->get("/empresas/{$id}/pdf");
 

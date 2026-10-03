@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/pdf-sin-auth
 archivos: [routes/web.php]
 ---
@@ -35,3 +35,11 @@ docs/auditorias/seg042-pdf-sin-auth.md.
 ## Restricciones
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: /pdf y /pdf/mascota/{mascota?} con auth+verified y MascotaPolicy; PDF de mascota deja de ser id fijo 5 y deja de dar 500 (relación barrio inexistente); eliminada la ruta duplicada empresas.pdf.
+- Archivos modificados: routes/web.php, app/Http/Controllers/PDFController.php, tests/Feature/PdfAccessTest.php, docs/auditorias/seg042-pdf-sin-auth.md
+- Cómo probarlo: `php artisan test` (266 passed); abrir /pdf/mascota/{id} sin sesión (→ login) y como dueño (PDF).
+- Pendientes y riesgos: la URL /pdf/mascota sin id ahora redirige al listado de mascotas; resto de P1/P2 de seg039b; sin prueba manual en navegador.
+- Preguntas para el humano: ¿Algún cliente externo usaba /pdf/mascota sin id? (devolvía el PDF de la mascota 5). ¿Se retira la imagen por defecto con ruta de usuario real en public/avatars?

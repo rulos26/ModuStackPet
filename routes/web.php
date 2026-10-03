@@ -164,9 +164,9 @@ Route::middleware(['auth', 'verified', 'role:Superadmin', \App\Http\Middleware\C
 Route::middleware(['auth', 'verified', 'role:Superadmin', \App\Http\Middleware\CheckModuleStatus::class . ':barrios'])->group(function () {
     Route::resource('barrios', BarrioController::class);
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':reportes'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\CheckModuleStatus::class . ':reportes'])->group(function () {
     Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
-    Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
+    Route::get('/pdf/mascota/{mascota?}', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
 });
 Route::middleware(['auth', 'verified', \App\Http\Middleware\CheckModuleStatus::class . ':certificados'])->group(function () {
     Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
@@ -228,7 +228,6 @@ Route::get('ciudades-api', function() {
         'timestamp' => date('Y-m-d H:i:s')
     ]);
 })->name('ciudades.api');
-Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 
 
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':paths-documentos'])->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mascota;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 //use PDF;
@@ -15,13 +16,20 @@ class PDFController extends Controller
         return $pdf->stream('archivo-ejemplo.pdf'); // O ->stream() para mostrarlo en el navegador
     }
 
-    public function generarPDFMascota()
+    /**
+     * SEG-042: exige sesión verificada y MascotaPolicy::view (dueño, Admin o
+     * Superadmin). Antes generaba el PDF de la mascota id=5 sin autenticación,
+     * con email y teléfono del propietario.
+     */
+    public function generarPDFMascota(?Mascota $mascota = null)
     {
-        $mascota = \App\Models\Mascota::with(['raza', 'barrio', 'user'])->find(5);
-
         if (!$mascota) {
-            return redirect()->back()->with('error', 'No se encontró la mascota especificada.');
+            return redirect()->route('mascotas.index')
+                ->with('error', 'Seleccione la mascota de la que desea el PDF.');
         }
+
+        $this->authorize('view', $mascota);
+        $mascota->load(['raza', 'user']); // Mascota no tiene relación barrio (antes rompía con 500)
 
         // Ruta de la imagen por defecto
         $imagenPorDefecto = public_path('avatars/1110456003/mascotas/thanos.png');
