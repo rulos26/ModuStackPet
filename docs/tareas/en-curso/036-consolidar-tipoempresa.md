@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/consolidar-tipoempresa
 archivos: [app/Models/TipoEmpresa.php, app/Models/TiposEmpresa.php, app/Http/Controllers/, resources/views/, tests/]
 ---
 
