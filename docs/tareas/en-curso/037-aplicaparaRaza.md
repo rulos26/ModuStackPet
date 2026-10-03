@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/aplica-para-raza
 archivos: [app/Models/DocumentRequirement.php, tests/]
 ---
 
