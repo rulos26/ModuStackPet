@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Ciudad;
 use App\Models\Departamento;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -18,6 +20,16 @@ use Tests\TestCase;
 class CiudadCharacterizationTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Desde SEG-034b /ciudades exige Superadmin o Admin.
+        $admin = User::factory()->create();
+        $admin->assignRole(Role::create(['name' => 'Admin']));
+        $this->actingAs($admin);
+    }
 
     private function departamento(): int
     {
@@ -120,37 +132,5 @@ class CiudadCharacterizationTest extends TestCase
         // Cambio intencional de SEG-034: antes (Ciudade) era borrado físico.
         $this->assertNull(Ciudad::find($inactiva));
         $this->assertNotNull(DB::table('ciudades')->where('id_municipio', $inactiva)->value('deleted_at'));
-    }
-
-    #[Test]
-    public function store_current_behavior(): void
-    {
-        $dep = $this->departamento();
-
-        $response = $this->post('/ciudades', [
-            'municipio' => 'Nueva', 'departamento_id' => $dep, 'estado' => 1,
-        ]);
-
-        // Bug preexistente, fuera del alcance de la consolidación: la regla
-        // `exists:departamentos,id` apunta a una columna que no existe (la PK
-        // es id_departamento), así que crear desde el CRUD falla siempre.
-        $response->assertSessionHasErrors('departamento_id');
-        $this->assertDatabaseMissing('ciudades', ['municipio' => 'Nueva']);
-    }
-
-    #[Test]
-    public function create_edit_forms_and_update_are_broken_today(): void
-    {
-        // Bug preexistente: el controlador usa pluck('nombre', 'id') y la
-        // validación exists:departamentos,id, pero la PK es id_departamento.
-        $dep = $this->departamento();
-        $id = $this->ciudadRow($dep, 'Vieja');
-
-        $this->get('/ciudades/create')->assertStatus(500);
-        $this->get("/ciudades/{$id}/edit")->assertStatus(500);
-
-        $this->put("/ciudades/{$id}", ['municipio' => 'Nueva', 'departamento_id' => $dep, 'estado' => 1])
-            ->assertSessionHasErrors('departamento_id');
-        $this->assertSame('Vieja', DB::table('ciudades')->where('id_municipio', $id)->value('municipio'));
     }
 }

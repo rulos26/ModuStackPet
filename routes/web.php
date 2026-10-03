@@ -176,8 +176,8 @@ Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':certificado
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':departamentos'])->group(function () {
     Route::resource('departamentos', DepartamentoController::class);
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':ciudades'])->group(function () {
-    Route::resource('ciudades', CiudadController::class);
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':ciudades'])->group(function () {
+    Route::resource('ciudades', CiudadController::class)->parameters(['ciudades' => 'ciudad']);
     Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
 });
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':sectores'])->group(function () {

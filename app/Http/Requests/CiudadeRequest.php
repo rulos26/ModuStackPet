@@ -30,13 +30,13 @@ class CiudadeRequest extends FormRequest
     {
         $rules = [
             'municipio' => 'required|string|max:255',
-            'departamento_id' => 'required|exists:departamentos,id',
+            'departamento_id' => 'required|exists:departamentos,id_departamento',
             'estado' => 'required|integer|in:0,1'
         ];
 
         // Si es una actualización, agregar regla unique ignorando el registro actual
         if ($this->method() === 'PUT' || $this->method() === 'PATCH') {
-            $rules['municipio'] .= '|unique:ciudades,municipio,' . $this->route('ciudade') . ',id_municipio,departamento_id,' . $this->departamento_id;
+            $rules['municipio'] .= '|unique:ciudades,municipio,' . $this->route('ciudad')?->getKey() . ',id_municipio,departamento_id,' . $this->departamento_id;
         } else {
             $rules['municipio'] .= '|unique:ciudades,municipio,NULL,id_municipio,departamento_id,' . $this->departamento_id;
         }
