@@ -95,6 +95,6 @@ class Departamento extends Model
      */
     public function ciudades()
     {
-        return $this->hasMany(Ciudade::class, 'departamento_id', 'id_departamento');
+        return $this->hasMany(Ciudad::class, 'departamento_id', 'id_departamento');
     }
 }

@@ -129,10 +129,10 @@
 
 <!-- Sección: Datos de Ubicación -->
 @php
-    $ciudades = \App\Models\Ciudade::orderBy('municipio')->get();
+    $ciudades = \App\Models\Ciudad::orderBy('municipio')->get();
     
     // Buscar Bogotá como ciudad por defecto
-    $bogota = \App\Models\Ciudade::where('municipio', 'LIKE', '%Bogotá%')
+    $bogota = \App\Models\Ciudad::where('municipio', 'LIKE', '%Bogotá%')
         ->orWhere('municipio', 'LIKE', '%Bogota%')
         ->first();
     

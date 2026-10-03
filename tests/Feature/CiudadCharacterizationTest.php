@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Ciudad;
-use App\Models\Ciudade;
 use App\Models\Departamento;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -11,8 +10,10 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * SEG-034: pruebas de caracterización de Ciudad / Ciudade (misma tabla
- * `ciudades`). Describen el comportamiento ACTUAL antes de consolidar.
+ * SEG-034: consolidación Ciudad / Ciudade (misma tabla `ciudades`).
+ * Antes del cambio estas pruebas describían ambos modelos (ver el commit
+ * "test: caracterización de Ciudad/Ciudade"); ahora fijan el resultado:
+ * solo existe Ciudad.
  */
 class CiudadCharacterizationTest extends TestCase
 {
@@ -34,56 +35,39 @@ class CiudadCharacterizationTest extends TestCase
     }
 
     #[Test]
-    public function both_models_share_table_and_primary_key(): void
+    public function ciudad_is_the_only_model_for_ciudades_table(): void
     {
+        $this->assertFileDoesNotExist(app_path('Models/Ciudade.php'));
         $this->assertSame('ciudades', (new Ciudad)->getTable());
-        $this->assertSame('ciudades', (new Ciudade)->getTable());
         $this->assertSame('id_municipio', (new Ciudad)->getKeyName());
-        $this->assertSame('id_municipio', (new Ciudade)->getKeyName());
     }
 
     #[Test]
-    public function both_models_read_the_same_row_and_its_departamento(): void
-    {
-        $dep = $this->departamento();
-        $id = $this->ciudadRow($dep);
-
-        foreach ([Ciudad::class, Ciudade::class] as $model) {
-            $c = $model::findOrFail($id);
-            $this->assertSame('Bogotá', $c->municipio);
-            $this->assertSame('Cundinamarca', $c->departamento->nombre);
-        }
-    }
-
-    #[Test]
-    public function estado_cast_differs_between_models(): void
+    public function ciudad_reads_row_and_departamento(): void
     {
         $id = $this->ciudadRow($this->departamento());
 
-        $this->assertSame(1, Ciudade::find($id)->estado);
-        $this->assertTrue(Ciudad::find($id)->estado);
-        // Los comparadores de las vistas (`== 1`) funcionan con ambos.
-        $this->assertTrue(Ciudad::find($id)->estado == 1);
+        $c = Ciudad::findOrFail($id);
+        $this->assertSame('Bogotá', $c->municipio);
+        $this->assertSame('Cundinamarca', $c->departamento->nombre);
+        // Los comparadores de las vistas (`== 1`) funcionan con el cast booleano.
+        $this->assertTrue($c->estado);
+        $this->assertTrue($c->estado == 1);
     }
 
     #[Test]
-    public function ciudade_delete_is_hard_and_ciudad_delete_is_soft(): void
+    public function ciudad_delete_is_soft(): void
     {
-        $dep = $this->departamento();
-        $a = $this->ciudadRow($dep, 'A');
-        $b = $this->ciudadRow($dep, 'B');
+        $id = $this->ciudadRow($this->departamento(), 'B');
 
-        Ciudade::find($a)->delete();
-        $this->assertDatabaseMissing('ciudades', ['id_municipio' => $a]);
+        Ciudad::find($id)->delete();
 
-        Ciudad::find($b)->delete();
-        $this->assertDatabaseHas('ciudades', ['id_municipio' => $b]);
-        $this->assertNotNull(DB::table('ciudades')->where('id_municipio', $b)->value('deleted_at'));
-        $this->assertNull(Ciudad::find($b));
+        $this->assertNotNull(DB::table('ciudades')->where('id_municipio', $id)->value('deleted_at'));
+        $this->assertNull(Ciudad::find($id));
     }
 
     #[Test]
-    public function departamento_ciudades_returns_ciudade_instances(): void
+    public function departamento_ciudades_returns_ciudad_instances(): void
     {
         $dep = $this->departamento();
         $this->ciudadRow($dep, 'A');
@@ -92,21 +76,19 @@ class CiudadCharacterizationTest extends TestCase
         $ciudades = Departamento::find($dep)->ciudades;
 
         $this->assertCount(2, $ciudades);
-        $this->assertContainsOnlyInstancesOf(Ciudade::class, $ciudades);
+        $this->assertContainsOnlyInstancesOf(Ciudad::class, $ciudades);
     }
 
     #[Test]
-    public function ciudad_has_empresas_relation_ciudade_does_not(): void
+    public function ciudad_has_empresas_relation(): void
     {
         $this->assertTrue(method_exists(Ciudad::class, 'empresas'));
-        $this->assertFalse(method_exists(Ciudade::class, 'empresas'));
     }
 
     #[Test]
     public function ciudades_index_and_show_render(): void
     {
-        $dep = $this->departamento();
-        $id = $this->ciudadRow($dep, 'Zipaquirá');
+        $id = $this->ciudadRow($this->departamento(), 'Zipaquirá');
 
         $this->get('/ciudades')->assertOk()->assertSee('Zipaquirá');
         $this->get("/ciudades/{$id}")->assertOk()->assertSee('Zipaquirá');
@@ -125,7 +107,7 @@ class CiudadCharacterizationTest extends TestCase
     }
 
     #[Test]
-    public function destroy_refuses_active_city_and_removes_inactive_one(): void
+    public function destroy_refuses_active_city_and_soft_deletes_inactive_one(): void
     {
         $dep = $this->departamento();
         $activa = $this->ciudadRow($dep, 'Activa', 1);
@@ -135,7 +117,9 @@ class CiudadCharacterizationTest extends TestCase
         $this->assertDatabaseHas('ciudades', ['id_municipio' => $activa, 'deleted_at' => null]);
 
         $this->delete("/ciudades/{$inactiva}")->assertSessionHas('success');
-        $this->assertNull(Ciudade::find($inactiva));
+        // Cambio intencional de SEG-034: antes (Ciudade) era borrado físico.
+        $this->assertNull(Ciudad::find($inactiva));
+        $this->assertNotNull(DB::table('ciudades')->where('id_municipio', $inactiva)->value('deleted_at'));
     }
 
     #[Test]
@@ -147,9 +131,9 @@ class CiudadCharacterizationTest extends TestCase
             'municipio' => 'Nueva', 'departamento_id' => $dep, 'estado' => 1,
         ]);
 
-        // Hoy la regla `exists:departamentos,id` apunta a una columna que no
-        // existe (la PK es id_departamento): crear desde el CRUD falla siempre.
-        // Bug preexistente, fuera del alcance de la consolidación (ver informe).
+        // Bug preexistente, fuera del alcance de la consolidación: la regla
+        // `exists:departamentos,id` apunta a una columna que no existe (la PK
+        // es id_departamento), así que crear desde el CRUD falla siempre.
         $response->assertSessionHasErrors('departamento_id');
         $this->assertDatabaseMissing('ciudades', ['municipio' => 'Nueva']);
     }
