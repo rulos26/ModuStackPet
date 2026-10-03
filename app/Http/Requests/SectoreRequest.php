@@ -22,7 +22,7 @@ class SectoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:100|unique:sectores,nombre,' . ($this->sectore ? $this->sectore->id : 'NULL') . ',id',
+            'nombre' => 'required|string|max:100|unique:sectores,nombre,' . ($this->sectore ? $this->sectore->id : 'NULL') . ',id,deleted_at,NULL',
         ];
     }
 
