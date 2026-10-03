@@ -110,7 +110,7 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home');
 
 // Rutas para Cliente
 
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':bienvenida'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin', \App\Http\Middleware\CheckModuleStatus::class . ':bienvenida'])->group(function () {
     Route::resource('mensaje-de-bienvenidas', MensajeDeBienvenidaController::class);
 });
 Route::get('/logout', function () {
@@ -147,7 +147,7 @@ Route::post('/notificaciones/leidas', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
 })->name('notificaciones.marcar.leidas');
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
     Route::resource('tipo-documentos', TipoDocumentoController::class);
 });
 Route::middleware(['auth', 'role:Superadmin'])->group(function () {
@@ -158,10 +158,10 @@ Route::post('/usuarios/roles/{user}', [RoleAssignmentController::class, 'asignar
 Route::middleware(['auth', 'verified', \App\Http\Middleware\CheckModuleStatus::class . ':mascotas'])->group(function () {
     Route::resource('mascotas', MascotaController::class);
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':razas'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin', \App\Http\Middleware\CheckModuleStatus::class . ':razas'])->group(function () {
     Route::resource('razas', RazaController::class);
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':barrios'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin', \App\Http\Middleware\CheckModuleStatus::class . ':barrios'])->group(function () {
     Route::resource('barrios', BarrioController::class);
 });
 Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':reportes'])->group(function () {
@@ -180,13 +180,12 @@ Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middle
     Route::resource('ciudades', CiudadController::class)->parameters(['ciudades' => 'ciudad']);
     Route::post('ciudades/{ciudad}/toggle-status', [CiudadController::class, 'toggleStatus'])->name('ciudades.toggle-status');
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':sectores'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':sectores'])->group(function () {
     Route::resource('sectores', SectoreController::class);
 });
 
 
-// tipos-empresas: sin auth aquí a propósito (tarea 040). empresas sí exige sesión.
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
     Route::resource('tipos-empresas', TiposEmpresaController::class);
 });
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
@@ -232,7 +231,7 @@ Route::get('ciudades-api', function() {
 Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 
 
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':paths-documentos'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':paths-documentos'])->group(function () {
     Route::resource('paths-documentos', PathDocumentoController::class);
     Route::get('/paths-documentos', [PathDocumentoController::class, 'index'])->name('paths-documentos.index');
     Route::get('/paths-documentos/create', [PathDocumentoController::class, 'create'])->name('paths-documentos.create');

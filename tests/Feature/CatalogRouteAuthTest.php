@@ -179,19 +179,19 @@ class CatalogRouteAuthTest extends TestCase
     }
 
     /**
-     * tipos-empresas sigue fuera de esta tarea (040): no debe ganar auth
-     * solo porque compartía grupo de módulo con empresas.
+     * tipos-empresas fue protegido por la tarea 040 (escritura anonima),
+     * en paralelo a esta tarea 041. Tras fusionar ambas, debe tener auth.
      */
     #[Test]
-    public function tipos_empresas_route_is_not_accidentally_given_auth_by_this_task(): void
+    public function tipos_empresas_route_has_auth_from_task_040(): void
     {
         $route = app('router')->getRoutes()->getByName('tipos-empresas.index');
         $this->assertNotNull($route);
         $middleware = $route->gatherMiddleware();
 
-        $this->assertFalse(
+        $this->assertTrue(
             collect($middleware)->contains('auth'),
-            'tipos-empresas.index no debe recibir auth en la tarea 041 (es 040); actual: '.implode(', ', $middleware)
+            'tipos-empresas.index deberia tener auth (aplicado por la tarea 040); actual: '.implode(', ', $middleware)
         );
     }
 }
