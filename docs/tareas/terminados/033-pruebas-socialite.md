@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: en-curso
+estado: terminado
 rama: ia/codex/pruebas-socialite
 archivos: [tests/Feature/SocialAuthTest.php]
 ---
@@ -34,3 +34,19 @@ si los hay, resultado de php artisan test (169 + las nuevas).
 ## Restricciones
 - Solo tests/. No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se agregaron ocho pruebas Feature del flujo Socialite con mocks,
+  cubriendo redirección, alta, vinculación, reutilización de cuenta, rechazos y
+  excepciones. Se documentó un bug real encontrado durante la verificación.
+- Archivos modificados: `tests/Feature/SocialAuthTest.php` y
+  `docs/auditorias/seg033-pruebas-socialite.md`.
+- Cómo probarlo: `php artisan test --filter=SocialAuthTest`, `php artisan test`
+  y `composer validate`.
+- Pendientes y riesgos: la prueba de usuario nuevo falla porque
+  `email_verified_at` no está en `$fillable` y queda en `null`. Suite completa:
+  176 aprobadas, 1 fallida, 556 aserciones. No se modificó `app/` por restricción
+  expresa de esta tarea. `composer validate` fue satisfactorio.
+- Preguntas para el humano: ¿se autoriza una tarea separada para corregir la
+  persistencia de `email_verified_at` en el registro OAuth?
