@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/claude/escritura-anonima
 archivos: [routes/web.php]
 ---
 
@@ -34,3 +34,11 @@ rol, y confirmacion de que paths-documentos ya no expone datos sin login.
   tarea 041, en paralelo, para no pisarse).
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: auth + verified + rol a nivel de ruta en los 7 recursos; tipos-empresas separado del grupo empresas.
+- Archivos modificados: routes/web.php, tests/Feature/EscrituraAnonimaTest.php, docs/auditorias/seg040-escritura-anonima.md
+- Cómo probarlo: `php artisan test` (234 passed); abrir /paths-documentos y /razas sin sesión (→ login).
+- Pendientes y riesgos: ver informe (binding de paths-documentos, 404 vs 403, P1/P2 de seg039). routes/web.php también lo toca la 041: posible conflicto de merge cerca del grupo de empresas. Sin prueba manual en navegador.
+- Preguntas para el humano: ¿Admin debe poder gestionar razas/barrios/mensajes de bienvenida? Los dejé solo Superadmin porque solo están en su sidebar.
