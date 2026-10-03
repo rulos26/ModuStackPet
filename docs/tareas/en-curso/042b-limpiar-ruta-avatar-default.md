@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/codex/limpiar-avatar-default
 archivos: [app/Http/Controllers/, config/, resources/views/]
 ---
 
