@@ -1,6 +1,6 @@
 ---
 agente: cursor
-estado: en-curso
+estado: terminado
 rama: ia/cursor/auth-constructor-a-ruta
 archivos: [routes/web.php, tests/Feature/CatalogRouteAuthTest.php, docs/auditorias/seg041-auth-constructor-a-ruta.md]
 ---
@@ -31,3 +31,23 @@ docs/auditorias/seg041-auth-constructor-a-ruta.md.
   paralelo, para no pisarse).
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Cursor, 2026-10-03
+- Qué se hizo: auth (+ verified; rol Superadmin|Admin en departamentos y
+  empresas) pasado a la ruta; vacunas solo auth+verified (Clientes). Se
+  separó tipos-empresas para no interferir con la 040. Se mantuvo auth
+  en los constructores (defensa en profundidad). Pruebas rojas primero.
+- Archivos modificados:
+  - `routes/web.php`
+  - `tests/Feature/CatalogRouteAuthTest.php` (nuevo)
+  - `docs/auditorias/seg041-auth-constructor-a-ruta.md` (nuevo)
+  - `docs/tareas/terminados/041-auth-constructor-a-ruta.md`
+- Cómo probarlo: `php artisan test --filter=CatalogRouteAuthTest`;
+  invitado a `/departamentos` → login; Cliente → 403; Admin → 200.
+- Verificación ejecutada: `php artisan test` → 210 passed (672);
+  `composer validate` → valid.
+- Pendientes y riesgos: la ruta duplicada `empresas/{empresa}/pdf` (línea
+  ~229) sigue fuera del grupo auth de ruta; el constructor de
+  EmpresaController aún la cubre. tipos-empresas sigue sin auth (040).
+- Preguntas para el humano: ninguna.
