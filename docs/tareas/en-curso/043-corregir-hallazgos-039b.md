@@ -1,8 +1,8 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
-archivos: [routes/web.php, app/Http/Controllers/]
+estado: en-curso
+rama: ia/cursor/corregir-hallazgos-039b
+archivos: [routes/web.php, app/Http/Controllers/, tests/Feature/, docs/auditorias/seg039b-ampliacion-rutas.md]
 ---
 
 # Corregir hallazgos P1/P2 de seg039b (APIs y rutas duplicadas)
