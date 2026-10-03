@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/consolidar-sector
 archivos: [app/Models/Sector.php, app/Models/Sectore.php, app/Http/Controllers/, resources/views/, tests/]
 ---
 
