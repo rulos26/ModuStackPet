@@ -120,22 +120,37 @@ class Seg039bRoutesHardeningTest extends TestCase
     }
 
     #[Test]
-    public function login_star_legacy_unprotected_dashboard_actions_are_gone(): void
+    public function login_dashboard_named_routes_exist_with_auth(): void
     {
-        // login_Cliente y login_Paseador siguen siendo los handlers bajo auth;
-        // lo legacy a eliminar es Superadmin/Admin sin middleware de ruta.
-        $legacyOnly = [
-            'App\Http\Controllers\SuperadminController@login_Superadmin',
-            'App\Http\Controllers\AdminController@login_Admin',
-        ];
+        foreach (['superadmin.dashboard', 'admin.dashboard', 'cliente.dashboard', 'paseador.dashboard'] as $name) {
+            $route = Route::getRoutes()->getByName($name);
+            $this->assertNotNull($route, "Falta la ruta nombrada {$name}");
+            $this->assertContains('auth', $route->gatherMiddleware(), "{$name} sin auth");
+        }
 
+        $superadmin = Route::getRoutes()->getByName('superadmin.dashboard');
+        $this->assertContains('verified', $superadmin->gatherMiddleware());
+        $this->assertContains('role:Superadmin', $superadmin->gatherMiddleware());
+    }
+
+    #[Test]
+    public function login_superadmin_unprotected_action_is_gone_and_admin_login_requires_auth(): void
+    {
         $actions = collect(Route::getRoutes()->getRoutes())
             ->map(fn ($r) => $r->getActionName())
             ->all();
 
-        foreach ($legacyOnly as $action) {
-            $this->assertNotContains($action, $actions, "La acción legacy {$action} sigue registrada");
-        }
+        $this->assertNotContains(
+            'App\Http\Controllers\SuperadminController@login_Superadmin',
+            $actions,
+            'login_Superadmin sin auth no debe registrarse'
+        );
+
+        $adminLogin = collect(Route::getRoutes()->getRoutes())
+            ->first(fn ($r) => $r->getActionName() === 'App\Http\Controllers\AdminController@login_Admin');
+
+        $this->assertNotNull($adminLogin);
+        $this->assertContains('auth', $adminLogin->gatherMiddleware());
     }
 
     #[Test]

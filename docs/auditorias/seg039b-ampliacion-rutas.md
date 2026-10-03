@@ -124,4 +124,59 @@ Rama: `ia/cursor/corregir-hallazgos-039b`. Patrón: pruebas en
 
 ### Pruebas
 
-`php artisan test --filter=Seg039bRoutesHardeningTest` (9 casos): invitado → login en notificaciones; Alice no marca las de Bob; sin verificar → `verification.notice`; `/clientes/dashboard` ausente (404); `cliente.dashboard` → `cliente/dashboard` con `auth`; dashboards de rol exigen login; `empresas.pdf` sigue única y completa.
+`php artisan test --filter=Seg039bRoutesHardeningTest`: invitado → login en notificaciones; Alice no marca las de Bob; sin verificar → `verification.notice`; `/clientes/dashboard` ausente (404); `cliente.dashboard` → `cliente/dashboard` con `auth`; dashboards de rol exigen login; `empresas.pdf` sigue única y completa.
+
+---
+
+## Corrección 043b — dashboards activos del login (2026-10-03)
+
+### Error de la 043
+
+La 043 eliminó los registros sueltos `login_*` y el grupo intermedio de
+`/superadmin/dashboard`, creyendo que eran solo legacy. Los **nombres**
+`superadmin.dashboard`, `admin.dashboard`, `cliente.dashboard` y
+`paseador.dashboard` seguían existiendo vía `prefix(...)->name(...)->name('dashboard')`,
+pero:
+
+1. Un `grep` de `name('….dashboard')` en `web.php` quedaba vacío (los
+   nombres se componían por prefijo), lo que parecía “ruta eliminada”.
+2. `admin.dashboard` quedó apuntando a `AdminController@index` (listado de
+   usuarios) en lugar de `login_Admin` (vista de bienvenida).
+3. Había riesgo de sombra/confusión con el grupo Superadmin sin
+   `role:Superadmin` explícito en el nombre literal.
+
+Las referencias en `RoleRedirect`, controladores y vistas **nunca** debieron
+quitarse; son el núcleo del post-login.
+
+### Corrección
+
+- Se restauraron las **4 rutas con nombre literal** y middleware:
+  - `superadmin.dashboard` → `auth + verified + role:Superadmin` → `index`
+  - `admin.dashboard` → `auth` → `login_Admin`
+  - `cliente.dashboard` → `auth` → `login_Cliente`
+  - `paseador.dashboard` → `auth` → `login_Paseador`
+- Se quitaron los `->name('dashboard')` duplicados dentro de los prefijos
+  (misma URI).
+- **No** se restauró `/clientes/dashboard` ni los `login_*` sin `auth`
+  (duplicados inseguros).
+- `POST notificaciones/leidas` con `auth+verified` se conserva.
+
+### Grep de verificación (paso 3 de 043b)
+
+Referencias en `app/` + `resources/views/` (deben existir; no están rotas):
+
+- `route('superadmin.dashboard')`, `admin.dashboard`, `cliente.dashboard`,
+  `paseador.dashboard` — presentes en `RoleRedirect`, login/social,
+  sidebars y controladores de perfil.
+
+Definiciones en `routes/web.php` (deben existir):
+
+```
+139: ->name('superadmin.dashboard')
+142: ->name('admin.dashboard')
+143: ->name('cliente.dashboard')
+144: ->name('paseador.dashboard')
+```
+
+`/clientes/dashboard` (plural): sin referencias de nombre distinto; URI
+ausente a propósito.

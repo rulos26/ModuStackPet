@@ -1,8 +1,8 @@
 ---
 agente: cursor
-estado: pendiente
+estado: terminado
 rama: ia/cursor/corregir-hallazgos-039b
-archivos: [routes/web.php]
+archivos: [routes/web.php, tests/Feature/Seg039bRoutesHardeningTest.php, docs/auditorias/seg039b-ampliacion-rutas.md]
 ---
 
 # URGENTE: revertir eliminacion de rutas de dashboard activas (043 rompio el login)
@@ -45,3 +45,11 @@ error, la correccion, y el resultado del grep de verificacion.
 - No toques .env ni dependencias.
 - No des la tarea por terminada sin que el grep del paso 3 salga vacio.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Cursor, 2026-10-03
+- Qué se hizo: Restauradas las 4 rutas de dashboard con nombre literal y auth (`superadmin` + verified + role). Admin vuelve a `login_Admin`. Eliminados los `name('dashboard')` duplicados en prefijos. Conservado auth+verified en notificaciones. No se restauró `/clientes/dashboard` ni `login_*` sin auth. Actualizado `seg039b-ampliacion-rutas.md` con la corrección 043b.
+- Archivos modificados: `routes/web.php`, `tests/Feature/Seg039bRoutesHardeningTest.php`, `docs/auditorias/seg039b-ampliacion-rutas.md`, esta tarea.
+- Cómo probarlo: `php artisan route:list --name=dashboard`; login Admin/Cliente/etc.; `php artisan test`.
+- Pendientes y riesgos: lección — no eliminar rutas sin grep de `route('…')` y de `name('…')` (incl. nombres compuestos por prefijo).
+- Preguntas para el humano: ninguna.
