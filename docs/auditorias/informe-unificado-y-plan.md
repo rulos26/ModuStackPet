@@ -354,3 +354,12 @@ Ejecutados en el worktree Cursor el 2026-10-03:
 - `composer install --no-interaction`: OK (exit 0).
 - `php artisan test`: **146 passed** (438 assertions).
 - `composer validate`: `./composer.json is valid`.
+## Pendiente: GitHub Actions bloqueado por facturación
+
+El workflow de CI (U-03, tarea 028) está creado y verificado localmente,
+pero no se ejecuta en GitHub porque la cuenta tiene un bloqueo de
+facturación ("account is locked due to a billing issue"). Se actualizó el
+método de pago y se reintentó la autorización, pero el bloqueo persiste
+tras más de 30 minutos. Mientras se resuelve, seguimos verificando cada
+tarea con scripts/verificar-rama.sh antes de fusionar, igual que hasta
+ahora.
