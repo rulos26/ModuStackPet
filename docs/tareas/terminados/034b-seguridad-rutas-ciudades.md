@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/consolidar-ciudad
 archivos: [routes/web.php, app/Http/Controllers/CiudadController.php]
 ---
@@ -37,3 +37,11 @@ correcciones.
   despues de esta).
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: /ciudades protegido con auth + verified + role:Superadmin|Admin; CRUD de ciudades corregido (id_departamento, binding del parámetro, regla unique).
+- Archivos modificados: routes/web.php, app/Http/Controllers/CiudadController.php, app/Http/Requests/CiudadeRequest.php, tests/Feature/{CiudadAccessAndCrudTest,CiudadCharacterizationTest}.php, docs/auditorias/seg034-consolidar-ciudad.md
+- Cómo probarlo: `php artisan test` (188 passed); entrar a /ciudades sin sesión (debe ir a login) y como Admin crear/editar una ciudad.
+- Pendientes y riesgos: no hice prueba manual en navegador. Otros grupos de rutas (departamentos, barrios, razas, tipo-documentos…) siguen sin auth.
+- Preguntas para el humano: ¿Solo Superadmin o también Admin para ciudades? (puse ambos por los sidebars). ¿Abrimos tarea para proteger los demás grupos?

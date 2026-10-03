@@ -27,3 +27,20 @@ Se conserva **`App\Models\Ciudad`** (según seg021: usado por Empresa, Cliente, 
 2. `update(CiudadeRequest, Ciudad $ciudad)`: el parámetro de ruta resource se llama `ciudade`, no `ciudad`, así que el route model binding no aplica.
 3. **Las rutas `/ciudades*` no tienen middleware `auth`** (solo `CheckModuleStatus:ciudades`): cualquiera puede listarlas, activarlas/desactivarlas y borrar ciudades inactivas. Conviene una tarea de seguridad aparte (mismo patrón que SEG-001/SEG-010).
 4. `vendor/composer/autoload_classmap.php` local sigue listando `Ciudade` (classmap optimizado); se resuelve con `composer dump-autoload`, no afecta a git.
+
+## Ajuste 034b — seguridad de rutas y CRUD roto
+
+### 1. `/ciudades*` sin autenticación (corregido)
+Pruebas primero (`tests/Feature/CiudadAccessAndCrudTest.php`, commit que fallaba: 8 de 11): un invitado podía listar, ver, abrir formularios, activar/desactivar y borrar.
+Corrección en `routes/web.php`: el grupo de ciudades usa ahora `['auth', 'verified', 'role:Superadmin|Admin', CheckModuleStatus:ciudades]`.
+Decisión de rol: Superadmin y Admin, porque los sidebars de ambos enlazan a `ciudades.index`; Cliente y Paseador reciben 403 (probado), invitado va a `login`, usuario sin verificar a `verification.notice`. Si se quiere solo Superadmin, basta cambiar el middleware.
+Nota: grupos vecinos (`departamentos`, `barrios`, `razas`, `tipo-documentos`, etc.) siguen sin `auth` en `routes/web.php`; no se tocaron (fuera de alcance), conviene una auditoría aparte.
+
+### 2. CRUD roto (corregido)
+- `CiudadController`: `pluck('nombre','id')` → `pluck('nombre','id_departamento')` (create y edit daban 500).
+- `CiudadeRequest`: `exists:departamentos,id` → `exists:departamentos,id_departamento`; la regla `unique` usaba `route('ciudade')` y ahora `route('ciudad')?->getKey()`.
+- `routes/web.php`: `Route::resource('ciudades', ...)->parameters(['ciudades' => 'ciudad'])`. El parámetro se llamaba `ciudade`, por lo que `update(CiudadeRequest, Ciudad $ciudad)` nunca recibía el modelo enlazado; ahora sí (clave `id_municipio`) y los nombres de ruta no cambian.
+Pruebas: formularios renderizan con departamentos; crear, editar (solo la ciudad correcta), conservar el propio nombre, rechazo de departamento inexistente y de duplicados.
+
+### Pruebas
+`CiudadCharacterizationTest` ahora actúa como Admin y se eliminaron sus dos pruebas "roto hoy" (sustituidas por las del CRUD funcionando). Suite: **188 passed**.

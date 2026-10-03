@@ -43,7 +43,7 @@ class CiudadController extends Controller
     public function create(): View
     {
         $ciudad = new Ciudad();
-        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
+        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id_departamento');
 
         return view('ciudade.create', compact('ciudad', 'departamentos'));
     }
@@ -84,7 +84,7 @@ class CiudadController extends Controller
     public function edit($id): View
     {
         $ciudad = Ciudad::findOrFail($id);
-        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
+        $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id_departamento');
 
         return view('ciudade.edit', compact('ciudad', 'departamentos'));
     }
