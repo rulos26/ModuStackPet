@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/codex/limpiar-avatar-default
 archivos: [app/Http/Controllers/, config/, resources/views/]
 ---
 
@@ -29,3 +29,18 @@ se puso en su lugar.
 ## Restricciones
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se localizaron las dos referencias a la ruta con apariencia de
+  documento real y se sustituyeron por `public/ruta_default_avatar.png`, que ya
+  era el placeholder genérico versionado del proyecto. No se tocó ningún archivo
+  de usuario.
+- Archivos modificados: `app/Http/Controllers/PDFController.php`,
+  `resources/views/pdf/ejemplo.blade.php` y
+  `docs/auditorias/seg042b-limpiar-avatar-default.md`.
+- Cómo probarlo: `php artisan test`, `composer validate` y buscar la cadena
+  anterior fuera de `docs/tareas/`.
+- Pendientes y riesgos: ninguno identificado. Suite completa: 258 pruebas
+  aprobadas, 1047 aserciones.
+- Preguntas para el humano: ninguna.
