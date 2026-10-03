@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/pdf-sin-auth
 archivos: [routes/web.php]
 ---
 
