@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/claude/consolidar-ciudad
 archivos: [app/Models/Ciudad.php, app/Models/Ciudade.php, app/Http/Controllers/, app/Models/Departamento.php, resources/views/, tests/]
 ---
 
@@ -37,3 +37,11 @@ movió a _borrar/, archivos migrados, resultado de pruebas.
   035/036, después de esta).
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: Ciudad/Ciudade consolidados en `Ciudad`; consumidores migrados; `Ciudade` movido a `_borrar/modelos/`.
+- Archivos modificados: app/Http/Controllers/CiudadController.php, app/Models/{Departamento,Empresa}.php, app/Models/Ciudade.php (eliminado), resources/views/user/form.blade.php, tests/Feature/CiudadCharacterizationTest.php, docs/auditorias/seg034-consolidar-ciudad.md
+- Cómo probarlo: `php artisan test` (179 passed); `composer dump-autoload` si el classmap local aún lista Ciudade.
+- Pendientes y riesgos: borrado de ciudades ahora es lógico; CRUD de ciudades ya estaba roto (create/edit 500) y sin `auth` — ver informe. No hice prueba manual en navegador.
+- Preguntas para el humano: ¿Abrimos tareas para (a) arreglar el CRUD de ciudades y (b) proteger /ciudades con auth/rol? Estas deberían ir antes de 035/036 o en paralelo, sin tocar EmpresaController.

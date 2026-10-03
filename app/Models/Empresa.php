@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Storage;
  * @property $updated_at
  * @property $deleted_at
  *
- * @property Ciudade $ciudade
+ * @property Ciudad $ciudad
  * @property Departamento $departamento
  * @property Sectore $sectore
  * @property TiposEmpresa $tiposEmpresa

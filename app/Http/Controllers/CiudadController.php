@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ciudade;
+use App\Models\Ciudad;
 use App\Models\Departamento;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ class CiudadController extends Controller
      */
     public function index(Request $request): View
     {
-        $ciudades = Ciudade::with('departamento')
+        $ciudades = Ciudad::with('departamento')
             ->orderBy('municipio')
             ->paginate();
 
@@ -42,7 +42,7 @@ class CiudadController extends Controller
      */
     public function create(): View
     {
-        $ciudad = new Ciudade();
+        $ciudad = new Ciudad();
         $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
 
         return view('ciudade.create', compact('ciudad', 'departamentos'));
@@ -56,7 +56,7 @@ class CiudadController extends Controller
      */
     public function store(CiudadeRequest $request): RedirectResponse
     {
-        Ciudade::create($request->validated());
+        Ciudad::create($request->validated());
 
         return Redirect::route('ciudades.index')
             ->with('success', 'Municipio creado exitosamente.');
@@ -70,7 +70,7 @@ class CiudadController extends Controller
      */
     public function show($id): View
     {
-        $ciudad = Ciudade::with('departamento')->findOrFail($id);
+        $ciudad = Ciudad::with('departamento')->findOrFail($id);
 
         return view('ciudade.show', compact('ciudad'));
     }
@@ -83,7 +83,7 @@ class CiudadController extends Controller
      */
     public function edit($id): View
     {
-        $ciudad = Ciudade::findOrFail($id);
+        $ciudad = Ciudad::findOrFail($id);
         $departamentos = Departamento::orderBy('nombre')->pluck('nombre', 'id');
 
         return view('ciudade.edit', compact('ciudad', 'departamentos'));
@@ -93,10 +93,10 @@ class CiudadController extends Controller
      * Actualiza una ciudad en la base de datos
      *
      * @param CiudadeRequest $request
-     * @param Ciudade $ciudad
+     * @param Ciudad $ciudad
      * @return RedirectResponse
      */
-    public function update(CiudadeRequest $request, Ciudade $ciudad): RedirectResponse
+    public function update(CiudadeRequest $request, Ciudad $ciudad): RedirectResponse
     {
         $ciudad->update($request->validated());
 
@@ -113,7 +113,7 @@ class CiudadController extends Controller
     public function destroy($id): RedirectResponse
     {
         try {
-            $ciudad = Ciudade::findOrFail($id);
+            $ciudad = Ciudad::findOrFail($id);
 
             // Verificar si la ciudad está activa
             if ($ciudad->estado == 1) {
@@ -143,7 +143,7 @@ class CiudadController extends Controller
     public function toggleStatus($id): RedirectResponse
     {
         try {
-            $ciudad = Ciudade::findOrFail($id);
+            $ciudad = Ciudad::findOrFail($id);
             $ciudad->estado = $ciudad->estado == 1 ? 0 : 1;
             $ciudad->save();
 
