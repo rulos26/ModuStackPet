@@ -64,10 +64,13 @@ class FortifyVerificationRedirectTest extends TestCase
             'password' => \Illuminate\Support\Facades\Crypt::encryptString('ok'), 'is_active' => true,
         ]);
 
+        $emptyId = DB::table('email_configs')->insertGetId($base + ['password' => '', 'is_active' => true]);
+
         $migration = require database_path('migrations/2026_10_03_000000_deactivate_undecryptable_email_configs.php');
         $migration->up();
 
         $this->assertEquals(0, DB::table('email_configs')->where('id', $badId)->value('is_active'));
+        $this->assertEquals(0, DB::table('email_configs')->where('id', $emptyId)->value('is_active'));
         $this->assertEquals(1, DB::table('email_configs')->where('id', $goodId)->value('is_active'));
     }
 }
