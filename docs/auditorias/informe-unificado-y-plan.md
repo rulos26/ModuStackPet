@@ -321,3 +321,36 @@ No se tocó `.env` ni dependencias.
 
 - `php artisan test`: **144 passed** (436 assertions).
 - `composer validate --no-check-publish`: **valid**.
+
+
+## 10. Confirmación U-03 (tarea 028) — workflow mínimo de GitHub Actions
+
+Fecha: 2026-10-03. Agente: Cursor. Rama: `ia/cursor/ci-github-actions`.
+
+### Workflow creado
+
+Archivo nuevo: `.github/workflows/tests.yml`.
+
+- Disparadores: `push` y `pull_request` a `main`.
+- Runner: `ubuntu-latest`.
+- PHP: `shivammathur/setup-php@v2` con PHP **8.3** (`composer.json` exige `^8.3`).
+- Extensiones: `mbstring, dom, fileinfo, pdo_sqlite, sqlite3, curl, zip, gd, bcmath, tokenizer, xml, ctype, openssl`
+  (SQLite en memoria para PHPUnit; `gd`/`dom` por `barryvdh/laravel-dompdf`).
+- Checkout: `actions/checkout@v4`.
+- Sin secrets ni credenciales.
+- No copia `.env` ni `.env.testing`: `phpunit.xml` ya define `APP_KEY`,
+  `DB_CONNECTION=sqlite` y `DB_DATABASE=:memory:`.
+
+Pasos del job (comandos exactos):
+
+1. `composer install --no-interaction`
+2. `php artisan test`
+3. `composer validate`
+
+### Verificación local (mismos comandos)
+
+Ejecutados en el worktree Cursor el 2026-10-03:
+
+- `composer install --no-interaction`: OK (exit 0).
+- `php artisan test`: **146 passed** (438 assertions).
+- `composer validate`: `./composer.json is valid`.
