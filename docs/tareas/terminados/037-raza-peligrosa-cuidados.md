@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: en-curso
+estado: terminado
 rama: ia/codex/raza-cuidados-especiales
 archivos: [app/Models/Raza.php, app/Models/DocumentRequirement.php, database/migrations/, resources/views/, tests/]
 ---
@@ -48,3 +48,21 @@ captura o descripcion de donde se ve en la ficha de la mascota.
   despues, desde el panel ya existente.
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se agregaron campos configurables de cuidado especial a las
+  razas, su administración en el formulario, una alerta en la ficha de mascota y
+  el filtro efectivo de requisitos documentales. No se clasificó ninguna raza.
+- Archivos modificados: `app/Models/Raza.php`,
+  `app/Models/DocumentRequirement.php`, `app/Http/Requests/RazaRequest.php`,
+  `database/migrations/2026_10_03_010000_add_cuidados_especiales_to_razas_table.php`,
+  `resources/views/raza/form.blade.php`, `resources/views/mascota/show.blade.php`,
+  `tests/Feature/RazaCuidadosEspecialesTest.php` y
+  `docs/auditorias/seg037-raza-cuidados-especiales.md`.
+- Cómo probarlo: `php artisan test --filter=RazaCuidadosEspecialesTest`,
+  `php artisan test` y `composer validate`.
+- Pendientes y riesgos: tras desplegar debe ejecutarse la migración; todas las
+  razas quedan sin marca por defecto y requieren configuración humana. Suite:
+  252 pruebas aprobadas, 1017 aserciones.
+- Preguntas para el humano: ninguna.
