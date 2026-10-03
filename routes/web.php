@@ -168,12 +168,12 @@ Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':reportes'])
     Route::get('/pdf', [PDFController::class, 'generarPDF'])->name('pdf.generar');
     Route::get('/pdf/mascota', [PDFController::class, 'generarPDFMascota'])->name('pdf.mascota');
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':certificados'])->group(function () {
+Route::middleware(['auth', 'verified', \App\Http\Middleware\CheckModuleStatus::class . ':certificados'])->group(function () {
     Route::resource('vacunas_certificaciones', VacunasCertificacionesController::class);
 });
 
 
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':departamentos'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':departamentos'])->group(function () {
     Route::resource('departamentos', DepartamentoController::class);
 });
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':ciudades'])->group(function () {
@@ -188,7 +188,7 @@ Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middle
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
     Route::resource('tipos-empresas', TiposEmpresaController::class);
 });
-Route::middleware([\App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':empresas'])->group(function () {
     Route::resource('empresas', EmpresaController::class);
     Route::get('empresas/{empresa}/pdf', [EmpresaController::class, 'pdf'])->name('empresas.pdf');
 });
