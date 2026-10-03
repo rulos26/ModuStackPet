@@ -363,3 +363,27 @@ método de pago y se reintentó la autorización, pero el bloqueo persiste
 tras más de 30 minutos. Mientras se resuelve, seguimos verificando cada
 tarea con scripts/verificar-rama.sh antes de fusionar, igual que hasta
 ahora.
+
+
+## 11. Confirmación U-04 + U-05 (tarea 029)
+
+Fecha: 2026-10-03. Agente: Cursor. Rama: `ia/cursor/env-example-trait-duplicado`.
+
+### U-04 — email real en `.env.example`
+
+Se reemplazó `rulos26@gmail.com` por el placeholder `noreply@example.com` en:
+
+- `MAIL_USERNAME` (`.env.example:91`)
+- `MAIL_FROM_ADDRESS` (`.env.example:94`)
+
+No quedan otros emails reales en `.env.example`. No se tocó `.env`.
+
+### U-05 — trait `HasRoles` duplicado en `User.php`
+
+Se eliminó la segunda declaración `use HasRoles;`. Queda una sola
+(`app/Models/User.php:18`).
+
+### Verificación
+
+- `php artisan test`: **169 passed** (510 assertions).
+- `composer validate`: `./composer.json is valid`.
