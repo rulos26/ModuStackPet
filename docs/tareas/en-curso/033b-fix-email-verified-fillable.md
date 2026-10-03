@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: pendiente
+estado: en-curso
 rama: ia/codex/pruebas-socialite
 archivos: [app/Models/User.php]
 ---
