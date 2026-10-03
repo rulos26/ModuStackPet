@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/consolidar-tipoempresa
 archivos: [app/Models/TipoEmpresa.php, app/Models/TiposEmpresa.php, app/Http/Controllers/, resources/views/, tests/]
 ---
@@ -32,3 +32,11 @@ docs/auditorias/seg036-consolidar-tipoempresa.md.
 ## Restricciones
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: TipoEmpresa/TiposEmpresa consolidados en `TipoEmpresa`; modelo descartado en `_borrar/modelos/`; findOrFail en show/edit/destroy; auth de ruta confirmada.
+- Archivos modificados: app/Http/Controllers/TiposEmpresaController.php, app/Models/{TipoEmpresa,Empresa}.php, app/Models/TiposEmpresa.php (eliminado), tests/Feature/TipoEmpresaCharacterizationTest.php, docs/auditorias/seg036-consolidar-tipoempresa.md
+- Cómo probarlo: `php artisan test` (274 passed); `composer dump-autoload` si el classmap local aún lista TiposEmpresa.
+- Pendientes y riesgos: borrado ahora lógico; el request no valida unicidad; sin prueba manual en navegador.
+- Preguntas para el humano: ¿Añadimos regla unique (ignorando eliminados) a tipos de empresa?

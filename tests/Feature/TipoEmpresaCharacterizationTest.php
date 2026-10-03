@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\TipoEmpresa;
-use App\Models\TiposEmpresa;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -34,36 +33,23 @@ class TipoEmpresaCharacterizationTest extends TestCase
     }
 
     #[Test]
-    public function both_models_share_the_table_and_read_the_same_row(): void
+    public function tipoempresa_is_the_only_model_for_the_table(): void
     {
-        $id = $this->row();
-
+        $this->assertFileDoesNotExist(app_path('Models/TiposEmpresa.php'));
         $this->assertSame('tipos_empresas', (new TipoEmpresa)->getTable());
-        $this->assertSame('tipos_empresas', (new TiposEmpresa)->getTable());
-        $this->assertSame('SAS', TipoEmpresa::find($id)->nombre);
-        $this->assertSame('SAS', TiposEmpresa::find($id)->nombre);
-    }
-
-    #[Test]
-    public function delete_is_hard_for_tiposempresa_and_soft_for_tipoempresa(): void
-    {
-        $a = $this->row('A');
-        $b = $this->row('B');
-
-        TiposEmpresa::find($a)->delete();
-        $this->assertDatabaseMissing('tipos_empresas', ['id' => $a]);
-
-        TipoEmpresa::find($b)->delete();
-        $this->assertNotNull(DB::table('tipos_empresas')->where('id', $b)->value('deleted_at'));
-    }
-
-    #[Test]
-    public function tipoempresa_has_empresas_relation_tiposempresa_does_not(): void
-    {
         $this->assertTrue(method_exists(TipoEmpresa::class, 'empresas'));
-        $this->assertFalse(method_exists(TiposEmpresa::class, 'empresas'));
     }
 
+    #[Test]
+    public function tipoempresa_delete_is_soft(): void
+    {
+        $id = $this->row('B');
+
+        TipoEmpresa::find($id)->delete();
+
+        $this->assertNotNull(DB::table('tipos_empresas')->where('id', $id)->value('deleted_at'));
+        $this->assertNull(TipoEmpresa::find($id));
+    }
     #[Test]
     public function index_lists_twenty_per_page(): void
     {
@@ -88,7 +74,7 @@ class TipoEmpresaCharacterizationTest extends TestCase
         $this->assertSame('LTDA 2', DB::table('tipos_empresas')->where('id', $id)->value('nombre'));
 
         $this->delete("/tipos-empresas/{$id}")->assertRedirect(route('tipos-empresas.index'));
-        $this->assertNull(TiposEmpresa::find($id));
+        $this->assertNull(TipoEmpresa::find($id)); // borrado lógico
     }
 
     #[Test]
@@ -101,12 +87,13 @@ class TipoEmpresaCharacterizationTest extends TestCase
     }
 
     #[Test]
-    public function missing_id_currently_crashes(): void
+    public function missing_id_returns_404(): void
     {
-        $this->get('/tipos-empresas/9999/edit')->assertStatus(500);
-        $this->delete('/tipos-empresas/9999')->assertStatus(500);
+        // Antes (find() sin fail) edit y destroy daban 500.
+        $this->get('/tipos-empresas/9999')->assertNotFound();
+        $this->get('/tipos-empresas/9999/edit')->assertNotFound();
+        $this->delete('/tipos-empresas/9999')->assertNotFound();
     }
-
     #[Test]
     public function routes_already_require_auth_and_role(): void
     {
