@@ -43,3 +43,10 @@ Corrección: migración `2026_10_03_000000_deactivate_undecryptable_email_config
 Verificación: prueba automatizada (fila inválida se desactiva, fila válida intacta). **Pendiente humano:** ejecutar `php artisan migrate` en el entorno local y confirmar que el warning desaparece del log (no pude hacerlo).
 
 Suite: 169 passed (164 + 5 nuevas).
+
+## Ajuste 031c — causa raíz real de la fila de `email_configs`
+Causa raíz (corrige la hipótesis de 031b): la fila activa tiene `password = ''` (vacía, no NULL), no un valor cifrado con otra APP_KEY. El cast `encrypted` de `EmailConfig` intenta descifrar `''` y lanza "The payload is invalid". Reproducido en la copia local `database/database.sqlite` (gitignored) del worktree: 1 fila activa, `len(password)=0`.
+Fallo de 031b: la migración filtraba `where('password','!=','')`, que excluía justo esa fila.
+Corrección (misma migración, sin crear otra): se quitaron los filtros de NULL/vacío y se descifra `(string) $password`; una password vacía o NULL se trata como no utilizable y la fila se desactiva (la app no puede cargarla de todos modos). La prueba ahora incluye una fila con `''`; falló antes del cambio.
+Verificación: suite 169 passed (510 aserciones). En la copia local (respaldo previo en `_borrar/`): como la migración ya figuraba ejecutada, se quitó su registro de `migrations` y se re-ejecutó → `EmailConfig::where('is_active',1)->count()` = 0; una petición a `/login` dio 200 y el conteo de warnings "Error al cargar configuración de Email" en `storage/logs/laravel.log` no cambió (131 antes y después; los anteriores son históricos).
+Nota para otros entornos: si ya corrieron la versión de 031b, la migración corregida NO se re-ejecutará sola; hay que quitar su fila de `migrations` o desactivar la fila a mano.

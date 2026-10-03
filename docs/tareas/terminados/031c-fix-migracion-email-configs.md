@@ -1,6 +1,6 @@
 ---
 agente: claude
-estado: en-curso
+estado: terminado
 rama: ia/claude/fortify-auth
 archivos: [database/migrations/]
 ---
@@ -36,3 +36,11 @@ Sección actualizada en seg031-fortify-auth.md con la causa raíz correcta.
 ## Restricciones
 - No toques .env ni dependencias. Las 169 pruebas deben seguir pasando.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Claude, 2026-10-03
+- Qué se hizo: migración 031b corregida para incluir password vacío/NULL; prueba ampliada; verificado contra la copia local sqlite (0 configs activas, sin warnings nuevos).
+- Archivos modificados: database/migrations/2026_10_03_000000_deactivate_undecryptable_email_configs.php, tests/Feature/FortifyVerificationRedirectTest.php, docs/auditorias/seg031-fortify-auth.md
+- Cómo probarlo: `php artisan test` (169 passed). En un entorno donde la 031b ya corrió: borrar su fila en `migrations` y `php artisan migrate`.
+- Pendientes y riesgos: modifiqué solo la copia local database/database.sqlite (respaldo en _borrar/database.sqlite.bak-031c). Entornos que ya ejecutaron la versión anterior necesitan re-ejecutarla manualmente.
+- Preguntas para el humano: ninguna.

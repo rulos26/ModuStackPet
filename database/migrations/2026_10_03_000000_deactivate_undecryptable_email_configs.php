@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * SEG-031b: desactiva las filas de email_configs cuyo password no se puede
- * descifrar con la APP_KEY actual ("The payload is invalid"). Causaban un
+ * descifrar ("The payload is invalid"): cifrado con otra APP_KEY o, el caso real
+ * encontrado, vacío (''). Causaban un
  * warning en cada petición y el sistema ya caía a .env. No borra datos.
  */
 return new class extends Migration
@@ -21,13 +22,13 @@ return new class extends Migration
 
         DB::table('email_configs')
             ->where('is_active', true)
-            ->whereNotNull('password')
-            ->where('password', '!=', '')
             ->select('id', 'password')
             ->orderBy('id')
             ->each(function ($row) {
+                // Un password NULL o vacío tampoco es utilizable: el cast
+                // 'encrypted' de EmailConfig lanza "The payload is invalid".
                 try {
-                    Crypt::decryptString($row->password);
+                    Crypt::decryptString((string) $row->password);
                 } catch (DecryptException) {
                     DB::table('email_configs')->where('id', $row->id)->update(['is_active' => false]);
                 }
