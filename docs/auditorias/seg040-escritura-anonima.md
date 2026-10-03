@@ -31,3 +31,8 @@ Un invitado recibe redirección a `login` en `index`, `create`, `store`, `show`,
 - `paths-documentos`: el parámetro de ruta (`paths_documento`) no coincide con el type-hint `$pathDocumento`, así que show/edit/update/destroy no enlazan el modelo (mismo patrón que `ciudade` en 034b). No es un hueco de acceso; sin corregir aquí.
 - P1/P2 de seg039 (`/pdf*`, APIs de barrios, `notificaciones/leidas`, duplicados) siguen pendientes.
 - Sin prueba manual en navegador.
+
+## Decisión humana confirmada (2026-10-03)
+razas, barrios y mensaje-de-bienvenidas quedan exclusivos de Superadmin,
+Admin no los gestiona. Implementación ya correcta tal como quedó en el
+commit original de esta tarea, sin cambios necesarios.
