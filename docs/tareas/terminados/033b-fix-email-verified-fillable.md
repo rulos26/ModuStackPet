@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: en-curso
+estado: terminado
 rama: ia/codex/pruebas-socialite
 archivos: [app/Models/User.php]
 ---
@@ -26,3 +26,16 @@ Actualiza docs/auditorias/seg033-pruebas-socialite.md con la corrección.
 ## Restricciones
 - Solo app/Models/User.php. No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se agregó `email_verified_at` a `$fillable` de `User` para
+  persistir la verificación que asigna el alta OAuth. La prueba existente pasó
+  sin modificaciones y se actualizó el informe SEG-033.
+- Archivos modificados: `app/Models/User.php` y
+  `docs/auditorias/seg033-pruebas-socialite.md`.
+- Cómo probarlo: `php artisan test --filter=SocialAuthTest`, `php artisan test`
+  y `composer validate`.
+- Pendientes y riesgos: ninguno identificado. Suite completa: 177 pruebas
+  aprobadas y 558 aserciones.
+- Preguntas para el humano: ninguna.
