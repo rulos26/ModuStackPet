@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/fortify-auth
 archivos: [bootstrap/providers.php, routes/web.php, app/Http/Controllers/, config/fortify.php]
 ---
 
