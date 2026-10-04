@@ -24,3 +24,10 @@ Verificación: una prueba comprueba que la URI se registra una sola vez y con es
 - Resto de P1/P2 de seg039b (APIs de barrios, `notificaciones/leidas`, `ciudades-api`, `/dashboard`).
 - La imagen por defecto del PDF usa una ruta fija bajo `public/avatars/1110456003/...` (parece un dato personal en el repo); no se tocó.
 - Sin prueba manual en navegador.
+
+## Decisión humana confirmada (2026-10-03)
+El control de acceso a empresas (incluido empresas.pdf) queda por rol
+(Superadmin y Admin), no por propietario individual. Empresas es un
+catálogo administrado centralmente, sin un "dueño" individual como sí
+lo tienen las mascotas. Implementación ya correcta desde la tarea 042,
+sin cambios necesarios.
