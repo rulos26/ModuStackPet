@@ -1,7 +1,7 @@
 ---
 agente: codex
-estado: pendiente
-rama:
+estado: terminado
+rama: ia/codex/cobertura-controladores
 archivos: [tests/Feature/]
 ---
 
@@ -40,3 +40,18 @@ encontrados si los hay.
 ## Restricciones
 - Solo tests/. No toques .env, dependencias ni codigo de app/.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-03.
+- Qué se hizo: se recalculó la cobertura actual y se agregaron siete pruebas
+  Feature para `VacunasCertificacionesController`, cubriendo el recurso completo,
+  validación, propiedad, roles e inexistencia de mutaciones no autorizadas.
+- Archivos modificados: `tests/Feature/VacunasCertificacionesFlowsTest.php` y
+  `docs/auditorias/seg038-pruebas-controladores.md`.
+- Cómo probarlo: `php artisan test --filter=VacunasCertificacionesFlowsTest`,
+  `php artisan test` y `composer validate`.
+- Pendientes y riesgos: quedan controladores priorizados en el informe; en
+  particular Empresa, Cliente, Paseador, requisitos documentales, OAuth y correo.
+  Las cargas de archivos de vacunas requieren casos adicionales con
+  `Storage::fake`. Suite: 273 pruebas aprobadas, 1138 aserciones.
+- Preguntas para el humano: ninguna.
