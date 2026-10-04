@@ -1,82 +1,114 @@
-# Auditoría de diseño y frontend (solo lectura)
+# Auditoría de diseño y frontend — web-quality-audit
 
 Fecha: 2026-10-03 · Agente: Claude · Rama: `ia/claude/auditoria-frontend`
 
-## Método y límites (leer primero)
-- De la lista de skills propuesta **ninguna está instalada** en esta sesión (comprobado con `ListSkills`), así que no pude cargar ninguna. Apliqué por mi cuenta el enfoque de **`accessibility` + `web-quality-audit` (Addy Osmani)**: WCAG 2.2 AA, rendimiento, buenas prácticas y consistencia de diseño. Si quieres la auditoría "con" una skill concreta, instálala y la repito.
-- **Análisis estático** de `resources/views` (149 vistas Blade), `resources/css`, `resources/js`, `package.json` y layouts. **No** ejecuté la app en navegador, ni Lighthouse, ni medí contraste real, ni probé lector de pantalla. Todo lo que dependa de eso está marcado *(verificar)*.
-- No se modificó código de aplicación ni se leyó `.env`.
+## Skill usada y cómo
+Skill elegida: **`web-quality-audit` (Addy Osmani)**, la más completa de la lista (Performance + Accesibilidad + SEO + Best Practices, basada en Lighthouse/Core Web Vitals/WCAG).
+- No estaba instalada ni disponible en el catálogo de skills de la sesión (`ListSkills`/`SearchSkills` sin resultados). Instalarla con `npx skills add` implica descargar y ejecutar código de terceros y de todos modos no se cargaría en la sesión en curso, así que **leí su `SKILL.md` público** ([addyosmani/web-quality-skills](https://github.com/addyosmani/web-quality-skills)) y apliqué su procedimiento: objetivo → **baseline medido en vivo** → localizar en código → categorizar por severidad y confianza.
+- **Medición real:** app local (`php artisan serve`, SQLite local) en el navegador integrado; Performance API (TTFB, DCL, load, LCP, CLS, recursos), `curl` de cabeceras, comprobación de DOM/consola y cálculo de contraste. Para el panel creé un usuario Superadmin de prueba en la copia local de SQLite (credenciales generadas, ya eliminado). Servidor detenido al terminar.
+- **No se ejecutó Lighthouse/axe** (no están instalados; no quise descargarlos). Los checks de a11y son manuales/propios y están marcados; falta una pasada con axe y lector de pantalla.
+- Se mantiene la regla de solo lectura: no se tocó código de la aplicación ni `.env`.
 
-## Resumen
-El frontend funciona pero es un **mosaico**: cada pantalla de autenticación es un HTML independiente con su propia versión de Bootstrap, el panel mezcla dos generaciones de librerías (AdminLTE 3 + Bootstrap 5 + jQuery), hay ~246 referencias a CDN sin SRI y el estilo se resuelve con 239 `style=""` en línea. Lo más importante: **faltan etiquetas accesibles en controles clave, las pantallas de login no muestran bien los errores y hay depuración con datos del formulario en `console.log`**.
+## Alcance medido
+`/login` (desktop claro y oscuro, móvil 375×812), `/forgot-password` (móvil), `/superadmin/dashboard` (panel) y `/razas` (listado con DataTables). Resto de vistas: análisis estático (149 vistas).
 
-Cifras medidas (grep sobre `resources/views`):
+## Evidencia
+| Señal | Alcance | Resultado | Fuente |
+|---|---|---|---|
+| TTFB / DCL / load | `/login` | 31 ms / 307 ms / 312 ms (3 req, 63 KB) | Navigation Timing |
+| TTFB / DCL / load | `/superadmin/dashboard` | 261 ms / 547 ms / 840 ms (12 req, 242 KB) | Navigation Timing |
+| TTFB / DCL / load | `/razas` | — / 639 ms / 686 ms (**28 req, 685 KB**, 6 orígenes) | Navigation Timing |
+| CLS | login / dashboard / razas | 0 / **0.032** / 0 (umbral 0.1: pasa) | PerformanceObserver |
+| LCP | todas | no reportado (sin elemento candidato válido en el entorno) | PerformanceObserver |
+| Long tasks | dashboard | ninguna | PerformanceObserver |
+| Imágenes rotas (404) | login, dashboard, razas | login 1/1, dashboard 3/3, razas 2/2 | DOM + `curl` |
+| `/public/storage/img/logo.jpg` vs `/storage/img/logo.jpg` | servidor | **404** vs **200** | `curl` |
+| Errores de consola | login→dashboard | 404s de recursos, 4× `console.log` de depuración del login, warning "Vite manifest no encontrado" | consola del navegador |
+| Cabeceras de seguridad | `/login` | sin CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy ni Permissions-Policy; `X-Powered-By: PHP/8.3.33` expuesto | `curl -I` |
+| Contraste enlaces (tema oscuro automático de Bootstrap) | login | enlaces `#0d6efd` sobre `#212529` = **3.43:1** (AA exige 4.5:1) | cálculo WCAG |
+| Contraste botón 👁️ (oscuro) | login | 3.29:1 | cálculo WCAG |
+| Landmark `<main>` / skip link | login, dashboard, razas | **ausentes** | DOM |
+| `<h1>` por página | dashboard | **2 `<h1>`** + `<h3>` (sin `<h2>`) | DOM |
+| Enlaces sin nombre accesible | navbar del panel | **2** (menú lateral y notificaciones) | DOM |
+| `scope` en `<th>` | `/razas` | 0 de 6 | DOM |
+| Overflow horizontal móvil | login 375 px | ninguno | DOM |
+| `autocomplete` | login | ausente en correo y contraseña | DOM |
+| Estilos | `/forgot-password` | **sin ninguna hoja de estilos** (HTML por defecto del navegador) | captura + DOM |
+| Feedback de errores | `/forgot-password` (correo inexistente) | **0 mensajes** de error/estado tras enviar | `fetch` del formulario |
+| Documentos HTML completos fuera del layout | estático | 12 | grep |
+| CDN sin SRI | estático | 0 con `integrity` (~246 referencias) | grep |
+| `style=""` / `onclick=` / `console.log` / `alert()`·`confirm()` | estático | 239 / 39 / 15 / 21 | grep |
 
-| Métrica | Valor |
-|---|---|
-| Vistas Blade | 149 |
-| Documentos HTML completos fuera del layout (`<!DOCTYPE`) | 12 (5 de auth, 2 emails, 3 PDF, welcome…) |
-| Recursos CDN sin atributo `integrity` (SRI) | 0 con integrity; ~246 referencias sin él |
-| Vistas que re-cargan DataTables + pdfmake + jszip desde CDN | 14 |
-| `<img>` / sin `alt` | 25 / 11 |
-| Estilos en línea `style="..."` | 239 |
-| `onclick=` en línea | 39 |
-| `console.log` en vistas | 15 |
-| `alert()` / `confirm()` nativos | 21 |
-| Tablas (`<table>`) / con `scope` en `<th>` o `<caption>` | 34 / 0 |
-| Controles de auth con `autocomplete` | 0 de 4 pantallas |
+## Críticos (0)
+Ninguno de seguridad de aplicación en el frontend (los de backend ya se trataron en SEG-040/042).
 
-## Hallazgos (ordenados por prioridad)
+## Alta prioridad (7)
 
-### Alta
-**F-01 · Pantallas de autenticación fuera del layout y desalineadas.** `login`, `register`, `forgot-password`, `reset-password` y `passwords/email` son HTML completo, cada una con su propio `<head>` y versiones distintas de Bootstrap (login usa 5.3.0, el layout 5.3.2). Resultado: estilos y comportamiento distintos entre pantallas, sin favicon/fuente común, mantenimiento x5. *Recomendación:* un layout `layouts/guest.blade.php` compartido.
+**H-01 · `forgot-password` sin estilos ni feedback.** *(medido)* La página no carga CSS (18 líneas, HTML crudo) y, al enviar un correo, no muestra ningún mensaje de éxito ni de error. Incumple WCAG 3.3.1/4.1.3 y es la primera pantalla que ve quien no puede entrar. Archivo: `resources/views/auth/forgot-password.blade.php`. *Fix:* usar el mismo diseño que login + `@if(session('status'))` y `@error('email')` con `role="alert"`.
 
-**F-02 · Errores de formulario no accesibles / ausentes.** `forgot-password.blade.php` no tiene ningún `@error`/`$errors`/mensaje de estado (0 coincidencias): un correo inválido o el aviso "enlace enviado" no se muestran. En login/register/reset los errores existen pero sin `aria-describedby`, `aria-invalid` ni `role="alert"` (0–1 atributos `aria-` por pantalla). Incumple WCAG 3.3.1/3.3.3 y 4.1.3. *Recomendación:* bloque de errores con `role="alert"` y enlazado a cada campo.
+**H-02 · Logos y avatares rotos en todas las pantallas.** *(medido)* Las vistas usan `asset('public/storage/img/...')`, que genera `/public/storage/...` → **404**; la URL correcta `/storage/img/logo.jpg` responde 200. Afecta login (`auth/login.blade.php:17`), sidebar (`layouts/sidebar.blade.php:5`), navbar (`layouts/navbar.blade.php:50-69`), `cliente/dashboard.blade.php:14-29`, `mascota/show.blade.php:21`. Se ve el texto alternativo en lugar de la marca. *Fix:* `asset('storage/img/...')`.
 
-**F-03 · Botón de mostrar/ocultar contraseña solo con emoji.** `login.blade.php` usa `<button onclick="togglePassword()">👁️</button>` sin `aria-label` ni estado `aria-pressed`: un lector de pantalla anuncia "botón" sin nombre (WCAG 4.1.2, 1.1.1). *Recomendación:* `aria-label="Mostrar contraseña"` + `aria-pressed`, y texto/ícono SVG.
+**H-03 · Pantallas de auth fuera del layout y desalineadas.** 5 pantallas son HTML completo con su propio `<head>`; login usa Bootstrap 5.3.0 (layout: 5.3.2), forgot-password ninguno (H-01). Mantenimiento ×5 y apariencia inconsistente. *Fix:* `layouts/guest.blade.php` compartido.
 
-**F-04 · Depuración con datos del formulario en producción.** `login.blade.php` registra en consola el correo digitado, longitud de la contraseña, método del formulario y presencia de CSRF (15 `console.log` en el proyecto). Es ruido y fuga menor de información; además contradice la política de logs del backend. *Recomendación:* eliminar los `console.log`/`console.error` de las vistas.
+**H-04 · Login con depuración en producción.** *(medido en consola)* Cada carga imprime `Login Form: ...` y al enviar registra el correo escrito y la longitud de la contraseña (15 `console.log` en el proyecto). *Fix:* eliminarlos.
 
-**F-05 · Navegación del panel con dos generaciones de librería mezcladas.** `layouts/navbar.blade.php` mezcla `data-widget="pushmenu"` (AdminLTE 3, basado en **Bootstrap 4** + jQuery) con `data-bs-toggle="dropdown"` (**Bootstrap 5**). AdminLTE 3.2 y Bootstrap 5.3 no están diseñados para convivir; es una fuente probable de dropdowns/estilos rotos *(verificar en navegador)*. Los enlaces `href="#"` con `role="button"` y el ícono de notificaciones (`<a ...><i class="far fa-bell"></i>`) no tienen nombre accesible (WCAG 4.1.2, 2.4.4). *Recomendación:* decidir una sola base (AdminLTE 4 / Bootstrap 5 puro, o AdminLTE 3 con Bootstrap 4) y dar `aria-label` a los controles solo-ícono.
+**H-05 · Botón de contraseña sin nombre accesible.** `auth/login.blade.php`: `<button onclick="togglePassword()">👁️</button>`, sin `aria-label` ni `aria-pressed` (WCAG 4.1.2). En tema oscuro su contraste es 3.29:1.
 
-**F-06 · Tablas sin semántica.** 34 tablas, 0 con `scope` en `<th>` ni `<caption>`/`aria-label`; los botones de acción son solo ícono (revisar nombres accesibles). WCAG 1.3.1. *Recomendación:* `scope="col"`, título de tabla y `aria-label` en las acciones ("Editar ciudad X").
+**H-06 · Navegación sin semántica y controles sin nombre.** *(medido)* Sin `<main>`, sin skip link (WCAG 2.4.1, 1.3.1); 2 enlaces de la navbar sin nombre (`data-widget="pushmenu"` y campana de notificaciones); 2 `<h1>` en el dashboard. Además la navbar mezcla `data-widget` (AdminLTE 3 / Bootstrap 4 + jQuery) con `data-bs-toggle` (Bootstrap 5), mezcla de generaciones que no está soportada *(verificar comportamiento de dropdown en navegador)*.
 
-### Media
-**F-07 · CDN sin SRI y dependencias duplicadas.** Ningún `<script>`/`<link>` externo lleva `integrity` ni `crossorigin` (jQuery, Bootstrap, SweetAlert2, AdminLTE, Font Awesome, DataTables, pdfmake, jszip…): un CDN comprometido ejecutaría código en el panel de Superadmin. Además 14 vistas cargan por su cuenta DataTables + Buttons + pdfmake (~MB) en vez de una vez en un bundle. *Recomendación:* compilar con Vite (ya instalado, `package.json`) o añadir SRI; mover DataTables a un `@stack` solo en vistas que lo usen.
+**H-07 · Contraste insuficiente en tema oscuro.** *(medido)* Con `prefers-color-scheme: dark` Bootstrap oscurece el login pero los enlaces mantienen `#0d6efd` (3.43:1 < 4.5:1). El resto de pantallas del panel no se probó en oscuro *(verificar)*. *Fix:* definir colores accesibles por tema o desactivar el tema oscuro automático.
 
-**F-08 · Rendimiento: assets pesados y bloqueantes.** Layout carga jQuery, Bootstrap bundle, SweetAlert2 y AdminLTE síncronos antes del contenido, más Google Fonts con `display=swap` (bien) pero 3+ CSS externos en el `<head>`. `public/css/app.css` y Vite/Tailwind (`@tailwind` en `resources/css/app.css`, tailwind en `package.json`) conviven con Bootstrap: **dos sistemas de estilos** declarados, solo uno parece usarse *(verificar)*. *Recomendación:* un único pipeline de CSS; `defer` en scripts; cargar pdfmake/jszip solo al exportar.
+## Prioridad media (8)
 
-**F-09 · Estilo en línea masivo y bloques `<style>` por vista.** 239 `style=""`, 39 `onclick=` y bloques `<style>` en 8+ vistas (welcome, superadmin/dashboard, user/*/show…). Impide CSP estricta, theming y modo oscuro coherente (existe `.dark-theme` en `resources/css/app.css`/`app.js`, no verificado que esté conectado). *Recomendación:* clases utilitarias/CSS compartido; quitar `onclick` por listeners.
+**M-01 · Peso y terceros en listados.** *(medido)* `/razas`: 28 peticiones, 685 KB, 6 orígenes externos (cdnjs, Google Fonts, jsdelivr, datatables.net, code.jquery.com) y 14 vistas re-cargan DataTables+Buttons+pdfmake+jszip. Aún así load < 1 s en local; en red real será notablemente más lento. *Fix:* bundle con Vite (instalado, pero hoy hay un warning "Vite manifest no encontrado") y cargar pdfmake/jszip solo al exportar.
 
-**F-10 · Imagen del logo con ruta sospechosa.** `login.blade.php`: `asset('public/storage/img/logo.jpg')` genera `/public/storage/img/...`; si el servidor sirve desde `public/`, esa URL da 404 *(verificar)*. `<img>` sin `alt`: 11 de 25 (el logo sí lo tiene como "Logo", poco descriptivo). WCAG 1.1.1. *Recomendación:* `asset('storage/img/logo.jpg')` y `alt` útil o `alt=""` si es decorativa.
+**M-02 · CDN sin SRI/`crossorigin`.** ~246 referencias sin `integrity`; un CDN comprometido ejecuta código en el panel de Superadmin (relevante por los módulos de BD/migraciones/seeders que expone).
 
-**F-11 · Formularios sin `autocomplete` ni ayuda.** Ninguna pantalla de auth define `autocomplete` (`username`, `current-password`, `new-password`, `email`): peor experiencia con gestores de contraseñas y WCAG 1.3.5. 91 `placeholder` en el proyecto: revisar que no sustituyan a `<label>`. Los `required` no tienen indicador visual/textual más allá del atributo HTML.
+**M-03 · Sin cabeceras de seguridad HTTP.** *(medido)* No hay CSP, X-Frame-Options (clickjacking), X-Content-Type-Options ni Referrer-Policy; `X-Powered-By` expone la versión de PHP. La CSP además choca con 239 `style=""`, 39 `onclick` y scripts en línea (M-05). *Fix:* middleware de cabeceras; deshabilitar `expose_php`.
 
-**F-12 · Idioma mezclado.** Interfaz en español con restos en inglés de los generadores CRUD: `__('Create')`, `__('Update')`, `__('Show')`, `__('Back')`, `__('Edit')`, `__('Submit')` (≈33 usos) y mensajes "created successfully" en controladores; `<title>` genérico ("Iniciar Sesión"). Sin archivos de traducción activos, se ve inglés. WCAG 3.1.2 / consistencia. *Recomendación:* `lang/es.json` o reemplazar por textos propios.
+**M-04 · Dos sistemas de estilos.** Tailwind/Vite declarados (`resources/css/app.css`, `package.json`) y Bootstrap+AdminLTE por CDN en uso; `public/css/app.css` además. Decidir una base.
 
-### Baja
-**F-13 · `alert()`/`confirm()` nativos (21).** Mezcla con SweetAlert2 (14 vistas) y 6 `onsubmit="return confirm(...)"`: confirmaciones inconsistentes y no estilizables. Unificar en un componente.
+**M-05 · Estilo y comportamiento en línea.** 239 `style=""`, 39 `onclick=`, bloques `<style>` en 8+ vistas. Impide CSP y theming.
 
-**F-14 · Contraste y jerarquía** *(verificar con herramienta)*: 157 usos de `text-muted` (en Bootstrap 5.3 es #6c757d sobre blanco ≈ 4.7:1, justo en el límite AA para texto pequeño; sobre `#f4f6f9` de las cabeceras de tabla baja), y 3 usos de `#ccc` como color. El layout usa `<h1>` en el encabezado de contenido y las pantallas de auth otro `<h1>`; revisar que no haya dos `<h1>` por página.
+**M-06 · Tablas sin semántica.** *(medido en `/razas`; 34 en el proyecto)* 0 `scope`, sin `<caption>`; acciones solo con ícono.
 
-**F-15 · Enlaces y pie.** El pie usa `<a href="#">` para el nombre de la app; un `target="_blank"` sin `rel="noopener"`; versión fija "1.0.0" en el footer.
+**M-07 · Formularios.** `autocomplete` ausente (WCAG 1.3.5); errores sin `aria-describedby`/`aria-invalid`; 91 `placeholder` que deben revisarse como posibles sustitutos de `<label>`.
 
-**F-16 · Foco y teclado** *(verificar)*: no se vio estilo `:focus-visible` propio; los dropdowns dependen del comportamiento de Bootstrap/AdminLTE (ver F-05). No hay "skip link" al contenido principal (WCAG 2.4.1).
+**M-08 · Defecto visible de contenido.** *(medido, captura del dashboard)* El mensaje de bienvenida muestra literalmente `\r\n\r\n` entre párrafos (secuencias de escape sin interpretar en el dato o en su render). Revisar el seeder/entrada de `mensaje-de-bienvenida`.
 
-## Lo que está bien
-- `<html lang>` correcto y `viewport` sin bloquear zoom (0 `user-scalable`/`maximum-scale`).
-- Tablas envueltas en `.table-responsive` (32 de 34) y DataTables con idioma español.
-- Labels asociadas con `for`/`id` en las pantallas de auth; CSRF presente.
-- `preconnect` + `display=swap` en Google Fonts.
-- Íconos de acción de tabla: 0 botones solo-ícono sin `title` según el patrón buscado (aun así falta `aria-label`, F-06).
+## Prioridad baja (6)
+- **L-01** Idioma mezclado: `__('Create'|'Update'|'Show'|'Back'|'Edit'|'Submit')` (~33 usos) y "created successfully" de los generadores CRUD.
+- **L-02** `alert()`/`confirm()` nativos (21) junto a SweetAlert2 (14 vistas).
+- **L-03** Sin `<meta name="description">`, canonical ni títulos únicos descriptivos en auth (`<title>` "Iniciar Sesión"); relevante solo para la página pública (login). `robots.txt` permite todo (`Disallow:` vacío) aunque es un panel privado: conviene `Disallow: /` salvo la landing.
+- **L-04** Pie con `<a href="#">`, versión fija "1.0.0"; un `target="_blank"` sin `rel="noopener"`.
+- **L-05** Foco visible y teclado: no se pudo confirmar estilo `:focus-visible` propio (la comprobación por script no es fiable) *(verificar con teclado)*.
+- **L-06** Imágenes sin `width`/`height` (CLS bajo hoy, 0.032, pero con riesgo si cargan las reales).
 
-## Plan sugerido (tareas, no creadas)
-1. **Layout de invitado + auth accesible** (F-01, F-02, F-03, F-04, F-10, F-11): una tarea acotada, alto impacto, riesgo bajo; tocan solo `resources/views/auth/*` y un layout nuevo.
-2. **Decidir la base de UI** (F-05, F-08): decisión humana (¿AdminLTE 3 o Bootstrap 5/AdminLTE 4? ¿Tailwind sí/no?). Bloquea el resto.
-3. **Bundle de assets con Vite + SRI** (F-07, F-08, F-09): quitar CDNs por vista.
-4. **Tablas y acciones accesibles + textos en español** (F-06, F-12, F-13).
-5. **Medición real**: Lighthouse/axe en `/login`, `/register`, un dashboard y un listado, y pasada con lector de pantalla para confirmar los puntos *(verificar)*.
+## Qué está bien
+`lang="es"` correcto, viewport sin bloquear zoom, sin overflow horizontal a 375 px, CLS < 0.1, sin long tasks, tablas en `.table-responsive`, DataTables en español, CSRF presente, fuentes con `preconnect` + `display=swap`, sin IDs duplicados en el dashboard, TTFB bajo.
+
+## Resumen por categoría
+- **Performance:** CWV medidos aceptables en local (CLS 0.032; LCP no medible); peso/terceros en listados (M-01, M-04). 2 hallazgos.
+- **Accesibilidad:** automatizada **no ejecutada** (sin axe/Lighthouse); manuales/medidos: 8 hallazgos (H-01, H-03, H-05, H-06, H-07, M-06, M-07, L-05).
+- **SEO:** 1 hallazgo menor (L-03); no aplica a un panel privado salvo la landing/login.
+- **Best Practices:** 6 hallazgos (H-02, H-04, M-02, M-03, M-05, L-04); errores 404 en consola y warning de Vite.
+- **Agentic Browsing:** no evaluado (no hay WebMCP/`llms.txt`); la semántica pobre (H-06, M-06, M-07) también limita a agentes.
+
+## Prioridad recomendada
+1. **H-02 + H-04 + H-01** (rápidos, alto impacto): corregir rutas `asset('storage/...')`, quitar `console.log`, dar estilo y feedback a forgot-password. Riesgo bajo.
+2. **H-03 + H-05 + M-07** layout de invitado y auth accesibles (una tarea acotada a `resources/views/auth/*`).
+3. **M-03** cabeceras de seguridad (middleware), después **M-02/M-05** para poder activar CSP.
+4. **H-06 + M-06** semántica del layout (`<main>`, skip link, nombres) y tablas.
+5. **Decisión humana**: base de UI (AdminLTE 3 + Bootstrap 5 vs una sola; Tailwind sí/no) antes de M-01/M-04.
+6. **M-08** corregir el dato de bienvenida.
+
+## Verificación pendiente
+- Ejecutar Lighthouse y axe sobre `/login`, `/register`, `/forgot-password`, el dashboard y un listado, en móvil y escritorio, y comparar contra la tabla de evidencia.
+- Pasada manual con teclado y lector de pantalla (foco, dropdowns, skip link).
+- Medir con red real (los números de este informe son locales, sin latencia de CDN).
+- Re-ejecutar este baseline tras cada corrección.
 
 ## Preguntas para el humano
-- ¿Qué skill de la lista quieres que use de verdad (hay que instalarla) y sobre qué pantallas (todas, o login + un panel)?
-- ¿AdminLTE 3 + Bootstrap 5 es una decisión consciente o herencia? ¿Se mantiene Tailwind?
+- ¿Autorizas tareas para los puntos 1–4 de la prioridad recomendada? (los 1 y 2 son de bajo riesgo).
+- ¿AdminLTE 3 + Bootstrap 5 es decisión consciente? ¿Se mantiene Tailwind?
+- ¿Quieres instalar Lighthouse/axe (descarga de paquetes de terceros) para la medición completa?
