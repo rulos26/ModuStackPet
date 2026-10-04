@@ -132,15 +132,18 @@ Route::post('/notificaciones/leidas', function () {
     return back();
 })->middleware(['auth', 'verified'])->name('notificaciones.marcar.leidas');
 
-// Dashboards activos del login (RoleRedirect y vistas). Protegidos con auth;
-// superadmin además exige verified + rol (no restaurar las copias sin auth
-// ni /clientes/dashboard, que eran el duplicado inseguro).
+// Dashboards activos del login (RoleRedirect y vistas). Cada rol solo el suyo.
+// No restaurar /clientes/dashboard ni login_* sin auth (duplicados inseguros).
 Route::middleware(['auth', 'verified', 'role:Superadmin'])->group(function () {
     Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
 });
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'login_Admin'])->name('admin.dashboard');
+});
+Route::middleware(['auth', 'verified', 'role:Cliente'])->group(function () {
     Route::get('/cliente/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
+});
+Route::middleware(['auth', 'verified', 'role:Paseador'])->group(function () {
     Route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
 });
 

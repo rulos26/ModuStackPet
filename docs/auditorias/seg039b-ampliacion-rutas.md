@@ -180,3 +180,34 @@ Definiciones en `routes/web.php` (deben existir):
 
 `/clientes/dashboard` (plural): sin referencias de nombre distinto; URI
 ausente a propósito.
+
+---
+
+## Corrección 043c — rol + verified en cada dashboard (2026-10-03)
+
+### Problema
+Tras 043b, `admin.dashboard`, `cliente.dashboard` y `paseador.dashboard`
+tenían solo `auth`. Un Cliente podía abrir `/admin/dashboard` (200 vía
+`login_Admin`, que no comprobaba rol Admin) y un Paseador podía disparar
+el flujo de `login_Cliente` (logout + redirect). `superadmin.dashboard`
+ya tenía `auth + verified + role:Superadmin`.
+
+### Corrección
+Cada dashboard queda con `auth + verified + role:<su rol>`:
+
+| Ruta | Middleware |
+|---|---|
+| `superadmin.dashboard` | `auth`, `verified`, `role:Superadmin` |
+| `admin.dashboard` | `auth`, `verified`, `role:Admin` |
+| `cliente.dashboard` | `auth`, `verified`, `role:Cliente` |
+| `paseador.dashboard` | `auth`, `verified`, `role:Paseador` |
+
+`RoleRedirect` / login / registro / verificación de email **no cambian**:
+siguen generando la URL del dashboard del propio rol; el middleware solo
+bloquea el acceso cruzado (403) y a usuarios sin verificar
+(`verification.notice`).
+
+### Pruebas
+`tests/Feature/DashboardRoleAccessTest.php`: matrices de acceso cruzado
+403, acceso propio, `verified`, middleware de ruta, y login → dashboard
+por rol. Suite completa en verde tras el fix.

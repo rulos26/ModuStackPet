@@ -1,6 +1,6 @@
 ---
 agente: cursor
-estado: en-curso
+estado: terminado
 rama: ia/cursor/corregir-hallazgos-039b
 archivos: [routes/web.php, tests/Feature/DashboardRoleAccessTest.php, docs/auditorias/seg039b-ampliacion-rutas.md]
 ---
@@ -31,3 +31,11 @@ final.
 ## Restricciones
 - No toques .env ni dependencias.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Cursor, 2026-10-03
+- Qué se hizo: Pruebas rojas primero (`DashboardRoleAccessTest`); luego `auth+verified+role` en admin/cliente/paseador dashboards (superadmin ya lo tenía). RoleRedirect intacto. Documentado en seg039b.
+- Archivos modificados: `routes/web.php`, `tests/Feature/DashboardRoleAccessTest.php`, `docs/auditorias/seg039b-ampliacion-rutas.md`, esta tarea.
+- Cómo probarlo: `php artisan test --filter=DashboardRoleAccessTest`; login con cada rol y probar abrir URI de otro rol (403).
+- Pendientes y riesgos: registro sigue redirigiendo a `cliente.dashboard`; el middleware `verified` enviará a `verification.notice` al seguir el redirect si el email no está verificado (comportamiento deseable).
+- Preguntas para el humano: ninguna.
