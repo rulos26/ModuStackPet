@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Ciudad $ciudad
  * @property Departamento $departamento
  * @property Sector $sector
- * @property TiposEmpresa $tiposEmpresa
+ * @property TipoEmpresa $tipoEmpresa
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */

@@ -12,6 +12,8 @@ class TipoEmpresa extends Model
 
     protected $table = 'tipos_empresas';
 
+    protected $perPage = 20;
+
     protected $fillable = [
         'nombre'
     ];
