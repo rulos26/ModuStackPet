@@ -95,16 +95,6 @@ Route::get('/dashboard', function () {
 Route::get('/auth/{provider}', [\App\Http\Controllers\Auth\SocialAuthController::class, 'redirect'])->name('social.redirect');
 Route::get('/auth/{provider}/callback', [\App\Http\Controllers\Auth\SocialAuthController::class, 'callback'])->name('social.callback');
 
-// Rutas para Superadmin
-Route::get('/superadmin/dashboard', [SuperadminController::class, 'login_Superadmin'])->name('superadmin.dashboard');
-
-// Rutas para Admin
-Route::get('/admin/dashboard', [AdminController::class, 'login_Admin'])->name('admin.dashboard');
-
-Route::get('/clientes/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
-
-
-route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
 /* // Rutas para Admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('home'); */
 
@@ -119,12 +109,6 @@ Route::get('/logout', function () {
 
     return redirect('/');
 })->name('logout');
-
-// Middleware para proteger el dashboard
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Rutas para Superadmin
-Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
-});
 
 // Ruta para verificar email
 Route::get('/email/verify', function () {
@@ -146,7 +130,23 @@ Route::post('/email/verification-notification', function (Request $request) {
 Route::post('/notificaciones/leidas', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return back();
-})->name('notificaciones.marcar.leidas');
+})->middleware(['auth', 'verified'])->name('notificaciones.marcar.leidas');
+
+// Dashboards activos del login (RoleRedirect y vistas). Cada rol solo el suyo.
+// No restaurar /clientes/dashboard ni login_* sin auth (duplicados inseguros).
+Route::middleware(['auth', 'verified', 'role:Superadmin'])->group(function () {
+    Route::get('/superadmin/dashboard', [SuperadminController::class, 'index'])->name('superadmin.dashboard');
+});
+Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'login_Admin'])->name('admin.dashboard');
+});
+Route::middleware(['auth', 'verified', 'role:Cliente'])->group(function () {
+    Route::get('/cliente/dashboard', [ClienteController::class, 'login_Cliente'])->name('cliente.dashboard');
+});
+Route::middleware(['auth', 'verified', 'role:Paseador'])->group(function () {
+    Route::get('/paseador/dashboard', [PaseadorController::class, 'login_Paseador'])->name('paseador.dashboard');
+});
+
 Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middleware\CheckModuleStatus::class . ':tipo-documentos'])->group(function () {
     Route::resource('tipo-documentos', TipoDocumentoController::class);
 });
@@ -238,16 +238,14 @@ Route::middleware(['auth', 'verified', 'role:Superadmin|Admin', \App\Http\Middle
     Route::post('paths-documentos/{pathDocumento}/toggle-status', [PathDocumentoController::class, 'toggleStatus'])->name('paths-documentos.toggle-status');
 });
 
-// Rutas para administradores
+// Rutas para administradores (dashboard nominado arriba)
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::resource('users', AdminController::class);
     Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleStatus'])->name('users.toggle-status');
 });
 
-// Rutas para clientes
+// Rutas para clientes (dashboard nominado arriba)
 Route::middleware(['auth'])->prefix('cliente')->name('cliente.')->group(function () {
-    Route::get('/dashboard', [ClienteController::class, 'login_Cliente'])->name('dashboard');
     Route::get('/perfil', [ClienteController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/{user}', [ClienteController::class, 'show'])->name('perfil.show');
     Route::get('/perfil/{user}/edit', [ClienteController::class, 'edit'])->name('perfil.edit');
@@ -259,9 +257,8 @@ Route::middleware(['auth'])->prefix('cliente')->name('cliente.')->group(function
     });
 });
 
-// Rutas para paseadores
+// Rutas para paseadores (dashboard nominado arriba)
 Route::middleware(['auth'])->prefix('paseador')->name('paseador.')->group(function () {
-    Route::get('/dashboard', [PaseadorController::class, 'login_Paseador'])->name('dashboard');
     Route::get('/perfil', [PaseadorController::class, 'index'])->name('perfil.index');
     Route::get('/perfil/{user}', [PaseadorController::class, 'show'])->name('perfil.show');
     Route::get('/perfil/{user}/edit', [PaseadorController::class, 'edit'])->name('perfil.edit');
@@ -286,9 +283,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-// Rutas para configuraciones del sistema (solo superadmin)
+// Rutas para configuraciones del sistema (solo superadmin; dashboard nominado arriba)
 Route::middleware(['auth','verified','role:Superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
-    Route::get('/dashboard', [SuperadminController::class, 'index'])->name('dashboard');
     Route::get('/users/edit', [SuperadminController::class, 'edit'])->name('users.edit');
     Route::get('/users/show', [SuperadminController::class, 'show'])->name('users.show');
     Route::post('/users/change-password', [SuperadminController::class, 'changePassword'])->name('users.change-password');

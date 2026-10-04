@@ -95,7 +95,119 @@ No hay otras rutas `*pdf*` en `routes/web.php` ni en `routes/api.php` (no usado 
 
 ---
 
-## Verificación
+## Verificación (auditoría original)
 
 - `php artisan route:list --json` (2026-10-03, worktree cursor): middleware citado arriba.
-- No se modificó código de aplicación (solo este markdown).
+- No se modificó código de aplicación en la auditoría 039b (solo este markdown).
+
+---
+
+## Correcciones aplicadas (tarea 043 — 2026-10-03)
+
+Rama: `ia/cursor/corregir-hallazgos-039b`. Patrón: pruebas en
+`tests/Feature/Seg039bRoutesHardeningTest.php`, luego fix en `routes/web.php`.
+
+| Hallazgo | Decisión | Qué se hizo |
+|---|---|---|
+| APIs barrios (`/barrios-engativa`, `/barrios-por-ciudad/{ciudadId}`) | **Dejar públicas** | Catálogo geográfico (`id`, `nombre`, `localidad`) sin dato personal. Se usan desde `user.form` (fetch con sesión) para rellenar selects de Engativá; mismo criterio de “público por diseño” que `ciudades-api`. El CRUD de barrios sigue siendo Superadmin. No se cambió código. |
+| `POST /notificaciones/leidas` | **Corregido** | Confirmado: **no hay IDOR** — `auth()->user()->unreadNotifications` solo toca notificaciones del usuario de sesión (prueba Alice/Bob). El hueco real era invitado → 500 y falta de `verified`. Se añadió `middleware(['auth', 'verified'])`. |
+| Dashboards duplicados / `login_*` legacy | **Corregido** | La app usa `route('cliente.dashboard')` → `/cliente/dashboard` (grupo `auth`). Se eliminaron: `/clientes/dashboard`, registros sueltos `login_Superadmin` / `login_Admin` / `login_Paseador`, y el grupo intermedio `auth+verified` de `/superadmin/dashboard` sin `role` (quedaba sombreando el del prefijo Superadmin). Quedan solo las rutas bajo prefijos con `auth`. |
+| `empresas.pdf` duplicada | **Ya resuelto (042)** | Confirmado con prueba: una sola URI con `auth + verified + role:Superadmin\|Admin`. No se tocó. |
+| `/pdf` y `/pdf/mascota` | **Ya resuelto (042)** | Fuera del alcance de 043; ver `seg042-pdf-sin-auth.md`. |
+
+### Dejado sin cambio (justificación)
+
+- **`ciudades-api`**: JSON hardcodeado de demo; sin lectura de BD. Misma familia que barrios públicos; limpieza futura opcional (P2/P3).
+- **`GET /dashboard` (`temp.index`)**: vista genérica; no se abordó en 043.
+- **Mensajes de error en APIs de barrios** (`$e->getMessage()` en 500): mejora cosméticas/P3; no bloqueante si el catálogo es público.
+- **Métodos `login_Cliente` / `login_Paseador`**: siguen siendo los handlers de los dashboards autenticados (no son rutas legacy sueltas).
+
+### Pruebas
+
+`php artisan test --filter=Seg039bRoutesHardeningTest`: invitado → login en notificaciones; Alice no marca las de Bob; sin verificar → `verification.notice`; `/clientes/dashboard` ausente (404); `cliente.dashboard` → `cliente/dashboard` con `auth`; dashboards de rol exigen login; `empresas.pdf` sigue única y completa.
+
+---
+
+## Corrección 043b — dashboards activos del login (2026-10-03)
+
+### Error de la 043
+
+La 043 eliminó los registros sueltos `login_*` y el grupo intermedio de
+`/superadmin/dashboard`, creyendo que eran solo legacy. Los **nombres**
+`superadmin.dashboard`, `admin.dashboard`, `cliente.dashboard` y
+`paseador.dashboard` seguían existiendo vía `prefix(...)->name(...)->name('dashboard')`,
+pero:
+
+1. Un `grep` de `name('….dashboard')` en `web.php` quedaba vacío (los
+   nombres se componían por prefijo), lo que parecía “ruta eliminada”.
+2. `admin.dashboard` quedó apuntando a `AdminController@index` (listado de
+   usuarios) en lugar de `login_Admin` (vista de bienvenida).
+3. Había riesgo de sombra/confusión con el grupo Superadmin sin
+   `role:Superadmin` explícito en el nombre literal.
+
+Las referencias en `RoleRedirect`, controladores y vistas **nunca** debieron
+quitarse; son el núcleo del post-login.
+
+### Corrección
+
+- Se restauraron las **4 rutas con nombre literal** y middleware:
+  - `superadmin.dashboard` → `auth + verified + role:Superadmin` → `index`
+  - `admin.dashboard` → `auth` → `login_Admin`
+  - `cliente.dashboard` → `auth` → `login_Cliente`
+  - `paseador.dashboard` → `auth` → `login_Paseador`
+- Se quitaron los `->name('dashboard')` duplicados dentro de los prefijos
+  (misma URI).
+- **No** se restauró `/clientes/dashboard` ni los `login_*` sin `auth`
+  (duplicados inseguros).
+- `POST notificaciones/leidas` con `auth+verified` se conserva.
+
+### Grep de verificación (paso 3 de 043b)
+
+Referencias en `app/` + `resources/views/` (deben existir; no están rotas):
+
+- `route('superadmin.dashboard')`, `admin.dashboard`, `cliente.dashboard`,
+  `paseador.dashboard` — presentes en `RoleRedirect`, login/social,
+  sidebars y controladores de perfil.
+
+Definiciones en `routes/web.php` (deben existir):
+
+```
+139: ->name('superadmin.dashboard')
+142: ->name('admin.dashboard')
+143: ->name('cliente.dashboard')
+144: ->name('paseador.dashboard')
+```
+
+`/clientes/dashboard` (plural): sin referencias de nombre distinto; URI
+ausente a propósito.
+
+---
+
+## Corrección 043c — rol + verified en cada dashboard (2026-10-03)
+
+### Problema
+Tras 043b, `admin.dashboard`, `cliente.dashboard` y `paseador.dashboard`
+tenían solo `auth`. Un Cliente podía abrir `/admin/dashboard` (200 vía
+`login_Admin`, que no comprobaba rol Admin) y un Paseador podía disparar
+el flujo de `login_Cliente` (logout + redirect). `superadmin.dashboard`
+ya tenía `auth + verified + role:Superadmin`.
+
+### Corrección
+Cada dashboard queda con `auth + verified + role:<su rol>`:
+
+| Ruta | Middleware |
+|---|---|
+| `superadmin.dashboard` | `auth`, `verified`, `role:Superadmin` |
+| `admin.dashboard` | `auth`, `verified`, `role:Admin` |
+| `cliente.dashboard` | `auth`, `verified`, `role:Cliente` |
+| `paseador.dashboard` | `auth`, `verified`, `role:Paseador` |
+
+`RoleRedirect` / login / registro / verificación de email **no cambian**:
+siguen generando la URL del dashboard del propio rol; el middleware solo
+bloquea el acceso cruzado (403) y a usuarios sin verificar
+(`verification.notice`).
+
+### Pruebas
+`tests/Feature/DashboardRoleAccessTest.php`: matrices de acceso cruzado
+403, acceso propio, `verified`, middleware de ruta, y login → dashboard
+por rol. Suite completa en verde tras el fix.
