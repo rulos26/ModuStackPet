@@ -1,7 +1,7 @@
 ---
 agente: cursor
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/cursor/frontend-fase2a-assets-vite
 archivos: [package.json, package-lock.json, vite.config.js, resources/js/, resources/css/, resources/views/layouts/app.blade.php]
 ---
 
