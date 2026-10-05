@@ -151,7 +151,7 @@ class FrontendViewRenderTest extends TestCase
 
         $this->get(route('password.request'))
             ->assertOk()
-            ->assertSeeText('Olvidé mi contraseña');
+            ->assertSeeText('Recuperar contraseña');
 
         $this->get(route('password.reset', [
             'token' => 'token-de-render',
