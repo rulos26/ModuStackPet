@@ -18,23 +18,23 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             @php
-                                $avatarUrl = asset('public/storage/img/default.png');
+                                $avatarUrl = asset('storage/img/default.png');
                                 if ($user->avatar) {
                                     if (strpos($user->avatar, 'storage/img/avatar/') === 0) {
                                         $filePath = public_path($user->avatar);
                                         if (file_exists($filePath)) {
-                                            $avatarUrl = asset('public/' . $user->avatar);
+                                            $avatarUrl = asset($user->avatar);
                                         } else {
                                             $fileName = basename($user->avatar);
                                             $altPath = public_path('storage/img/avatar/' . $fileName);
                                             if (file_exists($altPath)) {
-                                                $avatarUrl = asset('public/storage/img/avatar/' . $fileName);
+                                                $avatarUrl = asset('storage/img/avatar/' . $fileName);
                                             }
                                         }
                                     } elseif (file_exists(public_path('storage/' . $user->avatar))) {
                                         $avatarUrl = asset('storage/' . $user->avatar);
                                     } elseif (file_exists(public_path($user->avatar))) {
-                                        $avatarUrl = asset('public/' . $user->avatar);
+                                        $avatarUrl = asset($user->avatar);
                                     } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
                                         $avatarUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
                                     }

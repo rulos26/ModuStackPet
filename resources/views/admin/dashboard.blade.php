@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Admin')
+@section('template_title', 'Dashboard Admin')
 
 @section('content')
     <div class="container my-5">
@@ -13,11 +13,11 @@
                 </div>
 
                 <!-- Título centrado -->
-                <h1 class="text-center mt-4">🐾 {{ $titulo }}</h1>
+                <h2 class="h1 text-center mt-4">🐾 {{ $titulo }}</h2>
 
                 <!-- Descripción en formato de párrafos (alineada a la izquierda) -->
                 <div class="mt-4">
-                    @foreach (explode('.', $descripcion) as $oracion)
+                    @foreach (explode('.', str_replace(['\r\n', '\n', '\r'], ' ', $descripcion)) as $oracion)
                         @if (trim($oracion) !== '')
                             <p>{{ trim($oracion) }}.</p>
                         @endif

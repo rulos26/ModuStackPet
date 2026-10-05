@@ -125,7 +125,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     // Opcional: mostrar notificación
-                    console.log(data.message);
                 } else {
                     // Revertir cambio
                     this.checked = !this.checked;

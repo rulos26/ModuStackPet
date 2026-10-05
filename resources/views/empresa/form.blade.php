@@ -211,7 +211,7 @@
                     {!! $errors->first('logo', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
                     @if(isset($empresa) && $empresa->logo)
                         <div class="mt-3">
-                            <img src="{{ asset('public/' . $empresa->logo) }}" alt="Logo" class="img-thumbnail" style="max-width: 150px;">
+                            <img src="{{ asset('storage/' . $empresa->logo) }}" alt="Logo" class="img-thumbnail" style="max-width: 150px;">
                         </div>
                     @endif
                 </div>
@@ -260,7 +260,6 @@
 
         // Función para actualizar el select de ciudades
         function actualizarCiudades(ciudades) {
-            console.log('Actualizando ciudades:', ciudades);
             ciudadSelect.innerHTML = '<option value="">{{ __('Seleccione una ciudad') }}</option>';
 
             if (Array.isArray(ciudades)) {
@@ -278,10 +277,8 @@
 
         // Función para cargar ciudades
         function cargarCiudades(departamentoId) {
-            console.log('ID del departamento seleccionado:', departamentoId);
 
             if (!departamentoId) {
-                console.log('No hay departamento seleccionado');
                 actualizarCiudades([]);
                 return;
             }
@@ -298,21 +295,18 @@
                 }
             })
                 .then(response => {
-                    console.log('Response status:', response.status);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Datos recibidos de API externa:', data);
 
                     // Filtrar ciudades por departamento seleccionado
                     const ciudadesFiltradas = data.filter(ciudad => {
                         return ciudad.departmentId == departamentoId;
                     });
 
-                    console.log(`Ciudades encontradas para departamento ${departamentoId}:`, ciudadesFiltradas.length);
 
                     // Convertir al formato esperado
                     const ciudadesFormateadas = ciudadesFiltradas.map(ciudad => ({
@@ -325,7 +319,6 @@
                         return a.municipio.localeCompare(b.municipio);
                     });
 
-                    console.log('Ciudades formateadas:', ciudadesFormateadas);
                     actualizarCiudades(ciudadesFormateadas);
                 })
                 .catch(error => {
@@ -345,7 +338,6 @@
                         { id_municipio: 10, municipio: 'Manizales' }
                     ];
 
-                    console.log('Usando datos de fallback locales');
                     actualizarCiudades(ciudadesFallback);
                 });
         }
@@ -355,13 +347,11 @@
             // Evento cambio de departamento
             departamentoSelect.addEventListener('change', function(e) {
                 const selectedValue = this.value;
-                console.log('Departamento cambiado. Valor seleccionado:', selectedValue);
                 cargarCiudades(selectedValue);
             });
 
             // Cargar ciudades iniciales si hay un departamento seleccionado
             if (departamentoSelect.value) {
-                console.log('Cargando ciudades iniciales para departamento:', departamentoSelect.value);
                 cargarCiudades(departamentoSelect.value);
             }
         }

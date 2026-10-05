@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('template_title', 'Gestión de Vacunas y Certificaciones')
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">

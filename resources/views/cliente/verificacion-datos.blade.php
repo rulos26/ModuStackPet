@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Completa tu Perfil')
+@section('template_title', 'Completa tu Perfil')
 
 @section('content')
 <div class="container my-5">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Cliente')
+@section('template_title', 'Dashboard Cliente')
 
 @section('content')
     <div class="container my-5">
@@ -11,7 +11,7 @@
                 <div class="text-center mb-4">
                     @php
                         $user = auth()->user();
-                        $avatarUrl = asset('public/storage/img/default.png');
+                        $avatarUrl = asset('storage/img/default.png');
                         if ($user && $user->avatar) {
                             // La imagen se guarda en public/storage/img/avatar/filename.png
                             // La ruta en BD es: storage/img/avatar/filename.png
@@ -20,13 +20,13 @@
                                 $filePath = public_path($user->avatar);
                                 if (file_exists($filePath)) {
                                     // Ruta nueva: public/storage/img/avatar/filename.png
-                                    $avatarUrl = asset('public/' . $user->avatar);
+                                    $avatarUrl = asset($user->avatar);
                                 } else {
                                     // Intentar con solo el nombre del archivo
                                     $fileName = basename($user->avatar);
                                     $altPath = public_path('storage/img/avatar/' . $fileName);
                                     if (file_exists($altPath)) {
-                                        $avatarUrl = asset('public/storage/img/avatar/' . $fileName);
+                                        $avatarUrl = asset('storage/img/avatar/' . $fileName);
                                     }
                                 }
                             } elseif (file_exists(public_path('storage/' . $user->avatar))) {
@@ -34,7 +34,7 @@
                                 $avatarUrl = asset('storage/' . $user->avatar);
                             } elseif (file_exists(public_path($user->avatar))) {
                                 // Ruta absoluta
-                                $avatarUrl = asset('public/' . $user->avatar);
+                                $avatarUrl = asset($user->avatar);
                             } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
                                 // Ruta en storage disk
                                 $avatarUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);
@@ -45,7 +45,7 @@
                          alt="Foto de Perfil" 
                          class="img-circle" 
                          style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #007bff; border-radius: 50%;">
-                    <h4 class="mt-3">{{ $user->name ?? 'Usuario' }}</h4>
+                    <p class="h4 mt-3">{{ $user->name ?? 'Usuario' }}</p>
                 </div>
 
                 <!-- Logo centrado y grande -->
@@ -58,12 +58,12 @@
                 </div>
 
                 <!-- Título centrado -->
-                <h1 class="text-center mt-4">🐾 {{ $titulo ?? 'Bienvenido a ModuStackPet' }}</h1>
+                <h2 class="h1 text-center mt-4">🐾 {{ $titulo ?? 'Bienvenido a ModuStackPet' }}</h2>
 
                 <!-- Descripción en formato de párrafos (alineada a la izquierda) -->
                 <div class="mt-4">
                     @if(isset($descripcion) && !empty($descripcion))
-                        @foreach (explode('.', $descripcion) as $oracion)
+                        @foreach (explode('.', str_replace(['\r\n', '\n', '\r'], ' ', $descripcion)) as $oracion)
                             @if (trim($oracion) !== '')
                                 <p>{{ trim($oracion) }}.</p>
                             @endif
