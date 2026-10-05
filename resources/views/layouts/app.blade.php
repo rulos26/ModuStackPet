@@ -13,35 +13,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Styles -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
-
-    <!-- AdminLTE -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
-
-    <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: 'Source Sans Pro', sans-serif;
-        }
-        .table thead th {
-            background-color: #f4f6f9;
-        }
-        .dataTables_wrapper .dt-buttons {
-            margin-bottom: 1rem;
-        }
-        .dt-buttons .btn {
-            margin-right: 0.5rem;
-        }
-    </style>
+    @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 
     @yield('css')
     @stack('styles')
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body
+    class="hold-transition sidebar-mini"
+    @if (session('success')) data-flash-success="{{ session('success') }}" @endif
+    @if (session('error')) data-flash-error="{{ session('error') }}" @endif
+>
     <div class="wrapper">
         <!-- Navbar -->
         @include('layouts.navbar')
@@ -77,75 +59,23 @@
         </footer>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-
-    <!-- Custom Scripts -->
-    <script>
-        // Configuración global de SweetAlert2
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000
-        });
-
-        // Mostrar mensajes de éxito/error
-        @if(session('success'))
-            Toast.fire({
-                icon: 'success',
-                title: '{{ session('success') }}'
-            });
-        @endif
-
-        @if(session('error'))
-            Toast.fire({
-                icon: 'error',
-                title: '{{ session('error') }}'
-            });
-        @endif
-
-        // Configuración de CSRF para AJAX
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-    </script>
-
     <!-- Detectar el esquema de color del sistema -->
     <script>
         const userPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const theme = userPrefersDark ? "dark" : "light";
         document.documentElement.setAttribute("data-theme", theme);
 
-        // Cambiar el tema automáticamente si el usuario cambia su preferencia
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
             const newTheme = e.matches ? "dark" : "light";
             document.documentElement.setAttribute("data-theme", newTheme);
         });
     </script>
 
-    <!-- Cargar archivo app.js usando Vite (solo si está compilado o en desarrollo) -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/js/app.js'])
-    @else
-        {{-- Fallback: Solo cargar si el archivo existe en public --}}
-        @if (file_exists(public_path('js/app.js')))
-            <script src="{{ asset('js/app.js') }}"></script>
-        @endif
-        {{-- Log de advertencia solo en desarrollo --}}
-        @if (config('app.debug'))
-            <script>
-                console.warn('Vite manifest no encontrado. Ejecuta "npm run build" para compilar los assets.');
-            </script>
-        @endif
-    @endif
-    @yield('js')
-    @stack('scripts')
+    {{-- Scripts de página: no ejecutar hasta que admin.js (módulo) exponga jQuery/Swal --}}
+    <template id="deferred-page-scripts">
+        @yield('js')
+        @stack('scripts')
+    </template>
 </body>
 
 </html>

@@ -1,0 +1,45 @@
+/* Vendor stack previously loaded from CDN in layouts/app.blade.php.
+   Exact package versions are pinned in package.json (Bootstrap 5.3.2,
+   Font Awesome 6.4.2, SweetAlert2 11.7.32, AdminLTE 3.2.0).
+   Font Awesome: full package (all.min.css) — tree-shaking icons is not
+   straightforward with the free CSS build used across AdminLTE views. */
+
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "sweetalert2/dist/sweetalert2.min.css";
+@import "admin-lte/dist/css/adminlte.min.css";
+
+body {
+    font-family: "Source Sans Pro", sans-serif;
+}
+
+.table thead th {
+    background-color: #f4f6f9;
+}
+
+.dataTables_wrapper .dt-buttons {
+    margin-bottom: 1rem;
+}
+
+.dt-buttons .btn {
+    margin-right: 0.5rem;
+}
+
+/* Theme helpers previously only in resources/css/app.css (Tailwind entry). */
+.dark-theme {
+    --bs-body-bg: #121212;
+    --bs-body-color: #ffffff;
+    --bs-primary: #6200ea;
+    --bs-link-color: #bb86fc;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.light-theme {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #000000;
+    --bs-primary: #007bff;
+    --bs-link-color: #007bff;
+    background-color: #ffffff;
+    color: #000000;
+}
