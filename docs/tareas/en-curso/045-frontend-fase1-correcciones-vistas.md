@@ -1,7 +1,7 @@
 ---
 agente: claude
-estado: pendiente
-rama:
+estado: en-curso
+rama: ia/claude/frontend-fase1
 archivos: [resources/views/]
 ---
 
