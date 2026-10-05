@@ -18,24 +18,24 @@
                     <div class="row align-items-center">
                         <div class="col-auto">
                             @php
-                                $avatarUrl = asset('public/storage/img/default.png');
+                                $avatarUrl = asset('storage/img/default.png');
                                 if ($mascota->avatar) {
                                     // Verificar diferentes rutas posibles del avatar
                                     if (strpos($mascota->avatar, 'avatars/') === 0) {
                                         // Ruta: avatars/cedula/mascotas/nombre.ext
                                         $filePath = public_path($mascota->avatar);
                                         if (file_exists($filePath)) {
-                                            $avatarUrl = asset('public/' . $mascota->avatar);
+                                            $avatarUrl = asset($mascota->avatar);
                                         }
                                     } elseif (strpos($mascota->avatar, 'storage/') === 0) {
                                         $filePath = public_path($mascota->avatar);
                                         if (file_exists($filePath)) {
-                                            $avatarUrl = asset('public/' . $mascota->avatar);
+                                            $avatarUrl = asset($mascota->avatar);
                                         }
                                     } elseif (file_exists(public_path('storage/' . $mascota->avatar))) {
                                         $avatarUrl = asset('storage/' . $mascota->avatar);
                                     } elseif (file_exists(public_path($mascota->avatar))) {
-                                        $avatarUrl = asset('public/' . $mascota->avatar);
+                                        $avatarUrl = asset($mascota->avatar);
                                     } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($mascota->avatar)) {
                                         $avatarUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($mascota->avatar);
                                     }

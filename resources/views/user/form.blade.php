@@ -475,13 +475,13 @@
                                     $filePath = public_path($user->avatar);
                                     if (file_exists($filePath)) {
                                         // Ruta nueva: public/storage/img/avatar/filename.png
-                                        $avatarPath = asset('public/' . $user->avatar);
+                                        $avatarPath = asset($user->avatar);
                                     } else {
                                         // Intentar con solo el nombre del archivo
                                         $fileName = basename($user->avatar);
                                         $altPath = public_path('storage/img/avatar/' . $fileName);
                                         if (file_exists($altPath)) {
-                                            $avatarPath = asset('public/storage/img/avatar/' . $fileName);
+                                            $avatarPath = asset('storage/img/avatar/' . $fileName);
                                         }
                                     }
                                 } elseif (file_exists(public_path('storage/' . $user->avatar))) {
@@ -489,7 +489,7 @@
                                     $avatarPath = asset('storage/' . $user->avatar);
                                 } elseif (file_exists(public_path($user->avatar))) {
                                     // Ruta absoluta
-                                    $avatarPath = asset('public/' . $user->avatar);
+                                    $avatarPath = asset($user->avatar);
                                 } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($user->avatar)) {
                                     // Ruta en storage disk
                                     $avatarPath = \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar);

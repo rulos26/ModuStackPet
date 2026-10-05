@@ -30,7 +30,7 @@
                         <!-- Mostrar la descripción del mensaje -->
                         <div class="form-group mb-2 mb20">
                             <strong>Descripción:</strong>
-                            {{ $mensajeDeBienvenida->descripcion }}
+                            {{ str_replace(['\r\n', '\n', '\r'], ' ', $mensajeDeBienvenida->descripcion) }}
                         </div>
                         <!-- Mostrar el logo del mensaje -->
                         <div class="form-group mb-2 mb20">
@@ -38,7 +38,7 @@
                             @if ($mensajeDeBienvenida->logo && file_exists(public_path($mensajeDeBienvenida->logo)))
                                 <img src="{{ asset($mensajeDeBienvenida->logo) }}" alt="Logo" style="width: 100px; height: 100px; object-fit: cover;">
                             @else
-                                <img src="{{ asset('public/storage/img/logo.jpg') }}" alt="Logo predeterminado" style="width: 100px; height: 100px; object-fit: cover;">
+                                <img src="{{ asset('storage/img/logo.jpg') }}" alt="Logo predeterminado" style="width: 100px; height: 100px; object-fit: cover;">
                             @endif
                         </div>
                         <!-- Mostrar el rol asociado al mensaje -->

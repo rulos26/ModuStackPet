@@ -1,11 +1,13 @@
 {{-- resources/views/auth/verify-email.blade.php --}}
 @extends('layouts.app')
 
+@section('template_title', 'Verifica tu correo electrónico')
+
 @section('content')
 <div class="container mt-5">
     <div class="card shadow">
         <div class="card-body text-center">
-            <h3 class="mb-4">Verifica tu dirección de correo electrónico</h3>
+            <h2 class="h3 mb-4">Verifica tu dirección de correo electrónico</h2>
 
             @if (session('status') == 'verification-link-sent')
                 <div class="alert alert-success">
