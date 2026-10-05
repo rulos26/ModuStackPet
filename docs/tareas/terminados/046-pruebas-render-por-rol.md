@@ -1,6 +1,6 @@
 ---
 agente: codex
-estado: en-curso
+estado: terminado
 rama: ia/codex/pruebas-render-por-rol
 archivos: [tests/Feature/]
 ---
@@ -28,3 +28,11 @@ docs/auditorias/seg046-pruebas-render.md.
 ## Restricciones
 - Solo tests/. No modifiques app/ ni resources/.
 - Al terminar, vuelve con git switch --detach origin/main.
+
+## Handoff
+- Agente y fecha: Codex, 2026-10-04.
+- Qué se hizo: se añadieron pruebas de renderizado para dashboards y vistas representativas de Superadmin, Admin, Cliente y Paseador, además de las cuatro vistas públicas de autenticación. Se documentó el 500 preexistente de `admin.users.create` sin modificar producción.
+- Archivos modificados: `tests/Feature/FrontendViewRenderTest.php`, `docs/auditorias/seg046-pruebas-render.md` y esta ficha movida a `terminados/`.
+- Cómo probarlo: `php artisan test tests/Feature/FrontendViewRenderTest.php --compact`; suite completa con `php artisan test`; validar Composer con `composer validate --no-check-publish`.
+- Pendientes y riesgos: `GET /admin/users/create` sigue respondiendo 500 por la variable `$user` ausente; las pruebas no ejecutan JavaScript ni sustituyen una revisión visual en navegador.
+- Preguntas para el humano: ¿se abre una tarea separada para corregir el formulario de creación de Admin antes de migrar a AdminLTE 4?
